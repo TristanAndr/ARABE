@@ -18,6 +18,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Rattaché à l'environnement pour lire ses variables (VITE_SUPABASE_*), qu'elles soient
+    # définies au niveau du dépôt ou de l'environnement github-pages.
+    environment: github-pages
     steps:
       - uses: actions/checkout@v4
 

@@ -144,7 +144,7 @@ git push -u origin main
 ### 2. Activer Pages et renseigner la configuration
 
 1. Dépôt → **Settings → Pages → Build and deployment → Source : GitHub Actions**.
-2. Dépôt → **Settings → Secrets and variables → Actions → onglet Variables → New repository variable** :
+2. Dépôt → **Settings → Secrets and variables → Actions → onglet Variables → New repository variable** (ou variables de l’environnement `github-pages`, dans **Settings → Environments**) :
    - `VITE_SUPABASE_URL` = l'URL du projet ;
    - `VITE_SUPABASE_PUBLISHABLE_KEY` = la clé publishable.
 
