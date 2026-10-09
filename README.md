@@ -2,7 +2,8 @@
 
 Un segment du Coran s'affiche, entièrement vocalisé ; tu écris sa prononciation en alphabet latin ; l'application
 la compare à une lecture de référence, mot par mot, selon les conventions de translittération que tu as choisies.
-Une section « Révision » propose une fiche de conjugaison et des exercices.
+Une section « Révision » propose une fiche de conjugaison et des exercices, une section « Alphabet » les 28 lettres,
+leurs formes et un entraînement à la reconnaissance.
 
 Chaque personne a son **compte** (Supabase Auth) : progression, historique, paramètres et résultats sont stockés
 dans PostgreSQL (Supabase), isolés par Row Level Security. Le site est **statique** (GitHub Pages) : aucun serveur à
@@ -20,6 +21,7 @@ Navigateur (GitHub Pages, fichiers statiques)
       reading_attempts      historique des vérifications de lecture (ajout seul)
       conjugation_attempts  réponses aux exercices de conjugaison (ajout seul)
       conjugation_sessions  sessions de conjugaison terminées (ajout seul)
+      alphabet_progress     suivi de l'alphabet, par lettre (migration 2)
 ```
 
 - Le texte coranique et la fiche ne sont **pas** copiés dans les comptes : seule la progression l'est.
@@ -88,14 +90,22 @@ vérification.
    **Project Settings → Data API** : copier la **Project URL** (`https://xxxx.supabase.co`).
    Ne pas copier la *Secret key* ni la clé `service_role` : l'application n'en a pas besoin.
 
-### 2. Appliquer la migration
+### 2. Appliquer les migrations
 
-Fichier : `supabase/migrations/20261009120000_user_data.sql` (tables, contraintes, index, RLS et politiques).
+Dans l'ordre, chacune une seule fois :
+
+1. `supabase/migrations/20261009120000_user_data.sql` : tables, contraintes, index, RLS et politiques ;
+2. `supabase/migrations/20261010120000_alphabet_progress.sql` : suivi de l'alphabet. Tant qu'elle n'est pas
+   appliquée, la section Alphabet fonctionne, mais le suivi des lettres n'est pas enregistré (un message le
+   signale) ; rien d'autre n'est affecté.
 
 - **Par le dashboard** : **SQL Editor → New query**, coller tout le fichier, **Run**.
 - **Ou par la CLI Supabase** : `npx supabase login`, `npx supabase link --project-ref <ref>`, `npx supabase db push`.
 
-Contrôle : **Database → Tables** doit lister les 5 tables avec le badge *RLS enabled* ;
+Coller **tout** le fichier sans rien sélectionner dans l'éditeur : avec une sélection, seule la partie
+sélectionnée est exécutée.
+
+Contrôle : **Database → Tables** doit lister les 6 tables avec le badge *RLS enabled* ;
 **Authentication → Policies** doit montrer 4 politiques pour `user_settings` et `reading_progress`, 3 pour chacune
 des trois tables d'historique.
 
@@ -235,6 +245,22 @@ bleu : français), puis exercice en deux modes (retrouver le verbe, retrouver le
 Comparaison d'une forme saisie : vocalisation complète exigée ; espaces, tatwīl, caractères invisibles et
 composition Unicode ignorés. Si seules les voyelles diffèrent, la réponse est fausse mais le retour le précise.
 Pour un pronom, tout pronom dont la forme est identique est accepté (تَفْعَلُ : أَنْتَ ou هِيَ).
+
+## Alphabet
+
+Entrée « Alphabet » de l'en-tête. Données : `src/alphabet/letters.ts`.
+
+- Les 28 lettres dans l'ordre hijāʾī (ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي), avec nom
+  translittéré, nom arabe vocalisé et indication de prononciation. Le son et la précision de prononciation viennent
+  de la table des lettres des paramètres (`src/translit/letters.ts`) : une seule description par lettre.
+- Seul le caractère de base (bloc Unicode arabe, jamais une forme de présentation) est stocké ; les formes
+  initiale, médiane et finale sont construites avec le tatwīl (ـ) et dessinées par la police. Les six lettres qui
+  ne se lient pas à la suivante (ا د ذ ر ز و) n'ont ni forme initiale ni forme médiane : « — / n'existe pas ».
+- Les tests comparent chaque lettre à une table de référence indépendante (points de code Unicode et type de
+  jonction d'ArabicShaping.txt).
+- Entraînement : « Lettre → nom » ou « Nom → lettre », 4 propositions dont des sosies (ب ت ث ن ي, ج ح خ…),
+  séries de 10 lettres, les lettres non acquises en premier. Une lettre est « acquise » après deux bonnes réponses
+  de suite ; une erreur la remet « à revoir ».
 
 ## Lectures de référence
 

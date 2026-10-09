@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import { recordAnswer, type AlphabetProgress } from './alphabet/progress'
+import { AlphabetView } from './components/alphabet/AlphabetView'
 import { AccountView } from './components/AccountView'
 import { ExerciseView } from './components/ExerciseView'
 import { Header, type View } from './components/Header'
@@ -30,7 +32,13 @@ interface Props {
   syncStatus?: SyncStatus
 }
 
-type Section = 'exercise' | 'revision'
+type Section = 'exercise' | 'revision' | 'alphabet'
+
+const BACK_LABELS: Record<Section, string> = {
+  exercise: "Retour à l'exercice",
+  revision: 'Retour à la révision',
+  alphabet: "Retour à l'alphabet",
+}
 
 export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   const savers = useMemo(
@@ -45,6 +53,16 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   const progress = useProgress(initial.progress, settings.order, savers.progress)
   const revision = useRevisionPrefs(initial.revision, savers.revision)
   const [sessions, setSessions] = useState<ConjugationSessionRecord[]>(initial.conjugationSessions)
+  const [alphabet, setAlphabet] = useState<AlphabetProgress>(initial.alphabet ?? {})
+  const alphabetRef = useRef(alphabet)
+
+  function recordLetter(letter: string, correct: boolean) {
+    const next = recordAnswer(alphabetRef.current, letter, correct)
+    alphabetRef.current = next
+    setAlphabet(next)
+    // Sans la table alphabet_progress, le suivi reste en mémoire pour cette visite.
+    if (initial.alphabetSync) store.saveAlphabet(next)
+  }
   const [view, setView] = useState<View>('exercise')
   // Section à retrouver en quittant les paramètres ou le compte.
   const [section, setSection] = useState<Section>('exercise')
@@ -52,7 +70,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
 
   const { order, index } = progress.progress
   const exercise = index < order.length ? BY_ID.get(order[index]!) : undefined
-  const backLabel = section === 'revision' ? 'Retour à la révision' : "Retour à l'exercice"
+  const backLabel = BACK_LABELS[section]
 
   return (
     <div className={styles.shell}>
@@ -62,7 +80,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
         view={view}
         syncStatus={syncStatus}
         onNavigate={(next) => {
-          if (next === 'exercise' || next === 'revision') setSection(next)
+          if (next === 'exercise' || next === 'revision' || next === 'alphabet') setSection(next)
           setView(next)
         }}
       />
@@ -79,6 +97,13 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
           />
         ) : view === 'account' ? (
           <AccountView account={account} syncStatus={syncStatus} onClose={() => setView(section)} closeLabel={backLabel} />
+        ) : view === 'alphabet' ? (
+          <AlphabetView
+            progress={alphabet}
+            onAnswer={recordLetter}
+            synced={initial.alphabetSync}
+            spellings={spellings}
+          />
         ) : view === 'revision' ? (
           <RevisionView
             prefs={revision.prefs}

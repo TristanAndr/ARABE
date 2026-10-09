@@ -1,7 +1,7 @@
 import type { SyncStatus } from '../sync/types'
 import styles from './Header.module.css'
 
-export type View = 'exercise' | 'revision' | 'settings' | 'account'
+export type View = 'exercise' | 'revision' | 'alphabet' | 'settings' | 'account'
 
 interface Props {
   /** Sans `view`, en-tête réduit à la marque (écrans de connexion, chargement). */
@@ -15,6 +15,7 @@ interface Props {
 const SECTIONS: { view: View; label: string }[] = [
   { view: 'exercise', label: 'Lecture' },
   { view: 'revision', label: 'Révision' },
+  { view: 'alphabet', label: 'Alphabet' },
 ]
 
 const SYNC_HINT: Partial<Record<SyncStatus, string>> = {
@@ -23,7 +24,7 @@ const SYNC_HINT: Partial<Record<SyncStatus, string>> = {
 }
 
 export function Header({ view, position = null, total = 0, onNavigate, syncStatus = 'saved' }: Props) {
-  const main = view === 'exercise' || view === 'revision'
+  const main = view === 'exercise' || view === 'revision' || view === 'alphabet'
   return (
     <header className={styles.header}>
       <div className={styles.inner}>

@@ -159,11 +159,13 @@ export class MemoryBackend {
   data = new Map<string, UserData & { inserts: { table: InsertTable; row: unknown }[] }>()
   failing = false
   calls = 0
+  /** Simule un projet où la migration de l'alphabet n'a pas été appliquée. */
+  alphabetMissing = false
 
   private of(userId: string) {
     let d = this.data.get(userId)
     if (!d) {
-      d = { settings: null, revision: null, progress: null, conjugationSessions: [], inserts: [] }
+      d = { settings: null, revision: null, progress: null, conjugationSessions: [], alphabet: null, alphabetSync: true, inserts: [] }
       this.data.set(userId, d)
     }
     return d
@@ -184,6 +186,8 @@ export class MemoryBackend {
           revision: clone(d.revision),
           progress: clone(d.progress),
           conjugationSessions: clone(d.conjugationSessions),
+          alphabet: this.alphabetMissing ? null : clone(d.alphabet),
+          alphabetSync: !this.alphabetMissing,
         }
       },
       saveSettings: async (s) => {
@@ -197,6 +201,11 @@ export class MemoryBackend {
       saveProgress: async (p) => {
         guard()
         this.of(userId).progress = clone(p)
+      },
+      saveAlphabet: async (p) => {
+        guard()
+        if (this.alphabetMissing) throw new Error('table alphabet_progress absente')
+        this.of(userId).alphabet = clone(p)
       },
       insert: async <T extends InsertTable>(table: T, rows: InsertRows[T][]) => {
         guard()

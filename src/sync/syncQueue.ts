@@ -9,6 +9,7 @@
  *   propre au compte : rien n'est perdu si l'onglet est fermé ou la connexion coupée, et les
  *   modifications repartent à la prochaine ouverture par le même compte.
  */
+import type { AlphabetProgress } from '../alphabet/progress'
 import type { RevisionPrefs } from '../revision/prefs'
 import type { Progress } from '../state/progress'
 import type { Settings } from '../state/settings'
@@ -21,6 +22,7 @@ export interface Outbox {
   settings?: Settings
   revision?: RevisionPrefs
   progress?: Progress
+  alphabet?: AlphabetProgress
   inserts: PendingInsert[]
 }
 
@@ -67,6 +69,7 @@ function readOutbox(storage: KeyValue, key: string): Outbox {
       settings: raw.settings as Settings | undefined,
       revision: raw.revision as RevisionPrefs | undefined,
       progress: raw.progress as Progress | undefined,
+      alphabet: raw.alphabet as AlphabetProgress | undefined,
       inserts: Array.isArray(raw.inserts) ? (raw.inserts as PendingInsert[]) : [],
     }
   } catch {
@@ -120,6 +123,7 @@ export class SyncQueue implements AppStore {
       settings: this.outbox.settings ?? data.settings,
       revision: this.outbox.revision ?? data.revision,
       progress: this.outbox.progress ?? data.progress,
+      alphabet: data.alphabetSync ? (this.outbox.alphabet ?? data.alphabet) : data.alphabet,
     }
     if (this.hasPending()) void this.flush()
     return merged
@@ -134,6 +138,9 @@ export class SyncQueue implements AppStore {
   saveProgress(p: Progress) {
     this.change((o) => ({ ...o, progress: p }))
   }
+  saveAlphabet(p: AlphabetProgress) {
+    this.change((o) => ({ ...o, alphabet: p }))
+  }
   addReadingAttempt(a: Omit<InsertRows['reading_attempts'], 'id'>) {
     this.add({ table: 'reading_attempts', row: { id: this.newId(), ...a } })
   }
@@ -146,7 +153,7 @@ export class SyncQueue implements AppStore {
 
   hasPending(): boolean {
     const o = this.outbox
-    return !!(o.settings || o.revision || o.progress || o.inserts.length)
+    return !!(o.settings || o.revision || o.progress || o.alphabet || o.inserts.length)
   }
 
   getStatus = (): SyncStatus => this.status
@@ -224,6 +231,7 @@ export class SyncQueue implements AppStore {
         if (snapshot.settings) await this.remote.saveSettings(snapshot.settings)
         if (snapshot.revision) await this.remote.saveRevision(snapshot.revision)
         if (snapshot.progress) await this.remote.saveProgress(snapshot.progress)
+        if (snapshot.alphabet) await this.remote.saveAlphabet(snapshot.alphabet)
         const tables = [...new Set(snapshot.inserts.map((i) => i.table))]
         for (const table of tables) {
           const rows = snapshot.inserts.filter((i) => i.table === table).map((i) => i.row)
@@ -242,6 +250,7 @@ export class SyncQueue implements AppStore {
         settings: this.outbox.settings === snapshot.settings ? undefined : this.outbox.settings,
         revision: this.outbox.revision === snapshot.revision ? undefined : this.outbox.revision,
         progress: this.outbox.progress === snapshot.progress ? undefined : this.outbox.progress,
+        alphabet: this.outbox.alphabet === snapshot.alphabet ? undefined : this.outbox.alphabet,
         inserts: this.outbox.inserts.filter((i) => !sent.has(i)),
       }
       this.failures = 0

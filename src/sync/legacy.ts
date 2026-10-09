@@ -62,7 +62,7 @@ export function archiveLegacy(storage: KeyValue = browserStorage): void {
 
 /** Le compte contient-il déjà des données ? */
 export function accountHasData(d: UserData): boolean {
-  return !!(d.settings || d.revision || d.progress || d.conjugationSessions.length)
+  return !!(d.settings || d.revision || d.progress || d.alphabet || d.conjugationSessions.length)
 }
 
 export function summarizeLegacy(d: LegacyData): string {

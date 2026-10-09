@@ -1,3 +1,4 @@
+import type { AlphabetProgress } from '../alphabet/progress'
 import type { Verdict } from '../compare/compare'
 import type { AnswerMethod, RevisionPrefs } from '../revision/prefs'
 import type { QuizMode } from '../revision/quiz'
@@ -19,6 +20,12 @@ export interface UserData {
   revision: RevisionPrefs | null
   progress: Progress | null
   conjugationSessions: ConjugationSessionRecord[]
+  alphabet: AlphabetProgress | null
+  /**
+   * false si la table alphabet_progress n'existe pas encore dans le projet Supabase (migration
+   * non appliquée) : l'alphabet reste utilisable, son suivi n'est simplement pas enregistré.
+   */
+  alphabetSync: boolean
 }
 
 export interface ReadingAttempt {
@@ -58,6 +65,7 @@ export interface RemoteStore {
   saveSettings(s: Settings): Promise<void>
   saveRevision(p: RevisionPrefs): Promise<void>
   saveProgress(p: Progress): Promise<void>
+  saveAlphabet(p: AlphabetProgress): Promise<void>
   /** Insertion idempotente : une ligne déjà présente (même id) est ignorée. */
   insert<T extends InsertTable>(table: T, rows: InsertRows[T][]): Promise<void>
 }
@@ -67,6 +75,7 @@ export interface AppStore {
   saveSettings(s: Settings): void
   saveRevision(p: RevisionPrefs): void
   saveProgress(p: Progress): void
+  saveAlphabet(p: AlphabetProgress): void
   addReadingAttempt(a: Omit<ReadingAttempt, 'id'>): void
   addConjugationAttempt(a: Omit<ConjugationAttempt, 'id'>): void
   addConjugationSession(s: Omit<ConjugationSession, 'id'>): void

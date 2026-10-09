@@ -42,6 +42,7 @@ const TABLES = [
   'reading_attempts',
   'conjugation_attempts',
   'conjugation_sessions',
+  'alphabet_progress',
 ] as const
 
 let db: PGlite
@@ -87,6 +88,7 @@ beforeAll(async () => {
     await as(user, `insert into public.reading_attempts (exercise_id, verdict, answer) values ($1, 'correct', 'x')`, [ex])
     await as(user, `insert into public.conjugation_attempts (mode, prompt, answer, correct) values ('verbe', '1cs', 'a', true)`)
     await as(user, `insert into public.conjugation_sessions (mode, method, correct, total) values ('verbe', 'choix', 3, 14)`)
+    await as(user, `insert into public.alphabet_progress (letters) values ('{"ب":{"seen":1,"correct":1,"streak":1}}')`)
   }
 })
 
@@ -140,6 +142,8 @@ describe('isolation entre deux comptes', () => {
   it("modifier ou supprimer les lignes de l'autre n'a aucun effet", async () => {
     const upd = await as(ALICE, `update public.reading_progress set session_index = 99 where user_id = $1`, [BOB])
     expect(upd.affectedRows).toBe(0)
+    const alpha = await as(ALICE, `update public.alphabet_progress set letters = '{}' where user_id = $1`, [BOB])
+    expect(alpha.affectedRows).toBe(0)
     const del = await as(ALICE, `delete from public.reading_attempts where user_id = $1`, [BOB])
     expect(del.affectedRows).toBe(0)
     const b = await as<{ session_index: number }>(BOB, `select session_index from public.reading_progress`)
@@ -150,6 +154,7 @@ describe('isolation entre deux comptes', () => {
 
   it("impossible de s'approprier une ligne puis de la transférer à l'autre", async () => {
     await denied(ALICE, `update public.reading_progress set user_id = $1`, [BOB])
+    await denied(ALICE, `update public.alphabet_progress set user_id = $1`, [BOB])
   })
 
   it('les historiques ne se modifient pas après coup', async () => {
