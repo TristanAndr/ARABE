@@ -1,0 +1,138 @@
+.feedback {
+  transition: opacity 160ms var(--ease);
+}
+
+.stale {
+  opacity: 0.5;
+}
+
+.verdict {
+  font-family: var(--font-text);
+  font-size: 1.6rem;
+  font-weight: 500;
+  font-variation-settings: 'opsz' 36;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.9rem;
+}
+
+.correct {
+  color: var(--ok);
+}
+
+.partial {
+  color: var(--partial);
+}
+
+.incorrect {
+  color: var(--error);
+}
+
+.count {
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  margin-top: 1.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.reference {
+  margin-top: 0.4rem;
+  font-family: var(--font-text);
+  font-size: 1.45rem;
+  font-variation-settings: 'opsz' 24;
+  line-height: 1.5;
+}
+
+.wrongWord {
+  color: var(--error);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+.primary {
+  margin-top: 0.35rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.diff {
+  margin: 0.5rem 0 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(7rem, auto) minmax(6rem, auto) 1fr;
+  gap: 0.25rem 1.5rem;
+  align-items: baseline;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.row:first-child {
+  border-top: 1px solid var(--rule);
+}
+
+.row dd {
+  margin: 0;
+}
+
+.expected {
+  font-family: var(--font-text);
+  font-size: 1.15rem;
+}
+
+.typed {
+  font-family: var(--font-text);
+  font-size: 1.05rem;
+  color: var(--error);
+}
+
+.typed em {
+  font-style: italic;
+  color: var(--muted);
+}
+
+.issues {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.caveat {
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.notes {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  max-width: 38rem;
+}
+
+.notes li + li {
+  margin-top: 0.4rem;
+}
+
+@media (max-width: 34rem) {
+  .row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .issues {
+    grid-column: 1 / -1;
+  }
+}

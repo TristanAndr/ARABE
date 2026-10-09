@@ -1,0 +1,49 @@
+.exercise {
+  padding-top: clamp(2rem, 7vh, 4.5rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.form {
+  margin-top: clamp(2rem, 5vh, 3rem);
+}
+
+.actions,
+.next {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.result {
+  margin-top: 2.75rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+  animation: appear 160ms var(--ease);
+}
+
+.next {
+  margin-top: 2.25rem;
+}
+
+.stats {
+  margin-top: 4rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (max-width: 30rem) {
+  .actions kbd,
+  .next kbd {
+    display: none;
+  }
+}

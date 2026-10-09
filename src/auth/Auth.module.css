@@ -1,0 +1,127 @@
+.auth {
+  max-width: 26rem;
+  padding-top: clamp(2.5rem, 10vh, 6rem);
+}
+
+.kicker {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.title {
+  margin-top: 0.6rem;
+  font-family: var(--font-text);
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-weight: 500;
+  font-variation-settings: 'opsz' 60;
+  letter-spacing: -0.015em;
+}
+
+.intro {
+  margin-top: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.notice,
+.error {
+  margin-top: 1.5rem;
+  padding: 0.2rem 0 0.2rem 0.9rem;
+  border-left: 2px solid var(--accent);
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+.error {
+  border-left-color: var(--error);
+  color: var(--error);
+}
+
+.form {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.input {
+  margin-top: 0.35rem;
+  width: 100%;
+  padding: 0.55rem 0 0.5rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule-strong);
+  border-radius: 0;
+  font-size: 1.05rem;
+  color: var(--ink);
+  transition: border-color 120ms var(--ease);
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+  box-shadow: 0 1px 0 0 var(--accent);
+}
+
+.hint {
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.actions {
+  margin-top: 0.25rem;
+}
+
+.switches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9rem;
+}
+
+/* Écrans d'attente et d'erreur */
+.state {
+  padding-top: clamp(3rem, 14vh, 8rem);
+  max-width: 32rem;
+}
+
+.stateText {
+  margin-top: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.stateText code {
+  font-size: 0.88em;
+}
+
+.stateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: center;
+  margin-top: 1.75rem;
+}
+
+.loading {
+  color: var(--muted);
+  font-size: 0.95rem;
+}

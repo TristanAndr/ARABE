@@ -1,0 +1,224 @@
+:root {
+  --bg: #f6f2e9;
+  --bg-raised: #fbf8f2;
+  --ink: #24272a;
+  --ink-soft: #4a4c4c;
+  --muted: #7a776d;
+  --rule: #dcd5c6;
+  --rule-strong: #b9b09d;
+  --accent: #1f4d3a;
+  --accent-ink: #f6f2e9;
+  --accent-soft: #e3ebe4;
+  --ok: #1f4d3a;
+  --partial: #8a5a12;
+  --error: #9b3420;
+  --error-soft: #f3e2da;
+  --focus: #1f4d3a;
+
+  /* Code couleur de la fiche de conjugaison */
+  --conj-pronoun: #b3261e;
+  --conj-stem: #2b2e31;
+  --conj-affix: #1e7a45;
+  --conj-gloss: #24589e;
+
+  --font-ui: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-text: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --font-arabic: 'Amiri Quran', 'Amiri', 'Geeza Pro', serif;
+
+  --measure: 46rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #151716;
+  --bg-raised: #1c1f1d;
+  --ink: #ebe6da;
+  --ink-soft: #c9c4b8;
+  --muted: #8f8b80;
+  --rule: #2d312e;
+  --rule-strong: #474c48;
+  --accent: #8cc2a3;
+  --accent-ink: #121413;
+  --accent-soft: #1f2b24;
+  --ok: #8cc2a3;
+  --partial: #d6a85a;
+  --error: #e58f78;
+  --error-soft: #2c1d19;
+  --focus: #8cc2a3;
+  --conj-pronoun: #f0907c;
+  --conj-stem: #ebe6da;
+  --conj-affix: #7fd0a0;
+  --conj-gloss: #93b7ee;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #151716;
+    --bg-raised: #1c1f1d;
+    --ink: #ebe6da;
+    --ink-soft: #c9c4b8;
+    --muted: #8f8b80;
+    --rule: #2d312e;
+    --rule-strong: #474c48;
+    --accent: #8cc2a3;
+    --accent-ink: #121413;
+    --accent-soft: #1f2b24;
+    --ok: #8cc2a3;
+    --partial: #d6a85a;
+    --error: #e58f78;
+    --error-soft: #2c1d19;
+    --focus: #8cc2a3;
+    --conj-pronoun: #f0907c;
+    --conj-stem: #ebe6da;
+    --conj-affix: #7fd0a0;
+    --conj-gloss: #93b7ee;
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.55;
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Boutons partagés : un primaire plein, un secondaire au trait, un lien discret. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  min-height: 2.75rem;
+  padding: 0 1.4rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition:
+    background-color 120ms var(--ease),
+    color 120ms var(--ease),
+    border-color 120ms var(--ease);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--accent) 88%, var(--ink));
+}
+
+.btn-primary:disabled {
+  background: var(--rule);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: transparent;
+  border-color: var(--rule-strong);
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  border-color: var(--ink);
+}
+
+.btn-link {
+  min-height: auto;
+  padding: 0.25rem 0;
+  background: none;
+  border: 0;
+  color: var(--ink-soft);
+  font-weight: 450;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 0.3em;
+}
+
+.btn-link:hover {
+  color: var(--ink);
+  text-decoration-color: currentColor;
+}
+
+kbd {
+  font-family: var(--font-ui);
+  font-size: 0.78em;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+/* Arabe : interlignage large pour que les signes suscrits et souscrits ne soient jamais rognés. */
+.arabic {
+  font-family: var(--font-arabic);
+  font-feature-settings: normal;
+  line-height: 2.3;
+  font-weight: 400;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

@@ -1,0 +1,13 @@
+node_modules
+dist
+*.local
+.DS_Store
+
+# Variables d'environnement : seules les valeurs d'exemple sont versionnées.
+.env
+.env.*
+!.env.example
+
+# Supabase CLI (si utilisée localement)
+supabase/.temp
+supabase/.branches

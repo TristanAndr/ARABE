@@ -1,0 +1,40 @@
+.figure {
+  margin: 0;
+  text-align: center;
+}
+
+.verse {
+  font-size: clamp(2.1rem, 6vw, 3.4rem);
+  line-height: 2.35;
+  padding: 0.4em 0 0.2em;
+  overflow-wrap: normal;
+  word-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.ref {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sep {
+  color: var(--rule-strong);
+}
+
+.part {
+  color: var(--muted);
+}
+
+.refAr {
+  font-family: var(--font-arabic);
+  font-size: 1rem;
+  margin-inline-start: 0.4rem;
+}
