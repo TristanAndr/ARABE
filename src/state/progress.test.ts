@@ -25,4 +25,12 @@ describe('progression', () => {
     expect(p.results).toEqual({})
     expect(sanitizeProgress('nope')).toBeNull()
   })
+
+  it('conserve les résultats des versets d’entraînement, ignore les identifiants invalides', () => {
+    const p = sanitizeProgress({
+      order: [],
+      results: { '36:3': { first: 'correct', last: 'correct' }, '2:999': { first: 'correct', last: 'correct' } },
+    })!
+    expect(Object.keys(p.results)).toEqual(['36:3'])
+  })
 })

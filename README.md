@@ -236,6 +236,32 @@ Quatre éléments sont séparés côté lecture :
 L'affichage de la référence et la vérification utilisent les mêmes graphies : un test garantit que la référence
 affichée est jugée juste dans chaque profil.
 
+## Entraînement sur tout le Coran
+
+Dans l'écran d'entraînement, une barre discrète au-dessus du verset permet de choisir une sourate (114, avec
+recherche par numéro, nom français, nom arabe ou translittération) et de passer au verset précédent ou suivant.
+Choisir une sourate fait passer l'exercice verset par verset ; « Revenir à la sélection d'exercices » retrouve la
+série habituelle là où elle en était.
+
+- **Texte** : le fichier Tanzil du dépôt, utilisé tel quel (vérifié ligne à ligne par les tests), chargé à la
+  demande dans un fichier séparé (≈ 290 Ko compressés) : changer de verset ne fait aucune requête. La basmala que
+  Tanzil place en tête du verset 1 n'est pas comptée dans le verset, comme dans le corpus.
+- **Sourates** (`src/data/surahs.ts`) : noms arabes, translittérations Tanzil et nombres de versets tirés des
+  métadonnées Tanzil (Quran Metadata 1.0, CC BY 3.0), recoupés avec le texte ; translittération précise et nom
+  français ajoutés.
+- **Navigation** : précédent désactivé au verset 1 ; au dernier verset, suivant passe au verset 1 de la sourate
+  suivante ; désactivé à la fin du Coran.
+- **Lecture de référence** (`src/quran/practice.ts`) : celle du corpus écrite à la main si le verset y figure (ou
+  ses segments mis bout à bout) ; sinon une lecture **générée automatiquement** à partir du texte vocalisé
+  (`src/translit/autoReading.ts`, règles de Ḥafṣ), signalée comme telle après vérification. Le générateur retrouve
+  à l'identique les 35 lectures écrites à la main, produit une lecture valide pour les 6236 versets, et ces lectures
+  sont jugées justes dans chaque profil. Il n'a pas été relu verset par verset : quelques particularités rares
+  (imāla de 11:41, išmām de 12:11, tashīl de 41:44) ne sont pas rendues, et les durées de madd, la ġunna et
+  l'iḫfāʾ ne sont pas notées (comme pour le corpus).
+- **Enregistrement** : verset en cours dans les réglages du compte (`trainingVerse`, colonne `settings` de
+  `user_settings`), résultats dans la progression (`reading_progress`), tentatives dans `reading_attempts`. Aucune
+  migration nécessaire.
+
 ## Révision : le présent
 
 Entrée « Révision » de l'en-tête. Fiche du présent (الفِعْلُ الْمُضَارِعُ) sur le modèle فَعَلَ / يَفْعَلُ,

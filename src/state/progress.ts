@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import type { Verdict } from '../compare/compare'
 import { EXERCISES } from '../data/corpus'
+import { sanitizePosition } from '../quran/navigation'
 import { isRecord } from '../storage/storage'
 import type { Order } from './settings'
 
@@ -21,6 +22,12 @@ export interface Progress {
 
 const VERDICTS: Verdict[] = ['correct', 'partial', 'incorrect']
 const KNOWN_IDS = new Set(EXERCISES.map((e) => e.id))
+
+/** Résultats de l'entraînement verset par verset : identifiant « sourate:verset ». */
+function isValidVerseId(id: string): boolean {
+  const m = /^(\d+):(\d+)$/.exec(id)
+  return !!m && sanitizePosition({ surah: Number(m[1]), ayah: Number(m[2]) }) !== null
+}
 
 export function makeOrder(order: Order, random: () => number = Math.random): string[] {
   const ids = EXERCISES.map((e) => e.id)
@@ -45,7 +52,7 @@ export function sanitizeProgress(raw: unknown): Progress | null {
   const results: Record<string, ExerciseResult> = {}
   if (isRecord(raw.results)) {
     for (const [id, r] of Object.entries(raw.results)) {
-      if (KNOWN_IDS.has(id) && isRecord(r) && VERDICTS.includes(r.first as Verdict) && VERDICTS.includes(r.last as Verdict)) {
+      if ((KNOWN_IDS.has(id) || isValidVerseId(id)) && isRecord(r) && VERDICTS.includes(r.first as Verdict) && VERDICTS.includes(r.last as Verdict)) {
         results[id] = { first: r.first as Verdict, last: r.last as Verdict }
       }
     }

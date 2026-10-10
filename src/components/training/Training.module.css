@@ -1,0 +1,239 @@
+/* Barre discrète au-dessus de l'exercice : sourate à gauche, versets à droite. */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: clamp(1rem, 4vh, 2.25rem);
+  font-size: 0.9rem;
+}
+
+.picker {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.current {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  max-width: 100%;
+  padding: 0.25rem 0;
+  background: none;
+  border: 0;
+  color: var(--ink-soft);
+  text-align: left;
+}
+
+.current:hover .currentName {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 0.25em;
+}
+
+.number {
+  min-width: 1.6rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.currentName {
+  font-family: var(--font-text);
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+
+.currentAr {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+
+.chevron {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.panel {
+  margin-top: 0.5rem;
+  padding: 0.75rem 0 0.5rem;
+  border-top: 1px solid var(--rule);
+  animation: appear 140ms var(--ease);
+}
+
+.searchLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.search {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule-strong);
+  border-radius: 0;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.search:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+  box-shadow: 0 1px 0 0 var(--accent);
+}
+
+.count {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.list {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  max-height: min(22rem, 50vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.15rem 0.25rem;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  color: var(--ink);
+}
+
+.item:hover {
+  background: var(--bg-raised);
+}
+
+.item[aria-current='true'] {
+  background: var(--accent-soft);
+}
+
+.itemNames {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.itemName {
+  font-family: var(--font-text);
+  font-size: 1.05rem;
+}
+
+.itemFr {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.itemAr {
+  font-size: 1.35rem;
+  line-height: 2;
+}
+
+/* Versets : liens discrets, pas de boutons pleins. */
+.verseNav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.step {
+  padding: 0.25rem 0;
+  background: none;
+  border: 0;
+  color: var(--ink-soft);
+  font-weight: 450;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 0.3em;
+  white-space: nowrap;
+}
+
+.step:hover:not(:disabled) {
+  color: var(--ink);
+  text-decoration-color: currentColor;
+}
+
+.step:disabled {
+  color: var(--rule-strong);
+  text-decoration: none;
+  cursor: default;
+}
+
+.counter {
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.short {
+  display: none;
+}
+
+.exit {
+  flex-basis: 100%;
+  justify-content: flex-start;
+  font-size: 0.82rem;
+}
+
+.endBar {
+  padding-top: clamp(1.25rem, 4vh, 2.5rem);
+}
+
+.state {
+  padding: 3rem 0;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+
+@media (max-width: 34rem) {
+  .verseNav {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .long {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .short {
+    display: inline;
+  }
+}

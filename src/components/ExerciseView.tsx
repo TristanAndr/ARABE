@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useMemo, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
 import { compareAnswer, type Verdict } from '../compare/compare'
 import { isBlank, type NormalizationOptions } from '../compare/normalize'
 import type { Exercise } from '../data/corpus'
@@ -16,9 +16,25 @@ interface Props {
   progress: Progress
   onChecked: (verdict: Verdict, answer: string) => void
   onNext: () => void
+  /** Choix de la sourate et des versets, affiché au-dessus du verset. */
+  toolbar?: ReactNode
+  /** Libellé du passage à la suite (« Phrase suivante » ou « Verset suivant »). */
+  nextLabel?: string
+  /** Faux à la fin du Coran : plus de suite. */
+  canNext?: boolean
 }
 
-export function ExerciseView({ exercise, spellings, normalization, progress, onChecked, onNext }: Props) {
+export function ExerciseView({
+  exercise,
+  spellings,
+  normalization,
+  progress,
+  onChecked,
+  onNext,
+  toolbar,
+  nextLabel = 'Phrase suivante',
+  canNext = true,
+}: Props) {
   const [answer, setAnswer] = useState('')
   // Dernière réponse vérifiée : le résultat est recalculé si les réglages changent.
   const [checked, setChecked] = useState<string | null>(null)
@@ -39,7 +55,7 @@ export function ExerciseView({ exercise, spellings, normalization, progress, onC
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && result) {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && result && canNext) {
       e.preventDefault()
       onNext()
     }
@@ -50,6 +66,7 @@ export function ExerciseView({ exercise, spellings, normalization, progress, onC
 
   return (
     <article className={styles.exercise}>
+      {toolbar}
       <VerseDisplay exercise={exercise} />
 
       <form className={styles.form} onSubmit={check} noValidate>
@@ -72,10 +89,10 @@ export function ExerciseView({ exercise, spellings, normalization, progress, onC
         <section className={styles.result} aria-live="polite" aria-label="Résultat">
           <Feedback result={result} exercise={exercise} spellings={spellings} stale={checked !== answer} />
           <div className={styles.next}>
-            <button type="button" className="btn btn-secondary" onClick={onNext}>
-              Phrase suivante
+            <button type="button" className="btn btn-secondary" onClick={onNext} disabled={!canNext}>
+              {nextLabel}
             </button>
-            <kbd>Ctrl / ⌘ + Entrée</kbd>
+            {canNext && <kbd>Ctrl / ⌘ + Entrée</kbd>}
           </div>
         </section>
       )}

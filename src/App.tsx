@@ -1,6 +1,11 @@
 import { useMemo, useRef, useState } from 'react'
 import { recordAnswer, type AlphabetProgress } from './alphabet/progress'
 import { AlphabetView } from './components/alphabet/AlphabetView'
+import { VerseNav } from './components/training/VerseNav'
+import trainingStyles from './components/training/Training.module.css'
+import { next, type Position } from './quran/navigation'
+import { verseItem } from './quran/practice'
+import { useQuranText } from './quran/useQuranText'
 import { AccountView } from './components/AccountView'
 import { ExerciseView } from './components/ExerciseView'
 import { Header, type View } from './components/Header'
@@ -69,13 +74,50 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   const spellings = useMemo(() => resolveSpellings(settings), [settings])
 
   const { order, index } = progress.progress
-  const exercise = index < order.length ? BY_ID.get(order[index]!) : undefined
+  const sessionExercise = index < order.length ? BY_ID.get(order[index]!) : undefined
+
+  // Entraînement verset par verset : texte chargé à la demande, exercice construit sur le verset.
+  const verse = settings.trainingVerse
+  const quran = useQuranText(verse !== null)
+  const verseExercise = useMemo(
+    () => (verse && quran.status === 'ready' ? verseItem(quran.text, verse) : undefined),
+    [verse, quran],
+  )
+  const exercise = verse ? verseExercise : sessionExercise
+
+  // Dernière position demandée : des clics rapides avancent bien d'autant de versets.
+  const latestVerse = useRef<Position | null>(verse)
+  latestVerse.current = verse
+  const latestSettings = useRef(settings)
+  latestSettings.current = settings
+  const goVerse = (p: Position | null) => {
+    latestVerse.current = p
+    latestSettings.current = { ...latestSettings.current, trainingVerse: p }
+    save(latestSettings.current)
+  }
+  // Verset de référence pour la barre : celui de l'exercice affiché (ou, en fin de série, le dernier).
+  const shown = sessionExercise ?? BY_ID.get(order[order.length - 1] ?? '')
+  const position: Position | null = verse ?? (shown ? { surah: shown.surah, ayah: shown.ayah } : null)
+  const stepVerse = (move: (p: Position) => Position | null) => {
+    const from = latestVerse.current ?? position
+    const to = from && move(from)
+    if (to) goVerse(to)
+  }
+  const toolbar = position && (
+    <VerseNav
+      position={position}
+      verseMode={verse !== null}
+      onGo={goVerse}
+      onStep={stepVerse}
+      onExit={() => goVerse(null)}
+    />
+  )
   const backLabel = BACK_LABELS[section]
 
   return (
     <div className={styles.shell}>
       <Header
-        position={exercise ? index + 1 : null}
+        position={sessionExercise && !verse ? index + 1 : null}
         total={order.length}
         view={view}
         syncStatus={syncStatus}
@@ -115,9 +157,25 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
               setSessions((list) => [{ ...s, completedAt: new Date().toISOString() }, ...list])
             }}
           />
+        ) : verse && !exercise ? (
+          <article>
+            {toolbar}
+            {quran.status === 'error' ? (
+              <div className={trainingStyles.state} role="alert">
+                <p>Le texte du Coran n’a pas pu être chargé. Vérifie ta connexion internet.</p>
+                <button type="button" className="btn btn-secondary" onClick={quran.retry}>
+                  Réessayer
+                </button>
+              </div>
+            ) : (
+              <p className={trainingStyles.state} role="status">
+                Chargement du verset…
+              </p>
+            )}
+          </article>
         ) : exercise ? (
           <ExerciseView
-            key={`${exercise.id}#${index}`}
+            key={verse ? `verset:${exercise.id}` : `${exercise.id}#${index}`}
             exercise={exercise}
             spellings={spellings}
             normalization={settings.normalization}
@@ -126,10 +184,16 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
               progress.record(exercise.id, verdict)
               store.addReadingAttempt({ exercise_id: exercise.id, verdict, answer })
             }}
-            onNext={progress.next}
+            onNext={verse ? () => stepVerse(next) : progress.next}
+            nextLabel={verse ? 'Verset suivant' : 'Phrase suivante'}
+            canNext={verse ? next(verse) !== null : true}
+            toolbar={toolbar}
           />
         ) : (
-          <SessionEnd progress={progress.progress} onRestart={progress.restart} />
+          <>
+            <div className={trainingStyles.endBar}>{toolbar}</div>
+            <SessionEnd progress={progress.progress} onRestart={progress.restart} />
+          </>
         )}
       </main>
     </div>

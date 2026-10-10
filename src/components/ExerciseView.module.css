@@ -1,5 +1,5 @@
 .exercise {
-  padding-top: clamp(2rem, 7vh, 4.5rem);
+  padding-top: clamp(1.25rem, 4vh, 2.5rem);
   display: flex;
   flex-direction: column;
 }

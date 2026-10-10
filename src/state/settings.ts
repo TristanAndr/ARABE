@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { DEFAULT_NORMALIZATION, type NormalizationOptions } from '../compare/normalize'
 import { PHONEMES, type Phoneme } from '../translit/phonemes'
 import { PRESETS, type Overrides, type PresetId, type ProfileId, type ProfileSettings } from '../translit/profiles'
+import { sanitizePosition, type Position } from '../quran/navigation'
 import { isRecord } from '../storage/storage'
 
 export type Theme = 'system' | 'light' | 'dark'
@@ -11,6 +12,11 @@ export interface Settings extends ProfileSettings {
   normalization: NormalizationOptions
   theme: Theme
   order: Order
+  /**
+   * Entraînement verset par verset : verset en cours (null = sélection d'exercices, comportement
+   * d'origine). Enregistré avec les réglages du compte.
+   */
+  trainingVerse: Position | null
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -20,6 +26,7 @@ export const DEFAULT_SETTINGS: Settings = {
   normalization: DEFAULT_NORMALIZATION,
   theme: 'system',
   order: 'mushaf',
+  trainingVerse: null,
 }
 
 const isPreset = (v: unknown): v is PresetId => typeof v === 'string' && v in PRESETS
@@ -49,6 +56,7 @@ export function sanitizeSettings(raw: unknown): Settings | null {
     },
     theme: raw.theme === 'light' || raw.theme === 'dark' ? raw.theme : 'system',
     order: raw.order === 'random' ? 'random' : 'mushaf',
+    trainingVerse: sanitizePosition(raw.trainingVerse),
   }
 }
 

@@ -18,8 +18,8 @@ const SECTIONS: { view: View; label: string }[] = [
   { view: 'alphabet', label: 'Alphabet' },
 ]
 
+// Seul l'échec est signalé : « en cours » clignoterait à chaque changement de verset.
 const SYNC_HINT: Partial<Record<SyncStatus, string>> = {
-  saving: 'Enregistrement…',
   pending: 'Non enregistré',
 }
 
