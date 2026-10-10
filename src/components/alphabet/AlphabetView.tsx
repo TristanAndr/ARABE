@@ -9,9 +9,6 @@ type Tab = 'lettres' | 'tableau' | 'revision'
 
 interface Props {
   progress: AlphabetProgress
-  onAnswer: (letter: string, correct: boolean) => void
-  /** Le suivi est-il enregistré dans le compte ? */
-  synced: boolean
   spellings: Spellings
 }
 
@@ -21,7 +18,7 @@ const STATUS_LABEL: Record<LetterStatus, string> = {
   mastered: 'acquise',
 }
 
-export function AlphabetView({ progress, onAnswer, synced, spellings }: Props) {
+export function AlphabetView({ progress, spellings }: Props) {
   const [tab, setTab] = useState<Tab>('lettres')
   const [selected, setSelected] = useState<number | null>(null)
   const detailRef = useRef<HTMLElement>(null)
@@ -86,7 +83,7 @@ export function AlphabetView({ progress, onAnswer, synced, spellings }: Props) {
         </>
       )}
       {tab === 'tableau' && <LetterTable />}
-      {tab === 'revision' && <AlphabetQuiz progress={progress} onAnswer={onAnswer} synced={synced} />}
+      {tab === 'revision' && <AlphabetQuiz />}
     </article>
   )
 }

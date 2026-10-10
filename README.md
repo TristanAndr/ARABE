@@ -284,9 +284,13 @@ Entrée « Alphabet » de l'en-tête. Données : `src/alphabet/letters.ts`.
   ne se lient pas à la suivante (ا د ذ ر ز و) n'ont ni forme initiale ni forme médiane : « — / n'existe pas ».
 - Les tests comparent chaque lettre à une table de référence indépendante (points de code Unicode et type de
   jonction d'ArabicShaping.txt).
-- Entraînement : « Lettre → nom » ou « Nom → lettre », 4 propositions dont des sosies (ب ت ث ن ي, ج ح خ…),
-  séries de 10 lettres, les lettres non acquises en premier. Une lettre est « acquise » après deux bonnes réponses
-  de suite ; une erreur la remet « à revoir ».
+- Entraînement (`src/alphabet/flashcards.ts`) : flashcards en continu, sans score ni fin. Une lettre tirée au
+  hasard parmi les 28, sous une de ses formes valides tirée au hasard (100 cartes : jamais de forme initiale ou
+  médiane pour ا د ذ ر ز و), jamais deux fois de suite la même lettre sous la même forme. « Afficher la réponse »
+  révèle le nom translittéré, le nom arabe et la forme ; « Suivant » n'apparaît qu'après.
+- Le suivi par lettre (« acquise » après deux bonnes réponses de suite, « à revoir » après une erreur) a été
+  enregistré par l'ancien quiz à choix multiples ; la fiche l'affiche toujours, l'entraînement actuel ne le modifie
+  plus.
 
 ## Lectures de référence
 

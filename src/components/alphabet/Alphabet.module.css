@@ -78,17 +78,11 @@
 }
 
 /* Onglets : bascule soulignée */
-.tabs,
-.quizModes {
+.tabs {
   display: flex;
   gap: 1.5rem;
   margin-top: 2rem;
   border-bottom: 1px solid var(--rule);
-}
-
-.quizModes {
-  margin-top: 0;
-  border-bottom: 0;
 }
 
 .tab {
@@ -429,194 +423,63 @@
   color: var(--muted);
 }
 
-/* Révision */
+/* Entraînement : une carte, la lettre en grand au centre. */
 .quiz {
   margin-top: 1.25rem;
 }
 
-.syncNote {
-  margin-top: 1rem;
-  padding-left: 0.9rem;
-  border-left: 2px solid var(--partial);
-  font-size: 0.85rem;
-  color: var(--ink-soft);
-}
-
-.status {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.5rem 1.75rem;
-  margin-top: 1rem;
-  padding: 0.7rem 0;
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  font-size: 0.88rem;
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
-}
-
-.status strong {
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.status button {
-  margin-left: auto;
-  font-size: 0.85rem;
-}
-
-.quizForm {
-  margin-top: 2rem;
-}
-
-.prompt {
+.card {
+  padding: clamp(1rem, 4vh, 2.5rem) 0 1rem;
   text-align: center;
 }
 
-.promptLetter {
-  font-size: clamp(5rem, 18vw, 7rem);
-  line-height: 1.7;
+.cardLetter {
+  font-size: clamp(6.5rem, 30vw, 10rem);
+  /* Assez haut pour les jambages (ح ع م ي) et les points au-dessus. */
+  line-height: 2;
+  unicode-bidi: isolate;
 }
 
-.promptName {
-  margin: 0.75rem 0 0.5rem;
-  font-family: var(--font-text);
-  font-size: 2.6rem;
-  font-weight: 500;
-  font-variation-settings: 'opsz' 60;
-}
-
-.options {
-  margin: 1.5rem 0 0;
-  padding: 0;
-  border: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 2rem;
-}
-
-.options[data-mode='nom'] {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.option {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-height: 3.25rem;
-  padding: 0.2rem 0.5rem;
-  border-bottom: 1px solid var(--rule);
-  cursor: pointer;
-  transition:
-    border-color 120ms var(--ease),
-    background-color 120ms var(--ease);
-}
-
-.option input {
-  margin: 0;
-  accent-color: var(--accent);
-  flex-shrink: 0;
-}
-
-.option:hover {
-  border-bottom-color: var(--rule-strong);
-}
-
-.option[data-state='chosen'] {
-  border-bottom-color: var(--accent);
-}
-
-.option[data-state='right'] {
-  border-bottom-color: var(--ok);
-  background: var(--accent-soft);
-}
-
-.option[data-state='wrong'] {
-  border-bottom-color: var(--error);
-  background: var(--error-soft);
-}
-
-.option:has(input:disabled) {
-  cursor: default;
-}
-
-.optionName {
-  font-family: var(--font-text);
-  font-size: 1.3rem;
-}
-
-.optionLetter {
-  flex: 1;
-  font-size: 2.6rem;
-  line-height: 1.8;
-  text-align: center;
-}
-
-.outcome {
-  margin-top: 1.75rem;
+/* Place réservée : la lettre ne bouge pas quand la réponse apparaît. */
+.answer {
+  min-height: 8rem;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--rule);
+  margin-bottom: 1rem;
+}
+
+.reveal {
   animation: appear 160ms var(--ease);
 }
 
-.right,
-.wrong {
+.answerName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.25rem 0.9rem;
   font-family: var(--font-text);
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 500;
 }
 
-.right {
-  color: var(--ok);
-}
-
-.wrong {
-  color: var(--error);
-}
-
-.correction {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  margin-top: 0.25rem;
-}
-
-.correctionLetter {
-  font-size: 3rem;
-  line-height: 1.8;
-}
-
-.correction .arabic {
-  font-size: 1.3rem;
-}
-
-.correction .correctionLetter {
-  font-size: 3rem;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1.75rem;
-}
-
-.end {
-  margin-top: 2rem;
-}
-
-.score {
-  font-family: var(--font-text);
-  font-size: 3rem;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
-}
-
-.endText {
-  margin: 0.5rem 0 1.75rem;
+.answerNameAr {
+  font-size: 1.9rem;
+  line-height: 1.6;
   color: var(--ink-soft);
+}
+
+.answerForm {
+  margin-top: 0.15rem;
+  color: var(--ink-soft);
+}
+
+.answerIsolated {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 @keyframes appear {
@@ -650,18 +513,6 @@
   }
   .formNote {
     display: none;
-  }
-  .options {
-    grid-template-columns: 1fr;
-  }
-  .options[data-mode='nom'] {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .actions kbd {
-    display: none;
-  }
-  .status button {
-    margin-left: 0;
   }
   .tableGlyph {
     font-size: 1.6rem;

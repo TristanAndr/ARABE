@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { recordAnswer, type AlphabetProgress } from './alphabet/progress'
+import type { AlphabetProgress } from './alphabet/progress'
 import { AlphabetView } from './components/alphabet/AlphabetView'
 import { VerseNav } from './components/training/VerseNav'
 import trainingStyles from './components/training/Training.module.css'
@@ -58,16 +58,8 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   const progress = useProgress(initial.progress, settings.order, savers.progress)
   const revision = useRevisionPrefs(initial.revision, savers.revision)
   const [sessions, setSessions] = useState<ConjugationSessionRecord[]>(initial.conjugationSessions)
-  const [alphabet, setAlphabet] = useState<AlphabetProgress>(initial.alphabet ?? {})
-  const alphabetRef = useRef(alphabet)
-
-  function recordLetter(letter: string, correct: boolean) {
-    const next = recordAnswer(alphabetRef.current, letter, correct)
-    alphabetRef.current = next
-    setAlphabet(next)
-    // Sans la table alphabet_progress, le suivi reste en mémoire pour cette visite.
-    if (initial.alphabetSync) store.saveAlphabet(next)
-  }
+  // Suivi des lettres enregistré par l'ancien quiz : la fiche l'affiche toujours.
+  const alphabet: AlphabetProgress = initial.alphabet ?? {}
   const [view, setView] = useState<View>('exercise')
   // Section à retrouver en quittant les paramètres ou le compte.
   const [section, setSection] = useState<Section>('exercise')
@@ -140,12 +132,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
         ) : view === 'account' ? (
           <AccountView account={account} syncStatus={syncStatus} onClose={() => setView(section)} closeLabel={backLabel} />
         ) : view === 'alphabet' ? (
-          <AlphabetView
-            progress={alphabet}
-            onAnswer={recordLetter}
-            synced={initial.alphabetSync}
-            spellings={spellings}
-          />
+          <AlphabetView progress={alphabet} spellings={spellings} />
         ) : view === 'revision' ? (
           <RevisionView
             prefs={revision.prefs}

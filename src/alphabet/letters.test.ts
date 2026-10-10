@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formOf, LETTERS, LOOKALIKES, NON_CONNECTORS, POSITIONS, TATWEEL } from './letters'
+import { formOf, LETTERS, NON_CONNECTORS, POSITIONS, TATWEEL } from './letters'
 
 /**
  * Référence indépendante : points de code Unicode (bloc Arabe, U+0600–U+06FF) des 28 lettres,
@@ -84,11 +84,6 @@ describe('les 28 lettres', () => {
       else expect(l.phoneme).not.toBeNull()
       expect(l.sound.length).toBeGreaterThan(0)
     }
-  })
-
-  it('les sosies ne citent que des lettres de l’alphabet', () => {
-    const known = new Set(LETTERS.map((l) => l.letter))
-    for (const g of LOOKALIKES) for (const ch of g) expect(known.has(ch)).toBe(true)
   })
 })
 

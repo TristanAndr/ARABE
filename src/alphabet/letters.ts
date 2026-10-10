@@ -108,20 +108,3 @@ export function formOf(l: Letter, position: Position): string | null {
 export function letterAt(index: number): Letter {
   return LETTERS[(((index - 1) % LETTERS.length) + LETTERS.length) % LETTERS.length]!
 }
-
-/**
- * Lettres faciles à confondre : même tracé, distinguées seulement par les points, ou noms
- * presque identiques (Ḥāʾ / Hāʾ). Proposées en priorité comme mauvaises réponses.
- */
-export const LOOKALIKES: readonly string[][] = [
-  ['ب', 'ت', 'ث', 'ن', 'ي'],
-  ['ج', 'ح', 'خ'],
-  ['د', 'ذ'],
-  ['ر', 'ز'],
-  ['س', 'ش'],
-  ['ص', 'ض'],
-  ['ط', 'ظ'],
-  ['ع', 'غ'],
-  ['ف', 'ق'],
-  ['ح', 'ه'],
-]

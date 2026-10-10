@@ -2,7 +2,7 @@
 import { cleanup, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { LETTERS } from './alphabet/letters'
+import { FLASHCARDS } from './alphabet/flashcards'
 import { createEnv } from './test/env'
 
 let env: ReturnType<typeof createEnv>
@@ -19,15 +19,17 @@ async function openAlphabet(user: User) {
   await screen.findByRole('heading', { level: 1, name: /L’alphabet arabe/ })
 }
 
-/** Répond juste à la question affichée (mode Lettre → nom). */
-async function answerCurrent(user: User, correct: boolean) {
-  const shown = document.querySelector('[class*="promptLetter"]')!.textContent!
-  const target = LETTERS.find((l) => l.letter === shown)!
-  const radios = screen.getAllByRole('radio') as HTMLInputElement[]
-  const pick = radios.find((r) => (r.value === target.letter) === correct)!
-  await user.click(pick)
-  await user.keyboard('{Enter}')
-  return target
+const shownForm = () => screen.getByTestId('flashcard-letter').textContent!
+
+function cardOf(form: string) {
+  const card = FLASHCARDS.find((c) => c.form === form)
+  if (!card) throw new Error(`Forme inconnue : ${form}`)
+  return card
+}
+
+async function openTraining(user: User) {
+  await openAlphabet(user)
+  await user.click(screen.getByRole('button', { name: 'S’entraîner' }))
 }
 
 describe('section Alphabet', () => {
@@ -92,68 +94,64 @@ describe('section Alphabet', () => {
     expect(within(b as HTMLElement).queryByLabelText('n’existe pas')).toBeNull()
   })
 
-  it('révision : correction claire, suivi enregistré dans le compte et retrouvé', async () => {
+  it('entraînement : une lettre tout de suite, réponse masquée, « Suivant » seulement après la réponse', async () => {
     const user = userEvent.setup()
-    await openAlphabet(user)
-    await user.click(screen.getByRole('button', { name: 'S’entraîner' }))
+    await openTraining(user)
     expect(screen.getByRole('heading', { level: 1, name: /L’alphabet arabe/ })).toBeTruthy()
 
-    const wrong = await answerCurrent(user, false)
-    const status = screen.getByRole('status', { name: 'Résultat' })
-    expect(status.textContent).toContain('Pas tout à fait.')
-    expect(status.textContent).toContain(wrong.name)
-    await user.click(screen.getByRole('button', { name: 'Question suivante' }))
+    const card = cardOf(shownForm())
+    expect(screen.getByTestId('flashcard-letter').getAttribute('dir')).toBe('rtl')
+    expect(screen.queryByRole('region', { name: 'Réponse' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Suivant' })).toBeNull()
+    // Ni score ni fin de série.
+    expect(screen.queryByText(/sur 10|Correctes|Question \d/)).toBeNull()
 
-    const right = await answerCurrent(user, true)
-    expect(screen.getByRole('status', { name: 'Résultat' }).textContent).toContain('Juste.')
-    expect(screen.getByText(/Correctes :/).textContent).toContain('1 / 2')
+    await user.click(screen.getByRole('button', { name: 'Afficher la réponse' }))
+    const answer = screen.getByRole('region', { name: 'Réponse' })
+    expect(answer.textContent).toContain(card.letter.name)
+    expect(answer.textContent).toContain(card.letter.nameAr)
+    expect(answer.textContent).toMatch(/Forme (isolée|initiale|médiane|finale)/)
+    expect(screen.queryByRole('button', { name: 'Afficher la réponse' })).toBeNull()
 
+    await user.click(screen.getByRole('button', { name: 'Suivant' }))
+    expect(screen.queryByRole('region', { name: 'Réponse' })).toBeNull()
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Afficher la réponse' }))
+  })
+
+  it('cycle sans fin, au clavier : jamais deux fois de suite la même carte', async () => {
+    const user = userEvent.setup()
+    await openTraining(user)
+    let previous = cardOf(shownForm())
+    for (let i = 0; i < 40; i++) {
+      await user.click(screen.getByRole('button', { name: 'Afficher la réponse' }))
+      expect(screen.getByRole('region', { name: 'Réponse' }).textContent).toContain(previous.letter.name)
+      // Le focus est sur « Suivant » : Entrée passe à la carte suivante.
+      await user.keyboard('{Enter}')
+      const card = cardOf(shownForm())
+      expect(card.letter === previous.letter && card.position === previous.position).toBe(false)
+      previous = card
+    }
+  })
+
+  it('le suivi déjà enregistré reste affiché dans la fiche ; l’entraînement n’écrit rien', async () => {
+    const user = userEvent.setup()
+    await env.open()
     await env.synced()
-    const saved = env.backend.data.get(env.aliceId)!.alphabet!
-    expect(saved[wrong.letter]).toEqual({ seen: 1, correct: 0, streak: 0 })
-    expect(saved[right.letter]).toEqual({ seen: 1, correct: 1, streak: 1 })
-
+    env.backend.data.get(env.aliceId)!.alphabet = {
+      ب: { seen: 2, correct: 2, streak: 2 },
+      ت: { seen: 1, correct: 0, streak: 0 },
+    }
     await env.reload()
     await screen.findByLabelText('Transcription')
     await user.click(screen.getByRole('button', { name: 'Alphabet' }))
-    expect(screen.getByText(/0 acquise · 2 à revoir · 26 à découvrir/)).toBeTruthy()
-  })
+    expect(screen.getByText(/1 acquise · 1 à revoir · 26 à découvrir/)).toBeTruthy()
 
-  it('mode Nom → lettre', async () => {
-    const user = userEvent.setup()
-    await openAlphabet(user)
     await user.click(screen.getByRole('button', { name: 'S’entraîner' }))
-    await user.click(screen.getByRole('button', { name: 'Nom → lettre' }))
-    const name = document.querySelector('[class*="promptName"]')!.textContent!
-    const target = LETTERS.find((l) => l.name === name)!
-    const radio = (screen.getAllByRole('radio') as HTMLInputElement[]).find((r) => r.value === target.letter)!
-    await user.click(radio)
-    await user.click(screen.getByRole('button', { name: 'Valider' }))
-    expect(screen.getByRole('status', { name: 'Résultat' }).textContent).toContain('Juste.')
-  })
-
-  it('suivi indépendant entre deux comptes', async () => {
-    const user = userEvent.setup()
-    const bobId = env.auth.addAccount('bob@example.test', 'motdepasse-bob')
-    await openAlphabet(user)
-    await user.click(screen.getByRole('button', { name: 'S’entraîner' }))
-    await answerCurrent(user, true)
+    for (let i = 0; i < 5; i++) {
+      await user.click(screen.getByRole('button', { name: 'Afficher la réponse' }))
+      await user.click(screen.getByRole('button', { name: 'Suivant' }))
+    }
     await env.synced()
-    expect(env.backend.data.get(bobId)?.alphabet ?? null).toBeNull()
-    expect(Object.keys(env.backend.data.get(env.aliceId)!.alphabet!)).toHaveLength(1)
-  })
-
-  it('sans la table alphabet_progress : tout fonctionne, le suivi est signalé comme non enregistré', async () => {
-    env.backend.alphabetMissing = true
-    const user = userEvent.setup()
-    await openAlphabet(user)
-    await user.click(screen.getByRole('button', { name: 'S’entraîner' }))
-    expect(screen.getByText(/pas encore enregistré dans ton compte/)).toBeTruthy()
-    await answerCurrent(user, true)
-    // Rien n'est mis en file : les autres enregistrements ne sont pas bloqués.
-    await env.synced()
-    expect(screen.queryByText('Non enregistré')).toBeNull()
-    await user.click(screen.getByRole('button', { name: 'Lettres' }))
-    expect(screen.getByText(/1 à revoir/)).toBeTruthy()
+    expect(Object.keys(env.backend.data.get(env.aliceId)!.alphabet!)).toHaveLength(2)
   })
 })
