@@ -1,7 +1,7 @@
 import type { ComparisonResult, IssueKind } from '../compare/compare'
 import type { Exercise } from '../data/corpus'
 import type { Spellings } from '../translit/profiles'
-import { expandVariants, renderReading } from '../translit/reference'
+import { primaryVariant, renderReading } from '../translit/reference'
 import styles from './Feedback.module.css'
 
 const ISSUE_LABELS: Record<IssueKind, string> = {
@@ -27,7 +27,7 @@ interface Props {
 
 export function Feedback({ result, exercise, spellings, stale }: Props) {
   const wrong = result.words.filter((w) => !w.ok)
-  const primary = result.variantIndex > 0 ? renderReading(expandVariants(exercise.reading)[0]!, spellings) : null
+  const primary = result.variantIndex > 0 ? renderReading(primaryVariant(exercise.reading), spellings) : null
 
   return (
     <div className={`${styles.feedback} ${stale ? styles.stale : ''}`}>

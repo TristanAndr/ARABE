@@ -7,7 +7,7 @@ import { EXERCISES } from '../data/corpus'
 import { parseTanzil, verseView } from '../quran/text'
 import { generateReading } from './autoReading'
 import { PRESETS } from './profiles'
-import { expandVariants, parseReading, renderReading } from './reference'
+import { expandVariants, parseReading, primaryVariant, renderReading } from './reference'
 
 const QURAN = parseTanzil(readFileSync(join(__dirname, '../../data/tanzil/quran-uthmani.txt'), 'utf8'))
 const strip = (s: string) => s.replace(/-/g, '')
@@ -76,5 +76,46 @@ describe('lecture générée : cas particuliers', () => {
   it('tāʾ marbūṭa en fin de segment : h à la pause', () => {
     expect(generateReading(['رَحْمَةً'])).toBe('raḥma{h|t[an]}')
     expect(generateReading(['ٱلْجَنَّةِ'])).toBe('ʾal-janna{h|t[i]}')
+  })
+})
+
+describe('vérification des versets longs', () => {
+  const strict = { ...DEFAULT_NORMALIZATION, optionalInitialHamza: false, acceptWaslEndings: false }
+  const spellings = PRESETS.precise.spellings
+
+  it('même nombre d’écarts que l’essai de toutes les combinaisons de variantes', () => {
+    let checked = 0
+    let i = 0
+    for (const [s, list] of QURAN) {
+      for (let a = 1; a <= list.length; a++) {
+        if (i++ % 40) continue
+        const r = verse(s, a)
+        const all = expandVariants(r)
+        if (all.length < 2 || all.length > 32) continue
+        const last = renderReading(all[all.length - 1]!, spellings)
+        const answers = [last, last.slice(0, -3), last.replace(/a/, 'ā').replace(/i(?!.*i)/, 'u')]
+        for (const answer of answers) {
+          const brute = Math.min(...all.map((v) => compareAnswer(v, answer, spellings, strict).errors))
+          expect(compareAnswer(r, answer, spellings, strict).errors, `${s}:${a} « ${answer} »`).toBe(brute)
+        }
+        checked++
+      }
+    }
+    expect(checked).toBeGreaterThan(30)
+  })
+
+  it('2:196 et 2:282 (des centaines de combinaisons) : vérifiés en un instant', () => {
+    for (const [s, a] of [
+      [2, 196],
+      [2, 282],
+    ] as const) {
+      const r = verse(s, a)
+      expect((r.match(/\{/g) ?? []).length).toBeGreaterThanOrEqual(8)
+      const shown = renderReading(primaryVariant(r).slice(0, 200), spellings)
+      const t = performance.now()
+      expect(compareAnswer(r, shown, spellings, strict).verdict).toBe('incorrect')
+      expect(compareAnswer(r, renderReading(primaryVariant(r), spellings), spellings, strict).verdict).toBe('correct')
+      expect(performance.now() - t).toBeLessThan(2000)
+    }
   })
 })

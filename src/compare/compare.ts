@@ -1,6 +1,13 @@
 import { LENGTH_PAIRS, PHONEMES, type Phoneme } from '../translit/phonemes'
 import type { Spellings } from '../translit/profiles'
-import { expandVariants, parseReading, renderWord, type RefUnit } from '../translit/reference'
+import {
+  expandVariants,
+  parseReading,
+  renderWord,
+  splitReading,
+  type ParsedReading,
+  type RefUnit,
+} from '../translit/reference'
 import { normalizeAnswer, SEPARATOR, type NormalizationOptions } from './normalize'
 
 /**
@@ -113,15 +120,27 @@ function tokenEnd(input: string, j: number, tokens: string[]): number {
   return j + (cp > 0xffff ? 2 : 1)
 }
 
-function align(input: string, units: PreparedUnit[], tokens: string[]): { cost: number; ops: Op[] } {
+type Back = (Op & { pi: number; pj: number }) | null
+
+interface Alignment {
+  /** Coût minimal pour finir ce morceau à chaque position de la saisie. */
+  row: number[]
+  back: Back[][]
+  units: PreparedUnit[]
+}
+
+/**
+ * Aligne un morceau de la référence en partant de `start` (coût déjà atteint à chaque
+ * position de la saisie à la fin du morceau précédent).
+ */
+function align(input: string, units: PreparedUnit[], tokens: string[], start: number[]): Alignment {
   const n = units.length
   const m = input.length
   const INF = Number.POSITIVE_INFINITY
-  const cost: number[][] = Array.from({ length: n + 1 }, () => new Array<number>(m + 1).fill(INF))
-  const back: (Op & { pi: number; pj: number } | null)[][] = Array.from({ length: n + 1 }, () =>
-    new Array(m + 1).fill(null),
+  const cost: number[][] = Array.from({ length: n + 1 }, (_, i) =>
+    i === 0 ? [...start] : new Array<number>(m + 1).fill(INF),
   )
-  cost[0]![0] = 0
+  const back: Back[][] = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(null))
 
   const relax = (pi: number, pj: number, i: number, j: number, c: number, kind: OpKind, unit: number | null) => {
     const total = cost[pi]![pj]! + c
@@ -160,18 +179,22 @@ function align(input: string, units: PreparedUnit[], tokens: string[]): { cost: 
     }
   }
 
+  return { row: cost[n]!, back, units }
+}
+
+/** Opérations du morceau terminant en `j` ; renvoie aussi la position de départ dans la saisie. */
+function backtrack(back: Back[][], n: number, end: number): { ops: Op[]; from: number } {
   const ops: Op[] = []
   let i = n
-  let j = m
-  while (i > 0 || j > 0) {
+  let j = end
+  for (;;) {
     const b = back[i]![j]
     if (!b) break
     ops.push({ kind: b.kind, unit: b.unit, from: b.from, to: b.to })
     i = b.pi
     j = b.pj
   }
-  ops.reverse()
-  return { cost: cost[n]![m]!, ops }
+  return { ops: ops.reverse(), from: j }
 }
 
 function buildWords(
@@ -205,6 +228,17 @@ function buildWords(
   })
 }
 
+interface Chunk {
+  variants: string[]
+  /** Nombre d'options de chaque variante `{…}` du morceau, dans l'ordre. */
+  radix: number[]
+}
+
+/**
+ * Les variantes sont comparées morceau par morceau (voir splitReading), en propageant le coût
+ * atteint à chaque position de la saisie : même résultat que d'essayer toutes les combinaisons,
+ * sans leur nombre exponentiel (un verset long peut en avoir des millions).
+ */
 export function compareAnswer(
   reading: string,
   answer: string,
@@ -213,24 +247,71 @@ export function compareAnswer(
 ): ComparisonResult {
   const input = normalizeAnswer(answer, opts)
   const tokens = allSpellings(spellings, opts.ignoreCase)
-  const variants = expandVariants(reading)
+  const m = input.length
+  const chunks: Chunk[] = splitReading(reading).map((c) => ({
+    variants: expandVariants(c),
+    radix: [...c.matchAll(/\{([^{}]*)\}/g)].map((g) => g[1]!.split('|').length),
+  }))
 
-  let best: ComparisonResult | null = null
-  variants.forEach((variant, index) => {
-    const parsed = parseReading(variant)
-    const units = prepareUnits(parsed.units, spellings, opts)
-    const { cost, ops } = align(input, units, tokens)
-    if (best && cost >= best.errors) return
-    const total = Math.max(1, units.filter((u) => !u.optional).length)
-    const verdict: Verdict = cost === 0 ? 'correct' : cost / total <= PARTIAL_THRESHOLD ? 'partial' : 'incorrect'
-    best = {
-      verdict,
-      errors: cost,
-      total,
-      variantIndex: index,
-      variantCount: variants.length,
-      words: buildWords(parsed.words, units, ops, input, spellings),
-    }
+  let row = new Array<number>(m + 1).fill(Number.POSITIVE_INFINITY)
+  row[0] = 0
+  // Pour chaque morceau et chaque position de fin : variante retenue et son alignement.
+  const steps: { alignments: Alignment[]; parsed: ParsedReading[]; choice: number[] }[] = []
+  for (const chunk of chunks) {
+    const parsed = chunk.variants.map((v) => parseReading(v))
+    const alignments = parsed.map((p) => align(input, prepareUnits(p.units, spellings, opts), tokens, row))
+    const next = new Array<number>(m + 1).fill(Number.POSITIVE_INFINITY)
+    const choice = new Array<number>(m + 1).fill(0)
+    alignments.forEach((a, v) => {
+      for (let j = 0; j <= m; j++) {
+        // À coût égal, la première variante (lecture principale) l'emporte.
+        if (a.row[j]! < next[j]!) {
+          next[j] = a.row[j]!
+          choice[j] = v
+        }
+      }
+    })
+    steps.push({ alignments, parsed, choice })
+    row = next
+  }
+
+  // Remontée : morceau par morceau, depuis la fin de la saisie.
+  const picked: { units: PreparedUnit[]; words: string[]; ops: Op[]; variant: number }[] = []
+  let end = m
+  for (let k = steps.length - 1; k >= 0; k--) {
+    const { alignments, parsed, choice } = steps[k]!
+    const v = choice[end]!
+    const a = alignments[v]!
+    const { ops, from } = backtrack(a.back, a.units.length, end)
+    picked.unshift({ units: a.units, words: parsed[v]!.words, ops, variant: v })
+    end = from
+  }
+
+  const units: PreparedUnit[] = []
+  const words: string[] = []
+  const ops: Op[] = []
+  let variantIndex = 0
+  let variantCount = 1
+  picked.forEach((p, k) => {
+    const offset = units.length
+    const wordOffset = words.length
+    units.push(...p.units.map((u) => ({ ...u, word: u.word + wordOffset })))
+    words.push(...p.words)
+    ops.push(...p.ops.map((o) => ({ ...o, unit: o.unit === null ? null : o.unit + offset })))
+    const size = chunks[k]!.variants.length
+    variantIndex = variantIndex * size + p.variant
+    variantCount *= size
   })
-  return best!
+
+  const cost = row[m]!
+  const total = Math.max(1, units.filter((u) => !u.optional).length)
+  const verdict: Verdict = cost === 0 ? 'correct' : cost / total <= PARTIAL_THRESHOLD ? 'partial' : 'incorrect'
+  return {
+    verdict,
+    errors: cost,
+    total,
+    variantIndex,
+    variantCount,
+    words: buildWords(words, units, ops, input, spellings),
+  }
 }

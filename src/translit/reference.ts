@@ -44,6 +44,43 @@ export function expandVariants(source: string): string[] {
   return options.flatMap((opt) => expandVariants(before + opt + after))
 }
 
+/** Lecture principale : la première option de chaque `{x|y}`, sans tout développer. */
+export function primaryVariant(source: string): string {
+  return source.replace(/\{([^{}|]*)[^{}]*\}/g, '$1')
+}
+
+/**
+ * Découpe une lecture en morceaux indépendants, aux espaces où rien ne relie les deux
+ * côtés : ni variante collée à l'espace (son option peut former une gémination avec le mot
+ * suivant : ʾaḏa{m|n} mi), ni même consonne de part et d'autre (ʿābidum mā). Les variantes
+ * d'un morceau ne dépendent que de lui : on peut les comparer morceau par morceau.
+ */
+export function splitReading(source: string): string[] {
+  const text = source.normalize('NFC').trim()
+  const chunks: string[] = []
+  let start = 0
+  let depth = 0
+  for (let k = 0; k < text.length; k++) {
+    const ch = text[k]!
+    if (ch === '{' || ch === '[') depth++
+    else if (ch === '}' || ch === ']') depth--
+    else if (depth === 0 && /\s/.test(ch)) {
+      const before = text.slice(start, k).trimEnd()
+      const after = text.slice(k).trimStart()
+      const last = before[before.length - 1]
+      const first = after[0]
+      if (last && first && last !== '}' && first !== '{' && first !== '[' && last !== first) {
+        chunks.push(before)
+        start = k + 1
+        while (start < text.length && /\s/.test(text[start]!)) start++
+        k = start - 1
+      }
+    }
+  }
+  chunks.push(text.slice(start).trim())
+  return chunks.filter((c) => c.length > 0)
+}
+
 export function parseReading(source: string): ParsedReading {
   const text = source.normalize('NFC').trim()
   const words = text.split(/\s+/)
