@@ -113,13 +113,6 @@
   margin-top: 1.75rem;
 }
 
-.summary,
-.legend {
-  font-size: 0.85rem;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
-
 .grid {
   list-style: none;
   margin: 0.9rem 0 0;
@@ -156,27 +149,6 @@
   background: var(--accent-soft);
 }
 
-/* Suivi : un trait discret sous la lettre. */
-.cell::after {
-  content: '';
-  position: absolute;
-  left: 30%;
-  right: 30%;
-  bottom: 0.3rem;
-  height: 2px;
-  background: transparent;
-}
-
-.cell[data-status='learning']::after,
-.legendMark[data-status='learning'] {
-  background: var(--partial);
-}
-
-.cell[data-status='mastered']::after,
-.legendMark[data-status='mastered'] {
-  background: var(--ok);
-}
-
 .cellLetter {
   font-size: clamp(2rem, 6vw, 2.6rem);
   /* Interlignage large : les jambages (ج ح خ ع غ م ي) ne touchent pas le nom. */
@@ -187,25 +159,6 @@
   margin-top: -0.2rem;
   font-size: 0.78rem;
   color: var(--ink-soft);
-}
-
-.legend {
-  margin-top: 0.75rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem 0.5rem;
-}
-
-.legendMark {
-  display: inline-block;
-  width: 1rem;
-  height: 2px;
-  margin-left: 0.75rem;
-}
-
-.legendMark:first-child {
-  margin-left: 0;
 }
 
 /* Fiche détaillée */

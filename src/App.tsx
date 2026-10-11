@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState } from 'react'
-import type { AlphabetProgress } from './alphabet/progress'
 import { AlphabetView } from './components/alphabet/AlphabetView'
 import { VerseNav } from './components/training/VerseNav'
 import trainingStyles from './components/training/Training.module.css'
@@ -58,8 +57,6 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   const progress = useProgress(initial.progress, settings.order, savers.progress)
   const revision = useRevisionPrefs(initial.revision, savers.revision)
   const [sessions, setSessions] = useState<ConjugationSessionRecord[]>(initial.conjugationSessions)
-  // Suivi des lettres enregistré par l'ancien quiz : la fiche l'affiche toujours.
-  const alphabet: AlphabetProgress = initial.alphabet ?? {}
   const [view, setView] = useState<View>('exercise')
   // Section à retrouver en quittant les paramètres ou le compte.
   const [section, setSection] = useState<Section>('exercise')
@@ -132,7 +129,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
         ) : view === 'account' ? (
           <AccountView account={account} syncStatus={syncStatus} onClose={() => setView(section)} closeLabel={backLabel} />
         ) : view === 'alphabet' ? (
-          <AlphabetView progress={alphabet} spellings={spellings} />
+          <AlphabetView spellings={spellings} />
         ) : view === 'revision' ? (
           <RevisionView
             prefs={revision.prefs}

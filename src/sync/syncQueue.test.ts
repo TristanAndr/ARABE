@@ -54,7 +54,7 @@ describe('SyncQueue', () => {
     backend.failing = false
     const second = new SyncQueue(backend.storeFor(USER), USER, opts(storage))
     // Les modifications non envoyées priment sur la version (plus ancienne) du serveur.
-    const merged = second.withPending({ settings: null, revision: null, progress: null, conjugationSessions: [], alphabet: null, alphabetSync: true })
+    const merged = second.withPending({ settings: null, revision: null, progress: null, conjugationSessions: [] })
     expect(merged.settings!.theme).toBe('light')
     await second.flush()
     expect(backend.data.get(USER)!.settings!.theme).toBe('light')
@@ -65,7 +65,7 @@ describe('SyncQueue', () => {
     storage.set(outboxKey('autre'), JSON.stringify({ settings: { ...DEFAULT_SETTINGS, theme: 'dark' }, inserts: [] }))
     const q = new SyncQueue(new MemoryBackend().storeFor(USER), USER, opts(storage))
     expect(q.hasPending()).toBe(false)
-    expect(q.withPending({ settings: null, revision: null, progress: null, conjugationSessions: [], alphabet: null, alphabetSync: true }).settings).toBeNull()
+    expect(q.withPending({ settings: null, revision: null, progress: null, conjugationSessions: [] }).settings).toBeNull()
   })
 
   it('une insertion renvoyée après une coupure ne crée pas de doublon', async () => {

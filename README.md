@@ -21,7 +21,7 @@ Navigateur (GitHub Pages, fichiers statiques)
       reading_attempts      historique des vérifications de lecture (ajout seul)
       conjugation_attempts  réponses aux exercices de conjugaison (ajout seul)
       conjugation_sessions  sessions de conjugaison terminées (ajout seul)
-      alphabet_progress     suivi de l'alphabet, par lettre (migration 2)
+      alphabet_progress     ancien suivi de l'alphabet (migration 2), plus utilisé par l'application
 ```
 
 - Le texte coranique et la fiche ne sont **pas** copiés dans les comptes : seule la progression l'est.
@@ -95,9 +95,9 @@ vérification.
 Dans l'ordre, chacune une seule fois :
 
 1. `supabase/migrations/20261009120000_user_data.sql` : tables, contraintes, index, RLS et politiques ;
-2. `supabase/migrations/20261010120000_alphabet_progress.sql` : suivi de l'alphabet. Tant qu'elle n'est pas
-   appliquée, la section Alphabet fonctionne, mais le suivi des lettres n'est pas enregistré (un message le
-   signale) ; rien d'autre n'est affecté.
+2. `supabase/migrations/20261010120000_alphabet_progress.sql` : table de l'ancien suivi de l'alphabet. Elle
+   n'est plus lue ni écrite par l'application ; elle est conservée pour ne pas effacer les données déjà
+   enregistrées. Inutile de l'appliquer sur un nouveau projet.
 
 - **Par le dashboard** : **SQL Editor → New query**, coller tout le fichier, **Run**.
 - **Ou par la CLI Supabase** : `npx supabase login`, `npx supabase link --project-ref <ref>`, `npx supabase db push`.
@@ -288,9 +288,7 @@ Entrée « Alphabet » de l'en-tête. Données : `src/alphabet/letters.ts`.
   hasard parmi les 28, sous une de ses formes valides tirée au hasard (100 cartes : jamais de forme initiale ou
   médiane pour ا د ذ ر ز و), jamais deux fois de suite la même lettre sous la même forme. « Afficher la réponse »
   révèle le nom translittéré, le nom arabe et la forme ; « Suivant » n'apparaît qu'après.
-- Le suivi par lettre (« acquise » après deux bonnes réponses de suite, « à revoir » après une erreur) a été
-  enregistré par l'ancien quiz à choix multiples ; la fiche l'affiche toujours, l'entraînement actuel ne le modifie
-  plus.
+- Pas de suivi par lettre : ni statut, ni score. L'ancien suivi (table `alphabet_progress`) n'est plus utilisé.
 
 ## Lectures de référence
 

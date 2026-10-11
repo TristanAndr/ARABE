@@ -52,7 +52,7 @@ describe('section Alphabet', () => {
     expect(cells).toHaveLength(28)
     expect(cells[0]!.textContent).toContain('ا')
     expect(cells[27]!.textContent).toContain('ي')
-    expect(screen.getByText(/0 acquise · 0 à revoir · 28 à découvrir/)).toBeTruthy()
+    expect(screen.queryByText(/acquise|à revoir|à découvrir/)).toBeNull()
   })
 
   it('fiche détaillée, lettre précédente et suivante', async () => {
@@ -131,27 +131,5 @@ describe('section Alphabet', () => {
       expect(card.letter === previous.letter && card.position === previous.position).toBe(false)
       previous = card
     }
-  })
-
-  it('le suivi déjà enregistré reste affiché dans la fiche ; l’entraînement n’écrit rien', async () => {
-    const user = userEvent.setup()
-    await env.open()
-    await env.synced()
-    env.backend.data.get(env.aliceId)!.alphabet = {
-      ب: { seen: 2, correct: 2, streak: 2 },
-      ت: { seen: 1, correct: 0, streak: 0 },
-    }
-    await env.reload()
-    await screen.findByLabelText('Transcription')
-    await user.click(screen.getByRole('button', { name: 'Alphabet' }))
-    expect(screen.getByText(/1 acquise · 1 à revoir · 26 à découvrir/)).toBeTruthy()
-
-    await user.click(screen.getByRole('button', { name: 'S’entraîner' }))
-    for (let i = 0; i < 5; i++) {
-      await user.click(screen.getByRole('button', { name: 'Afficher la réponse' }))
-      await user.click(screen.getByRole('button', { name: 'Suivant' }))
-    }
-    await env.synced()
-    expect(Object.keys(env.backend.data.get(env.aliceId)!.alphabet!)).toHaveLength(2)
   })
 })

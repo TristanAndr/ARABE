@@ -1,6 +1,5 @@
 import { useRef, useState, type Ref } from 'react'
 import { formOf, LETTERS, letterAt, NON_CONNECTORS, POSITIONS, type Letter } from '../../alphabet/letters'
-import { statusOf, summarize, type AlphabetProgress, type LetterStatus } from '../../alphabet/progress'
 import type { Spellings } from '../../translit/profiles'
 import { AlphabetQuiz } from './AlphabetQuiz'
 import styles from './Alphabet.module.css'
@@ -8,17 +7,10 @@ import styles from './Alphabet.module.css'
 type Tab = 'lettres' | 'tableau' | 'revision'
 
 interface Props {
-  progress: AlphabetProgress
   spellings: Spellings
 }
 
-const STATUS_LABEL: Record<LetterStatus, string> = {
-  new: 'à découvrir',
-  learning: 'à revoir',
-  mastered: 'acquise',
-}
-
-export function AlphabetView({ progress, spellings }: Props) {
+export function AlphabetView({ spellings }: Props) {
   const [tab, setTab] = useState<Tab>('lettres')
   const [selected, setSelected] = useState<number | null>(null)
   const detailRef = useRef<HTMLElement>(null)
@@ -72,14 +64,13 @@ export function AlphabetView({ progress, spellings }: Props) {
             <LetterDetail
               ref={detailRef}
               letter={letterAt(selected)}
-              status={statusOf(progress[letterAt(selected).letter])}
               spellings={spellings}
               onPrev={selected > 1 ? () => setSelected(selected - 1) : undefined}
               onNext={selected < LETTERS.length ? () => setSelected(selected + 1) : undefined}
               onClose={() => setSelected(null)}
             />
           )}
-          <LetterGrid progress={progress} selected={selected} onSelect={open} />
+          <LetterGrid selected={selected} onSelect={open} />
         </>
       )}
       {tab === 'tableau' && <LetterTable />}
@@ -115,58 +106,35 @@ function Rules() {
   )
 }
 
-function LetterGrid({
-  progress,
-  selected,
-  onSelect,
-}: {
-  progress: AlphabetProgress
-  selected: number | null
-  onSelect: (index: number) => void
-}) {
-  const counts = summarize(progress)
+function LetterGrid({ selected, onSelect }: { selected: number | null; onSelect: (index: number) => void }) {
   return (
     <section className={styles.gridSection} aria-label="Les 28 lettres">
-      <p className={styles.summary} aria-live="polite">
-        {counts.mastered} acquise{counts.mastered > 1 ? 's' : ''} · {counts.learning} à revoir · {counts.new} à
-        découvrir
-      </p>
       <ol className={styles.grid} dir="rtl" aria-label="Lettres de l’alphabet">
-        {LETTERS.map((l) => {
-          const status = statusOf(progress[l.letter])
-          return (
-            <li key={l.letter}>
-              <button
-                type="button"
-                className={styles.cell}
-                data-status={status}
-                aria-current={selected === l.index ? 'true' : undefined}
-                aria-label={`${l.name}, ${STATUS_LABEL[status]}`}
-                onClick={() => onSelect(l.index)}
-              >
-                <span className={`arabic ${styles.cellLetter}`} lang="ar">
-                  {l.letter}
-                </span>
-                <span className={styles.cellName} dir="ltr">
-                  {l.name}
-                </span>
-              </button>
-            </li>
-          )
-        })}
+        {LETTERS.map((l) => (
+          <li key={l.letter}>
+            <button
+              type="button"
+              className={styles.cell}
+              aria-current={selected === l.index ? 'true' : undefined}
+              aria-label={l.name}
+              onClick={() => onSelect(l.index)}
+            >
+              <span className={`arabic ${styles.cellLetter}`} lang="ar">
+                {l.letter}
+              </span>
+              <span className={styles.cellName} dir="ltr">
+                {l.name}
+              </span>
+            </button>
+          </li>
+        ))}
       </ol>
-      <p className={styles.legend}>
-        <span className={styles.legendMark} data-status="learning" aria-hidden /> à revoir
-        <span className={styles.legendMark} data-status="mastered" aria-hidden /> acquise (deux bonnes réponses de
-        suite en révision)
-      </p>
     </section>
   )
 }
 
 interface DetailProps {
   letter: Letter
-  status: LetterStatus
   spellings: Spellings
   onPrev?: () => void
   onNext?: () => void
@@ -174,7 +142,7 @@ interface DetailProps {
   ref: Ref<HTMLElement>
 }
 
-function LetterDetail({ letter, status, spellings, onPrev, onNext, onClose, ref }: DetailProps) {
+function LetterDetail({ letter, spellings, onPrev, onNext, onClose, ref }: DetailProps) {
   const prev = onPrev ? letterAt(letter.index - 1) : null
   const next = onNext ? letterAt(letter.index + 1) : null
   const profile = letter.phoneme ? spellings[letter.phoneme][0] : null
@@ -182,7 +150,7 @@ function LetterDetail({ letter, status, spellings, onPrev, onNext, onClose, ref 
     <section ref={ref} className={styles.detail} aria-labelledby="letter-title" tabIndex={-1}>
       <div className={styles.detailHead}>
         <p className={styles.detailIndex}>
-          Lettre {letter.index} sur 28 · {STATUS_LABEL[status]}
+          Lettre {letter.index} sur 28
         </p>
         <button type="button" className="btn btn-link" onClick={onClose}>
           Fermer
