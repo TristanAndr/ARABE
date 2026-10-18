@@ -47,3 +47,12 @@
     display: none;
   }
 }
+
+/* Cocooning : le résultat dans une carte. */
+:global([data-theme='cocooning']) .result {
+  padding: clamp(1.25rem, 4vw, 2rem);
+  background: var(--bg-raised);
+  border: 2px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}

@@ -112,46 +112,55 @@ describe('paramètres', () => {
   })
 })
 
-describe('révision', () => {
-  const openRevision = async (user: ReturnType<typeof userEvent.setup>) => {
+describe('conjugaison', () => {
+  const openConjugation = async (user: ReturnType<typeof userEvent.setup>, tab?: string) => {
     await env.open()
-    await user.click(screen.getByRole('button', { name: 'Révision' }))
+    await user.click(screen.getByRole('button', { name: 'Conjugaison' }))
+    if (tab) await user.click(screen.getByRole('button', { name: tab }))
   }
+  const openPractice = (user: ReturnType<typeof userEvent.setup>) => openConjugation(user, 'S’entraîner')
 
   it('la navigation mène à la fiche et revient à la lecture sans la perturber', async () => {
     const user = userEvent.setup()
-    await openRevision(user)
+    await openConjugation(user)
     expect(screen.getByRole('heading', { level: 1, name: /Le présent/ })).toBeTruthy()
     expect(screen.queryByLabelText('Transcription')).toBeNull()
-    expect(screen.getByRole('button', { name: 'Révision' }).getAttribute('aria-current')).toBe('page')
+    expect(screen.getByRole('button', { name: 'Conjugaison' }).getAttribute('aria-current')).toBe('page')
+    expect(screen.queryByRole('button', { name: 'Révision' })).toBeNull()
 
     await user.click(screen.getByRole('button', { name: 'Lecture' }))
     expect(screen.getByText(EXERCISES[0]!.arabic)).toBeTruthy()
     expect(screen.getByText(/Phrase 1/)).toBeTruthy()
   })
 
-  it('la fiche affiche les 14 formes avec les segments colorés', async () => {
+  it('une partie à la fois : le tableau, puis « À retenir » dans son onglet', async () => {
     const user = userEvent.setup()
-    await openRevision(user)
+    await openConjugation(user)
     const rows = document.querySelectorAll('tr[data-form]')
     expect(rows).toHaveLength(14)
     const row = document.querySelector('tr[data-form="2fs"]')!
     expect(row.textContent).toContain('أَنْتِ')
     expect(row.textContent!.replaceAll('\u200D', '')).toContain('تَفْعَلِينَ')
     expect(row.textContent).toContain('tu fais')
+    expect(screen.queryByText('Un radical stable')).toBeNull()
+    expect(screen.queryByRole('radio')).toBeNull()
+
+    await user.click(screen.getByRole('button', { name: 'À retenir' }))
+    expect(screen.getByText('Un radical stable')).toBeTruthy()
+    expect(document.querySelectorAll('tr[data-form]')).toHaveLength(0)
   })
 
-  it('les paramètres ramènent à la révision', async () => {
+  it('les paramètres ramènent à la conjugaison', async () => {
     const user = userEvent.setup()
-    await openRevision(user)
+    await openConjugation(user)
     await user.click(screen.getByRole('button', { name: 'Paramètres' }))
-    await user.click(screen.getByRole('button', { name: 'Retour à la révision' }))
+    await user.click(screen.getByRole('button', { name: 'Retour à la conjugaison' }))
     expect(screen.getByRole('heading', { level: 1, name: /Le présent/ })).toBeTruthy()
   })
 
   it('mode verbe : choisir, valider avec Entrée, voir le retour, passer à la suite', async () => {
     const user = userEvent.setup()
-    await openRevision(user)
+    await openPractice(user)
     expect(screen.getByText(/Question 1/)).toBeTruthy()
     const options = screen.getAllByRole('radio') as HTMLInputElement[]
     expect(options).toHaveLength(4)
@@ -172,7 +181,7 @@ describe('révision', () => {
 
   it('mode verbe, saisie : la bonne forme vocalisée est jugée juste', async () => {
     const user = userEvent.setup()
-    await openRevision(user)
+    await openPractice(user)
     await user.click(screen.getByRole('button', { name: 'Écrire' }))
     const answer = verbOf(currentForm())
     await user.type(screen.getByLabelText(/Forme verbale/), `${answer}{Enter}`)
@@ -182,7 +191,7 @@ describe('révision', () => {
 
   it('mode pronom : un pronom compatible est juste, recommencer remet le compteur à zéro', async () => {
     const user = userEvent.setup()
-    await openRevision(user)
+    await openPractice(user)
     await user.click(screen.getByRole('button', { name: 'Retrouver le pronom' }))
     const verb = document.querySelector('[class*="promptAr"]')!.textContent!
     const id = formsForVerb(verb)[0]!.id
@@ -198,7 +207,7 @@ describe('révision', () => {
 
   it('mode pronom arabe : le pronom arabe correspondant est jugé juste', async () => {
     const user = userEvent.setup()
-    await openRevision(user)
+    await openPractice(user)
     await user.click(screen.getByRole('button', { name: 'Dire le pronom en arabe' }))
     const label = document.querySelector('[class*="promptFrBig"]')!.textContent!
     const grammar = document.querySelector('[class*="promptFr"]:not([class*="promptFrBig"])')!.textContent!
@@ -209,17 +218,53 @@ describe('révision', () => {
     expect(screen.getByRole('status', { name: 'Résultat' }).textContent).toContain('Juste.')
   })
 
-  it('catégorie fruits : fiche avec écoute de chaque mot, et entraînement', async () => {
+  it('flashcards : on retourne la carte, une carte à revoir revient en fin de paquet', async () => {
+    const user = userEvent.setup()
+    await openConjugation(user, 'Flashcards')
+    const deck = () => within(screen.getByRole('region', { name: 'Flashcards' }))
+    const remaining = () => deck().getByText(/^Encore/).textContent
+
+    // Le présent : du pronom au verbe.
+    expect(remaining()).toBe(`Encore ${FORMS.length} cartes`)
+    const pronoun = deck().getByRole('group', { name: 'Recto de la carte' }).querySelector('[lang="ar"]')!.textContent!
+    const form = FORMS.find((f) => f.pronoun === pronoun)!
+    await user.click(deck().getByRole('button', { name: 'Retourner la carte' }))
+    expect(deck().getByRole('group', { name: 'Verso de la carte' }).textContent).toContain(form.translation)
+    await user.click(deck().getByRole('button', { name: 'À revoir' }))
+    expect(remaining()).toBe(`Encore ${FORMS.length} cartes`)
+    await user.click(deck().getByRole('button', { name: 'Retourner la carte' }))
+    await user.click(deck().getByRole('button', { name: 'Je savais' }))
+    expect(remaining()).toBe(`Encore ${FORMS.length - 1} cartes`)
+
+    // Les fruits : un paquet par mot, du français à l'arabe.
+    await user.click(screen.getByRole('button', { name: 'Vocabulaire' }))
+    await user.click(screen.getByRole('button', { name: 'Flashcards' }))
+    expect(remaining()).toBe(`Encore ${FRUITS.words.length} cartes`)
+    const fr = deck().getByRole('group', { name: 'Recto de la carte' }).textContent!
+    const word = FRUITS.words.find((w) => fr.endsWith(w.fr))!
+    await user.click(deck().getByRole('button', { name: 'Retourner la carte' }))
+    expect(deck().getByRole('group', { name: 'Verso de la carte' }).textContent).toContain(word.ar)
+  })
+})
+
+describe('vocabulaire', () => {
+  it('fruits : les mots avec écoute, l’entraînement dans son onglet, puis les couleurs', async () => {
     const speak = vi.fn()
     const synth = { speak, cancel: vi.fn(), getVoices: () => [{ lang: 'ar-SA' }], addEventListener: vi.fn(), removeEventListener: vi.fn() }
     vi.stubGlobal('speechSynthesis', synth)
     vi.stubGlobal('SpeechSynthesisUtterance', class { lang = ''; voice = null; rate = 1; constructor(public text: string) {} })
     try {
       const user = userEvent.setup()
-      await openRevision(user)
-      await user.click(screen.getByRole('button', { name: 'Les fruits' }))
-      expect(screen.getByRole('heading', { level: 1, name: /Les fruits/ })).toBeTruthy()
+      await env.open()
+      await user.click(screen.getByRole('button', { name: 'Vocabulaire' }))
+      expect(screen.getByRole('heading', { level: 1, name: /Le vocabulaire/ })).toBeTruthy()
+      expect(screen.getByRole('button', { name: /^Les fruits/ }).getAttribute('aria-pressed')).toBe('true')
+      expect(screen.getByRole('heading', { level: 2, name: /Les fruits/ })).toBeTruthy()
       expect(document.querySelectorAll('tr[data-word]')).toHaveLength(FRUITS.words.length)
+      // Le mot français est écrit dans la couleur du fruit.
+      const pomme = document.querySelector('tr[data-word="pomme"] [style]') as HTMLElement
+      expect(pomme.textContent).toBe('pomme')
+      expect(pomme.style.color).not.toBe('')
 
       await user.click(screen.getByRole('button', { name: 'Écouter تُفَّاحٌ' }))
       expect(speak).toHaveBeenCalledTimes(1)
@@ -227,18 +272,20 @@ describe('révision', () => {
       expect(speak.mock.calls[0]![0].text).toBe('تُفَّاح')
 
       // Mode « Retrouver le mot arabe » : on choisit le mot de la fiche qui correspond au français affiché.
+      await user.click(screen.getByRole('button', { name: 'S’entraîner' }))
+      expect(document.querySelectorAll('tr[data-word]')).toHaveLength(0)
       const fr = document.querySelector('[class*="promptFrBig"]')!.textContent!
       const word = FRUITS.words.find((w) => w.fr === fr)!
       await user.click((screen.getAllByRole('radio') as HTMLInputElement[]).find((r) => r.value === word.id)!)
       await user.click(screen.getByRole('button', { name: 'Valider' }))
       expect(screen.getByRole('status', { name: 'Résultat' }).textContent).toContain('Juste.')
 
-      // La catégorie est conservée en passant par les paramètres.
+      // Le thème est conservé en passant par les paramètres.
       await user.click(screen.getByRole('button', { name: 'Paramètres' }))
-      await user.click(screen.getByRole('button', { name: 'Retour à la révision' }))
-      expect(screen.getByRole('heading', { level: 1, name: /Les fruits/ })).toBeTruthy()
+      await user.click(screen.getByRole('button', { name: 'Retour au vocabulaire' }))
+      expect(screen.getByRole('heading', { level: 2, name: /Les fruits/ })).toBeTruthy()
 
-      await user.click(screen.getByRole('button', { name: 'Les couleurs' }))
+      await user.click(screen.getByRole('button', { name: /^Les couleurs/ }))
       expect(document.querySelector('tr[data-word="rouge"]')!.textContent).toContain('حَمْرَاءُ')
     } finally {
       vi.unstubAllGlobals()

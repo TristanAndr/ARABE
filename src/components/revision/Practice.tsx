@@ -3,9 +3,11 @@ import { checkPronoun, checkVerb, type VerbCheck } from '../../revision/check'
 import { FORMS, formsForVerb, grammarLabel, pronounLabel, type ConjugatedForm } from '../../revision/conjugation'
 import type { AnswerMethod, RevisionPrefs } from '../../revision/prefs'
 import { buildSession, type Question, type QuizMode } from '../../revision/quiz'
+import { pointsFor, scoreOf } from '../../revision/game'
 import { modeStats, type ModeStats } from '../../revision/stats'
 import type { ConjugationAttempt, ConjugationSession, ConjugationSessionRecord } from '../../sync/types'
 import { ConjugatedPhrase } from './ConjugatedWord'
+import { Burst, GameBar, GameEnd } from './Game'
 import styles from './Practice.module.css'
 
 interface Props {
@@ -43,6 +45,7 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
   const question = questions[index]
   const outcome = outcomes[index]
   const correctCount = outcomes.filter((o) => o.correct).length
+  const results = outcomes.map((o) => o.correct)
   const method: AnswerMethod = prefs.method
 
   const firstField = useRef<HTMLInputElement>(null)
@@ -145,7 +148,7 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
   return (
     <section className={styles.practice} aria-labelledby="practice-title">
       <div className={styles.head}>
-        <h2 id="practice-title" className={styles.title}>
+        <h2 id="practice-title" className="visually-hidden">
           Entraînement
         </h2>
         <p className={styles.lead}>Les questions reprennent exactement les formes de la fiche.</p>
@@ -176,6 +179,8 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
         )}
       </div>
 
+      <GameBar results={results} total={questions.length} />
+
       <div className={styles.status} aria-live="polite">
         <span>
           {question ? (
@@ -196,6 +201,7 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
 
       {question ? (
         <form className={styles.form} onSubmit={submit} onKeyDown={onKeyDown} noValidate>
+          <Burst trigger={outcome?.correct ? index : null} />
           {question.kind === 'verbe' ? (
             <VerbQuestion
               question={question}
@@ -227,7 +233,11 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
           )}
 
           {outcome ? (
-            <OutcomeView question={question} outcome={outcome} />
+            <OutcomeView
+              question={question}
+              outcome={outcome}
+              earned={outcome.correct ? pointsFor(scoreOf(results.slice(0, index + 1)).combo) : 0}
+            />
           ) : null}
 
           <div className={styles.actions}>
@@ -244,19 +254,16 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
           </div>
         </form>
       ) : (
-        <div className={styles.end}>
-          <p className={styles.score}>
-            {correctCount} <span className={styles.muted}>/ {questions.length}</span>
-          </p>
-          <p className={styles.endText}>
-            {correctCount === questions.length
+        <GameEnd
+          results={results}
+          total={questions.length}
+          detail={
+            correctCount === questions.length
               ? 'Tout est juste.'
-              : `${questions.length - correctCount} réponse${questions.length - correctCount > 1 ? 's' : ''} à revoir dans la fiche.`}
-          </p>
-          <button type="button" className="btn btn-primary" onClick={() => restart()} autoFocus>
-            Recommencer une session
-          </button>
-        </div>
+              : `${questions.length - correctCount} réponse${questions.length - correctCount > 1 ? 's' : ''} à revoir dans la fiche.`
+          }
+          onAgain={() => restart()}
+        />
       )}
     </section>
   )
@@ -513,12 +520,13 @@ function optionState(outcome: Outcome | undefined, chosen: boolean, right: boole
   return undefined
 }
 
-function OutcomeView({ question, outcome }: { question: Question; outcome: Outcome }) {
+function OutcomeView({ question, outcome, earned }: { question: Question; outcome: Outcome; earned: number }) {
   const forms: ConjugatedForm[] = question.kind === 'pronom' ? formsForVerb(question.verb) : [question.form]
   return (
     <div className={styles.outcome} role="status" aria-label="Résultat">
       <p className={outcome.correct ? styles.right : styles.wrong}>
         {outcome.correct ? 'Juste.' : outcome.vowelsOnly ? 'Presque : les lettres sont justes, pas les voyelles.' : 'Pas tout à fait.'}
+        {earned > 0 && <span className={styles.earned}>+{earned} pts</span>}
       </p>
       {question.kind === 'pronom-arabe' && !outcome.correct && outcome.given && (
         <p className={styles.given}>

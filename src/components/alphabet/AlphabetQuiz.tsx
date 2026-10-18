@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import { nextFlashcard, type Flashcard } from '../../alphabet/flashcards'
 import { formOf, POSITIONS } from '../../alphabet/letters'
+import { GameBar, Burst } from '../revision/Game'
 import styles from './Alphabet.module.css'
 
 const LABEL = Object.fromEntries(POSITIONS.map((p) => [p.position, p]))
 
-/** Entraînement continu : une lettre au hasard, la réponse sur demande, puis la suivante. */
+/**
+ * Entraînement continu : une lettre au hasard, la réponse sur demande, puis on dit si on la
+ * connaissait (points et série, sans fin de partie).
+ */
 export function AlphabetQuiz() {
   const [card, setCard] = useState<Flashcard>(() => nextFlashcard(null))
   const [revealed, setRevealed] = useState(false)
+  const [answers, setAnswers] = useState<boolean[]>([])
   const revealButton = useRef<HTMLButtonElement>(null)
   const nextButton = useRef<HTMLButtonElement>(null)
   // Pas de focus automatique à l'ouverture de l'onglet, seulement après une action.
@@ -25,8 +30,9 @@ export function AlphabetQuiz() {
     setRevealed(true)
   }
 
-  function next() {
+  function next(known: boolean) {
     started.current = true
+    setAnswers((a) => [...a, known])
     setCard((c) => nextFlashcard(c))
     setRevealed(false)
   }
@@ -41,7 +47,10 @@ export function AlphabetQuiz() {
         Entraînement : reconnaître les lettres
       </h2>
 
+      <GameBar results={answers} total={0} />
+
       <div className={styles.card}>
+        <Burst trigger={answers.at(-1) ? answers.length : null} />
         <p className={styles.promptLabel}>Quelle est cette lettre ?</p>
         <p className={`arabic ${styles.cardLetter}`} lang="ar" dir="rtl" data-testid="flashcard-letter">
           {form}
@@ -72,9 +81,14 @@ export function AlphabetQuiz() {
         </div>
 
         {revealed ? (
-          <button ref={nextButton} type="button" className="btn btn-primary" onClick={next}>
-            Suivant
-          </button>
+          <div className={styles.verdictButtons}>
+            <button type="button" className="btn btn-secondary" onClick={() => next(false)}>
+              À revoir
+            </button>
+            <button ref={nextButton} type="button" className="btn btn-primary" onClick={() => next(true)}>
+              Je savais
+            </button>
+          </div>
         ) : (
           <button ref={revealButton} type="button" className="btn btn-secondary" onClick={reveal}>
             Afficher la réponse

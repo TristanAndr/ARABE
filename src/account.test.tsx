@@ -49,7 +49,7 @@ describe('accès', () => {
     env.mount()
     await screen.findByRole('heading', { name: 'Connexion' })
     expect(screen.queryByLabelText('Transcription')).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Révision' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Conjugaison' })).toBeNull()
   })
 })
 
@@ -267,7 +267,8 @@ describe('données du compte', () => {
   it('les résultats de conjugaison sont enregistrés et retrouvés', async () => {
     const user = userEvent.setup()
     await env.open()
-    await user.click(screen.getByRole('button', { name: 'Révision' }))
+    await user.click(screen.getByRole('button', { name: 'Conjugaison' }))
+    await user.click(screen.getByRole('button', { name: 'S’entraîner' }))
     expect(screen.getByText(/Aucune session terminée/)).toBeTruthy()
     await user.click(screen.getByRole('button', { name: 'Retrouver le pronom' }))
     // Répond (n'importe comment) à toutes les questions de la session.
@@ -282,7 +283,8 @@ describe('données du compte', () => {
     await env.synced()
     await env.reload()
     await screen.findByLabelText('Transcription')
-    await user.click(screen.getByRole('button', { name: 'Révision' }))
+    await user.click(screen.getByRole('button', { name: 'Conjugaison' }))
+    await user.click(screen.getByRole('button', { name: 'S’entraîner' }))
     // Le mode choisi et l'historique sont retrouvés.
     expect(screen.getByRole('button', { name: 'Retrouver le pronom' }).getAttribute('aria-pressed')).toBe('true')
     expect(screen.getByText(/1 session terminée dans ce mode/)).toBeTruthy()

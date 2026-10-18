@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { pointsFor, scoreOf } from '../../revision/game'
 import { speakArabic, type SpeechState } from '../../revision/speech'
 import { buildVocabSession, type VocabMode, type VocabQuestion } from '../../revision/vocabQuiz'
 import type { VocabCategory, VocabWord } from '../../revision/vocabulary'
+import { Burst, GameBar, GameEnd } from './Game'
 import { SpeakButton } from './SpeakButton'
 import { SpokenWord } from './SpokenWord'
-import { Emoji } from './VocabularySheet'
+import { FrenchWord, WordIcon } from './WordIcon'
 import styles from './Practice.module.css'
 import vocab from './Vocabulary.module.css'
 
@@ -92,7 +94,7 @@ export function VocabPractice({ category, speech }: Props) {
   return (
     <section className={styles.practice} aria-labelledby="practice-title">
       <div className={styles.head}>
-        <h2 id="practice-title" className={styles.title}>
+        <h2 id="practice-title" className="visually-hidden">
           Entraînement
         </h2>
         <p className={styles.lead}>Une question par mot de la fiche.</p>
@@ -114,6 +116,8 @@ export function VocabPractice({ category, speech }: Props) {
         </div>
       </div>
 
+      <GameBar results={outcomes} total={questions.length} />
+
       <div className={styles.status} aria-live="polite">
         <span>
           {question ? (
@@ -134,12 +138,15 @@ export function VocabPractice({ category, speech }: Props) {
 
       {question ? (
         <form className={styles.form} onSubmit={submit} onKeyDown={onKeyDown} noValidate>
+          <Burst trigger={outcome ? index : null} />
           <div className={styles.prompt}>
             <p className={styles.promptLabel}>{current.prompt}</p>
             {mode === 'fr-ar' && (
               <>
-                {question.word.emoji && <Emoji symbol={question.word.emoji} className={vocab.emojiBig} />}
-                <p className={styles.promptFrBig}>{question.word.fr}</p>
+                <WordIcon key={question.word.id} word={question.word} className={vocab.emojiBig} />
+                <p className={styles.promptFrBig}>
+                  <FrenchWord word={question.word} icon={false} />
+                </p>
               </>
             )}
             {mode === 'ar-fr' && (
@@ -174,8 +181,7 @@ export function VocabPractice({ category, speech }: Props) {
                     <SpokenWord text={w.ar} className={styles.optionAr} />
                   ) : (
                     <span className={vocab.optionFr}>
-                      {w.emoji && <Emoji symbol={w.emoji} />}
-                      {w.fr}
+                      <FrenchWord word={w} />
                     </span>
                   )}
                 </label>
@@ -183,7 +189,15 @@ export function VocabPractice({ category, speech }: Props) {
             })}
           </fieldset>
 
-          {answered && <Outcome correct={outcome} word={question.word} columns={category.columns} canSpeak={speech !== 'indisponible'} />}
+          {answered && (
+            <Outcome
+              correct={outcome}
+              earned={outcome ? pointsFor(scoreOf(outcomes.slice(0, index + 1)).combo) : 0}
+              word={question.word}
+              columns={category.columns}
+              canSpeak={speech !== 'indisponible'}
+            />
+          )}
 
           <div className={styles.actions}>
             {answered ? (
@@ -199,19 +213,16 @@ export function VocabPractice({ category, speech }: Props) {
           </div>
         </form>
       ) : (
-        <div className={styles.end}>
-          <p className={styles.score}>
-            {correctCount} <span className={styles.muted}>/ {questions.length}</span>
-          </p>
-          <p className={styles.endText}>
-            {correctCount === questions.length
-              ? 'Tout est juste. 🏆'
-              : `${questions.length - correctCount} mot${questions.length - correctCount > 1 ? 's' : ''} à revoir dans la fiche.`}
-          </p>
-          <button type="button" className="btn btn-primary" onClick={() => restart()} autoFocus>
-            Recommencer une session
-          </button>
-        </div>
+        <GameEnd
+          results={outcomes}
+          total={questions.length}
+          detail={
+            correctCount === questions.length
+              ? 'Tout est juste.'
+              : `${questions.length - correctCount} mot${questions.length - correctCount > 1 ? 's' : ''} à revoir dans la fiche.`
+          }
+          onAgain={() => restart()}
+        />
       )}
     </section>
   )
@@ -226,11 +237,13 @@ function optionState(outcome: boolean | undefined, chosen: boolean, right: boole
 
 function Outcome({
   correct,
+  earned,
   word,
   columns,
   canSpeak,
 }: {
   correct: boolean
+  earned: number
   word: VocabWord
   columns: readonly string[]
   canSpeak: boolean
@@ -238,7 +251,10 @@ function Outcome({
   const others = (word.others ?? []).map((ar, i) => ({ ar, label: columns[i + 1]!.toLowerCase() }))
   return (
     <div className={styles.outcome} role="status" aria-label="Résultat">
-      <p className={correct ? styles.right : styles.wrong}>{correct ? 'Juste. 🎉' : 'Pas tout à fait. 🙈'}</p>
+      <p className={correct ? styles.right : styles.wrong}>
+        {correct ? 'Juste. 🎉' : 'Pas tout à fait. 🙈'}
+        {earned > 0 && <span className={styles.earned}>+{earned} pts</span>}
+      </p>
       <p className={styles.expectedLabel}>Réponse</p>
       <ul className={styles.expected}>
         <li>
@@ -247,8 +263,7 @@ function Outcome({
             {canSpeak && <SpeakButton text={word.ar} label={`Écouter ${word.ar}`} />}
           </span>
           <span className={styles.expectedFr}>
-            {word.emoji && <Emoji symbol={word.emoji} />}
-            {word.fr}
+            <FrenchWord word={word} />
             {others.map((o) => (
               <span key={o.label}>
                 {` · ${o.label} : `}

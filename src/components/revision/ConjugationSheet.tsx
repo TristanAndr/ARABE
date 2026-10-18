@@ -10,7 +10,7 @@ import {
 import { Breakdown, ConjugatedPhrase } from './ConjugatedWord'
 import styles from './Revision.module.css'
 
-const Ar = ({ children }: { children: string }) => (
+export const Ar = ({ children }: { children: string }) => (
   <span className={`arabic ${styles.inlineAr}`} lang="ar" dir="rtl">
     {children}
   </span>
@@ -22,25 +22,10 @@ const Affix = ({ children }: { children: string }) => (
   </span>
 )
 
-export function ConjugationSheet() {
+/** Le tableau : code couleur, puis les formes groupées par personne. */
+export function ConjugationTable() {
   return (
-    <article className={styles.sheet} aria-labelledby="sheet-title">
-      <header className={styles.sheetHead}>
-        <p className={styles.kicker}>Fiche de révision · conjugaison</p>
-        <h1 id="sheet-title" className={styles.title}>
-          Le présent
-          <span className={`arabic ${styles.titleAr}`} lang="ar" dir="rtl">
-            الفِعْلُ الْمُضَارِعُ
-          </span>
-        </h1>
-        <p className={styles.intro}>
-          Modèle : <Ar>{MODEL.past}</Ar> / <Ar>{MODEL.present}</Ar>{' '}
-          <span className={styles.gloss}>« {MODEL.meaning} »</span>, verbe régulier de trois lettres (
-          <Ar>{MODEL.root.join(' ')}</Ar>). Il sert traditionnellement de modèle : chaque verbe du même type se
-          conjugue en remplaçant <Ar>ف</Ar>, <Ar>ع</Ar> et <Ar>ل</Ar> par ses propres lettres.
-        </p>
-      </header>
-
+    <div className={styles.tableTab}>
       <Legend />
 
       {PERSONS.map((p) => (
@@ -82,8 +67,7 @@ export function ConjugationSheet() {
         </section>
       ))}
 
-      <Explanation />
-    </article>
+    </div>
   )
 }
 
@@ -115,12 +99,10 @@ function Legend() {
 const ending = (id: string) => breakdown(formById(id)).ending
 const verb = (id: string) => verbOf(formById(id))
 
-function Explanation() {
+/** À retenir : préfixe, terminaison, radical, puis personne, genre et nombre. */
+export function ConjugationNotes() {
   return (
-    <section className={styles.explain} aria-labelledby="explain-title">
-      <h2 id="explain-title" className={styles.sectionTitle}>
-        À retenir
-      </h2>
+    <section className={styles.explain} aria-label="À retenir">
 
       <div className={styles.points}>
         <div>

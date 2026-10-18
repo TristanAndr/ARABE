@@ -70,3 +70,21 @@
   font-size: 0.82rem;
   color: var(--muted);
 }
+
+/* Cocooning : champ arrondi, rose au focus. */
+:global([data-theme='cocooning']) .input {
+  padding-inline: 1rem;
+  background: var(--bg-raised);
+  border: 2px solid var(--rule);
+  border-radius: 16px;
+}
+
+:global([data-theme='cocooning']) .input:focus {
+  border-color: var(--sp-pink);
+  box-shadow: 0 0 0 4px var(--sp-pink-soft);
+}
+
+:global([data-theme='cocooning']) .char {
+  background: var(--accent-soft);
+  border-radius: 8px;
+}

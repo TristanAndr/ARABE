@@ -8,7 +8,8 @@ import { useQuranText } from './quran/useQuranText'
 import { AccountView } from './components/AccountView'
 import { ExerciseView } from './components/ExerciseView'
 import { Header, type View } from './components/Header'
-import { RevisionView, type RevisionCategory } from './components/revision/RevisionView'
+import { ConjugationView } from './components/revision/ConjugationView'
+import { VocabularyView, type VocabTheme } from './components/revision/VocabularyView'
 import { SessionEnd } from './components/SessionEnd'
 import { SettingsView } from './components/settings/SettingsView'
 import { EXERCISES } from './data/corpus'
@@ -36,11 +37,12 @@ interface Props {
   syncStatus?: SyncStatus
 }
 
-type Section = 'exercise' | 'revision' | 'alphabet'
+type Section = 'exercise' | 'vocabulaire' | 'conjugaison' | 'alphabet'
 
 const BACK_LABELS: Record<Section, string> = {
   exercise: "Retour à l'exercice",
-  revision: 'Retour à la révision',
+  vocabulaire: 'Retour au vocabulaire',
+  conjugaison: 'Retour à la conjugaison',
   alphabet: "Retour à l'alphabet",
 }
 
@@ -58,7 +60,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   const revision = useRevisionPrefs(initial.revision, savers.revision)
   const [sessions, setSessions] = useState<ConjugationSessionRecord[]>(initial.conjugationSessions)
   const [view, setView] = useState<View>('exercise')
-  const [revisionCategory, setRevisionCategory] = useState<RevisionCategory>('present')
+  const [vocabTheme, setVocabTheme] = useState<VocabTheme>('fruits')
   // Section à retrouver en quittant les paramètres ou le compte.
   const [section, setSection] = useState<Section>('exercise')
   const spellings = useMemo(() => resolveSpellings(settings), [settings])
@@ -112,7 +114,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
         view={view}
         syncStatus={syncStatus}
         onNavigate={(next) => {
-          if (next === 'exercise' || next === 'revision' || next === 'alphabet') setSection(next)
+          if (next !== 'settings' && next !== 'account') setSection(next)
           setView(next)
         }}
       />
@@ -131,10 +133,10 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
           <AccountView account={account} syncStatus={syncStatus} onClose={() => setView(section)} closeLabel={backLabel} />
         ) : view === 'alphabet' ? (
           <AlphabetView spellings={spellings} />
-        ) : view === 'revision' ? (
-          <RevisionView
-            category={revisionCategory}
-            onCategory={setRevisionCategory}
+        ) : view === 'vocabulaire' ? (
+          <VocabularyView theme={vocabTheme} onTheme={setVocabTheme} />
+        ) : view === 'conjugaison' ? (
+          <ConjugationView
             prefs={revision.prefs}
             onPrefs={revision.update}
             sessions={sessions}

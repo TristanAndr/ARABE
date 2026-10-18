@@ -382,8 +382,16 @@
 }
 
 .card {
+  position: relative;
   padding: clamp(1rem, 4vh, 2.5rem) 0 1rem;
   text-align: center;
+}
+
+.verdictButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .cardLetter {
@@ -470,4 +478,97 @@
   .tableGlyph {
     font-size: 1.6rem;
   }
+}
+
+/* Cocooning : lettres en tuiles bonbons, onglets en pastilles. */
+:global([data-theme='cocooning']) .kicker {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: var(--sp-yellow-soft);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+:global([data-theme='cocooning']) .title {
+  font-family: var(--font-fun);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+:global([data-theme='cocooning']) .rules {
+  padding: 1rem 1.25rem;
+  border: 0;
+  border-radius: 16px;
+  background: var(--sp-lilac-soft);
+}
+
+:global([data-theme='cocooning']) .tabs {
+  width: fit-content;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent-soft);
+}
+
+:global([data-theme='cocooning']) .tab {
+  margin: 0;
+  padding: 0.4rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-family: var(--font-fun);
+  font-size: 0.98rem;
+  font-weight: 550;
+}
+
+:global([data-theme='cocooning']) .tab[aria-pressed='true'] {
+  color: var(--ink);
+  background: var(--bg-raised);
+  box-shadow: 0 2px 0 var(--rule-strong);
+}
+
+:global([data-theme='cocooning']) .grid {
+  gap: 0.5rem;
+  border: 0;
+}
+
+:global([data-theme='cocooning']) .grid li {
+  display: flex;
+  border: 0;
+}
+
+:global([data-theme='cocooning']) .cell {
+  background: var(--bg-raised);
+  border: 2px solid var(--rule);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--rule);
+  transition:
+    background-color 120ms var(--ease),
+    border-color 120ms var(--ease),
+    transform 160ms var(--bounce);
+}
+
+:global([data-theme='cocooning']) .cell:hover {
+  border-color: var(--sp-lilac);
+  transform: translateY(-3px) rotate(-2deg);
+}
+
+:global([data-theme='cocooning']) .cell[aria-current='true'] {
+  background: var(--sp-lilac-soft);
+  border-color: var(--sp-lilac);
+  box-shadow: 0 4px 0 var(--sp-lilac);
+}
+
+:global([data-theme='cocooning']) .card {
+  margin-top: 0.75rem;
+  padding-inline: 1rem;
+  background:
+    radial-gradient(circle at 12% 12%, var(--sp-lilac-soft), transparent 40%),
+    radial-gradient(circle at 88% 88%, var(--sp-yellow-soft), transparent 40%),
+    var(--bg-raised);
+  border: 2px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 0 var(--rule);
 }

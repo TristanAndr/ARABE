@@ -1,6 +1,7 @@
 import { StrictMode, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@fontsource/amiri-quran/400.css'
+import '@fontsource-variable/fredoka/index.css'
 import '@fontsource-variable/inter/index.css'
 import '@fontsource-variable/newsreader/opsz.css'
 import './styles/global.css'

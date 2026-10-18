@@ -16,6 +16,8 @@ export interface VocabWord {
   note?: string
   /** Illustration à côté du français ; absente quand Unicode n'a pas d'emoji pour le fruit. */
   emoji?: string
+  /** Couleur du mot français : celle du fruit, ou la couleur elle-même (sauf blanc et noir). */
+  tint?: string
 }
 
 export interface VocabCategory {
@@ -28,11 +30,20 @@ export interface VocabCategory {
   words: readonly VocabWord[]
 }
 
-const word = (id: string, fr: string, emoji: string, ar: string, others: string[], note?: string): VocabWord => ({
+const word = (
+  id: string,
+  fr: string,
+  emoji: string,
+  tint: string,
+  ar: string,
+  others: string[],
+  note?: string,
+): VocabWord => ({
   id,
   fr,
   ar,
   others,
+  ...(tint ? { tint } : {}),
   ...(emoji ? { emoji } : {}),
   ...(note ? { note } : {}),
 })
@@ -45,32 +56,33 @@ export const FRUITS: VocabCategory = {
     'Le mot de base est un collectif : il désigne l’espèce ou les fruits en général (« la pomme, des pommes ») et il est masculin singulier. On ajoute ـَةٌ pour désigner un seul fruit, qui devient féminin : تُفَّاحٌ → تُفَّاحَةٌ. Pour exactement deux fruits, le ة s’ouvre en ت suivi du duel ـَتَانِ : تُفَّاحَتَانِ.',
   columns: ['Collectif', 'Un fruit', 'Deux fruits'],
   words: [
-    word('pomme', 'pomme', '🍎', 'تُفَّاحٌ', ['تُفَّاحَةٌ', 'تُفَّاحَتَانِ']),
-    word('banane', 'banane', '🍌', 'مَوْزٌ', ['مَوْزَةٌ', 'مَوْزَتَانِ']),
-    word('orange', 'orange', '🍊', 'بُرْتُقَالٌ', ['بُرْتُقَالَةٌ', 'بُرْتُقَالَتَانِ']),
-    word('raisin', 'raisin', '🍇', 'عِنَبٌ', ['عِنَبَةٌ', 'عِنَبَتَانِ'], 'un grain de raisin : عِنَبَةٌ ou, très couramment, حَبَّةُ عِنَبٍ'),
-    word('datte', 'datte', '🌴', 'تَمْرٌ', ['تَمْرَةٌ', 'تَمْرَتَانِ']),
-    word('grenade', 'grenade', '', 'رُمَّانٌ', ['رُمَّانَةٌ', 'رُمَّانَتَانِ']),
-    word('pasteque', 'pastèque', '🍉', 'بِطِّيخٌ', ['بِطِّيخَةٌ', 'بِطِّيخَتَانِ']),
-    word('citron', 'citron', '🍋', 'لَيْمُونٌ', ['لَيْمُونَةٌ', 'لَيْمُونَتَانِ']),
-    word('figue', 'figue', '', 'تِينٌ', ['تِينَةٌ', 'تِينَتَانِ']),
-    word('peche', 'pêche', '🍑', 'خَوْخٌ', ['خَوْخَةٌ', 'خَوْخَتَانِ']),
-    word('cerise', 'cerise', '🍒', 'كَرَزٌ', ['كَرَزَةٌ', 'كَرَزَتَانِ']),
+    word('pomme', 'pomme', '🍎', '#d62828', 'تُفَّاحٌ', ['تُفَّاحَةٌ', 'تُفَّاحَتَانِ']),
+    word('banane', 'banane', '🍌', '#c99700', 'مَوْزٌ', ['مَوْزَةٌ', 'مَوْزَتَانِ']),
+    word('orange', 'orange', '🍊', '#e8710a', 'بُرْتُقَالٌ', ['بُرْتُقَالَةٌ', 'بُرْتُقَالَتَانِ']),
+    word('raisin', 'raisin', '🍇', '#7b2d8e', 'عِنَبٌ', ['عِنَبَةٌ', 'عِنَبَتَانِ'], 'un grain de raisin : عِنَبَةٌ ou, très couramment, حَبَّةُ عِنَبٍ'),
+    word('datte', 'datte', '🌴', '#8b5a2b', 'تَمْرٌ', ['تَمْرَةٌ', 'تَمْرَتَانِ']),
+    word('grenade', 'grenade', '', '#b3122e', 'رُمَّانٌ', ['رُمَّانَةٌ', 'رُمَّانَتَانِ']),
+    word('pasteque', 'pastèque', '🍉', '#e03a4e', 'بِطِّيخٌ', ['بِطِّيخَةٌ', 'بِطِّيخَتَانِ']),
+    word('citron', 'citron', '🍋', '#b8a200', 'لَيْمُونٌ', ['لَيْمُونَةٌ', 'لَيْمُونَتَانِ']),
+    word('figue', 'figue', '', '#6b2f7a', 'تِينٌ', ['تِينَةٌ', 'تِينَتَانِ']),
+    word('peche', 'pêche', '🍑', '#e8794f', 'خَوْخٌ', ['خَوْخَةٌ', 'خَوْخَتَانِ']),
+    word('cerise', 'cerise', '🍒', '#c1121f', 'كَرَزٌ', ['كَرَزَةٌ', 'كَرَزَتَانِ']),
     word(
       'fraise',
       'fraise',
       '🍓',
+      '#e5383b',
       'فَرَاوِلَةٌ',
       ['حَبَّةُ فَرَاوِلَةٍ', 'حَبَّتَا فَرَاوِلَةٍ'],
       'emprunt déjà terminé par ـَةٌ : pour « une fraise », on dit حَبَّةُ, « un grain de »',
     ),
-    word('poire', 'poire', '🍐', 'كُمَّثْرَى', ['كُمَّثْرَاةٌ', 'كُمَّثْرَاتَانِ'], 'au Levant, on dit aussi إِجَّاصٌ'),
-    word('framboise', 'framboise', '🫐', 'تُوتٌ', ['تُوتَةٌ', 'تُوتَتَانِ'], 'تُوتٌ désigne les baies (framboise, mûre) ; la framboise précisément : تُوتُ العُلَّيْقِ'),
-    word('kiwi', 'kiwi', '🥝', 'كِيوِي', ['حَبَّةُ كِيوِي', 'حَبَّتَا كِيوِي'], 'emprunt invariable : l’unité se forme avec حَبَّةُ'),
-    word('mangue', 'mangue', '🥭', 'مَانْجُو', ['حَبَّةُ مَانْجُو', 'حَبَّتَا مَانْجُو'], 'emprunt invariable : l’unité se forme avec حَبَّةُ'),
-    word('ananas', 'ananas', '🍍', 'أَنَانَاسٌ', ['أَنَانَاسَةٌ', 'أَنَانَاسَتَانِ']),
-    word('abricot', 'abricot', '', 'مِشْمِشٌ', ['مِشْمِشَةٌ', 'مِشْمِشَتَانِ']),
-    word('melon', 'melon', '🍈', 'شَمَّامٌ', ['شَمَّامَةٌ', 'شَمَّامَتَانِ']),
+    word('poire', 'poire', '🍐', '#7fa310', 'كُمَّثْرَى', ['كُمَّثْرَاةٌ', 'كُمَّثْرَاتَانِ'], 'au Levant, on dit aussi إِجَّاصٌ'),
+    word('framboise', 'framboise', '🫐', '#d6336c', 'تُوتٌ', ['تُوتَةٌ', 'تُوتَتَانِ'], 'تُوتٌ désigne les baies (framboise, mûre) ; la framboise précisément : تُوتُ العُلَّيْقِ'),
+    word('kiwi', 'kiwi', '🥝', '#5f9420', 'كِيوِي', ['حَبَّةُ كِيوِي', 'حَبَّتَا كِيوِي'], 'emprunt invariable : l’unité se forme avec حَبَّةُ'),
+    word('mangue', 'mangue', '🥭', '#ef9000', 'مَانْجُو', ['حَبَّةُ مَانْجُو', 'حَبَّتَا مَانْجُو'], 'emprunt invariable : l’unité se forme avec حَبَّةُ'),
+    word('ananas', 'ananas', '🍍', '#c99000', 'أَنَانَاسٌ', ['أَنَانَاسَةٌ', 'أَنَانَاسَتَانِ']),
+    word('abricot', 'abricot', '', '#ee8a2a', 'مِشْمِشٌ', ['مِشْمِشَةٌ', 'مِشْمِشَتَانِ']),
+    word('melon', 'melon', '🍈', '#74a032', 'شَمَّامٌ', ['شَمَّامَةٌ', 'شَمَّامَتَانِ']),
   ],
 }
 
@@ -82,19 +94,19 @@ export const COLORS: VocabCategory = {
     'Les couleurs de base suivent le schème أَفْعَلُ au masculin et فَعْلَاءُ au féminin. Les autres se forment sur un nom avec le suffixe nisba ـِيٌّ, et ـِيَّةٌ au féminin.',
   columns: ['Masculin', 'Féminin'],
   words: [
-    word('rouge', 'rouge', '❤️', 'أَحْمَرُ', ['حَمْرَاءُ']),
-    word('bleu', 'bleu', '💙', 'أَزْرَقُ', ['زَرْقَاءُ']),
-    word('vert', 'vert', '💚', 'أَخْضَرُ', ['خَضْرَاءُ']),
-    word('jaune', 'jaune', '💛', 'أَصْفَرُ', ['صَفْرَاءُ']),
-    word('blanc', 'blanc', '🤍', 'أَبْيَضُ', ['بَيْضَاءُ']),
-    word('noir', 'noir', '🖤', 'أَسْوَدُ', ['سَوْدَاءُ']),
-    word('marron', 'marron', '🤎', 'بُنِّيٌّ', ['بُنِّيَّةٌ'], 'de بُنٌّ, le café'),
-    word('orange', 'orange', '🧡', 'بُرْتُقَالِيٌّ', ['بُرْتُقَالِيَّةٌ'], 'de بُرْتُقَالٌ, l’orange'),
-    word('rose', 'rose', '🩷', 'وَرْدِيٌّ', ['وَرْدِيَّةٌ'], 'de وَرْدٌ, les roses'),
-    word('gris', 'gris', '🩶', 'رَمَادِيٌّ', ['رَمَادِيَّةٌ'], 'de رَمَادٌ, la cendre'),
-    word('violet', 'violet', '💜', 'بَنَفْسَجِيٌّ', ['بَنَفْسَجِيَّةٌ'], 'de بَنَفْسَجٌ, la violette'),
-    word('argente', 'argenté', '🥈', 'فِضِّيٌّ', ['فِضِّيَّةٌ'], 'de فِضَّةٌ, l’argent (le métal)'),
-    word('dore', 'doré', '🥇', 'ذَهَبِيٌّ', ['ذَهَبِيَّةٌ'], 'de ذَهَبٌ, l’or'),
+    word('rouge', 'rouge', '❤️', '#d62828', 'أَحْمَرُ', ['حَمْرَاءُ']),
+    word('bleu', 'bleu', '💙', '#1f6fd6', 'أَزْرَقُ', ['زَرْقَاءُ']),
+    word('vert', 'vert', '💚', '#2b9348', 'أَخْضَرُ', ['خَضْرَاءُ']),
+    word('jaune', 'jaune', '💛', '#d4a900', 'أَصْفَرُ', ['صَفْرَاءُ']),
+    word('blanc', 'blanc', '🤍', '', 'أَبْيَضُ', ['بَيْضَاءُ']),
+    word('noir', 'noir', '🖤', '', 'أَسْوَدُ', ['سَوْدَاءُ']),
+    word('marron', 'marron', '🤎', '#8b5a2b', 'بُنِّيٌّ', ['بُنِّيَّةٌ'], 'de بُنٌّ, le café'),
+    word('orange', 'orange', '🧡', '#e8710a', 'بُرْتُقَالِيٌّ', ['بُرْتُقَالِيَّةٌ'], 'de بُرْتُقَالٌ, l’orange'),
+    word('rose', 'rose', '🩷', '#e0569a', 'وَرْدِيٌّ', ['وَرْدِيَّةٌ'], 'de وَرْدٌ, les roses'),
+    word('gris', 'gris', '🩶', '#868e96', 'رَمَادِيٌّ', ['رَمَادِيَّةٌ'], 'de رَمَادٌ, la cendre'),
+    word('violet', 'violet', '💜', '#7b3fbf', 'بَنَفْسَجِيٌّ', ['بَنَفْسَجِيَّةٌ'], 'de بَنَفْسَجٌ, la violette'),
+    word('argente', 'argenté', '🥈', '#98a2ab', 'فِضِّيٌّ', ['فِضِّيَّةٌ'], 'de فِضَّةٌ, l’argent (le métal)'),
+    word('dore', 'doré', '🥇', '#c49a1b', 'ذَهَبِيٌّ', ['ذَهَبِيَّةٌ'], 'de ذَهَبٌ, l’or'),
   ],
 }
 

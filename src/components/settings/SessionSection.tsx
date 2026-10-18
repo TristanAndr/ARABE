@@ -64,6 +64,8 @@ export function SessionSection({ order, theme, onOrder, onTheme, progress, onRes
             ['system', 'Système'],
             ['light', 'Clair'],
             ['dark', 'Sombre'],
+            ['cocooning', 'Cocooning clair'],
+            ['cocooning-dark', 'Cocooning sombre'],
           ]}
           onChange={onTheme}
         />

@@ -5,7 +5,8 @@ import { PRESETS, type Overrides, type PresetId, type ProfileId, type ProfileSet
 import { sanitizePosition, type Position } from '../quran/navigation'
 import { isRecord } from '../storage/storage'
 
-export type Theme = 'system' | 'light' | 'dark'
+export type Theme = 'system' | 'light' | 'dark' | 'cocooning' | 'cocooning-dark'
+const THEMES: readonly Theme[] = ['system', 'light', 'dark', 'cocooning', 'cocooning-dark']
 export type Order = 'mushaf' | 'random'
 
 export interface Settings extends ProfileSettings {
@@ -54,7 +55,7 @@ export function sanitizeSettings(raw: unknown): Settings | null {
       optionalInitialHamza: bool(norm.optionalInitialHamza, DEFAULT_NORMALIZATION.optionalInitialHamza),
       acceptWaslEndings: bool(norm.acceptWaslEndings, DEFAULT_NORMALIZATION.acceptWaslEndings),
     },
-    theme: raw.theme === 'light' || raw.theme === 'dark' ? raw.theme : 'system',
+    theme: THEMES.includes(raw.theme as Theme) ? (raw.theme as Theme) : 'system',
     order: raw.order === 'random' ? 'random' : 'mushaf',
     trainingVerse: sanitizePosition(raw.trainingVerse),
   }
@@ -79,8 +80,16 @@ export function useSettings(initial: Settings | null, onChange: (s: Settings) =>
   return { settings, save }
 }
 
+/**
+ * Clair et sombre posent data-theme ; les deux Cocooning partagent data-theme="cocooning" et se
+ * distinguent par data-shade, pour que leurs styles communs n'aient qu'un sélecteur.
+ */
 export function applyTheme(theme: Theme) {
   const root = document.documentElement
+  delete root.dataset.shade
   if (theme === 'system') delete root.dataset.theme
-  else root.dataset.theme = theme
+  else if (theme === 'cocooning-dark') {
+    root.dataset.theme = 'cocooning'
+    root.dataset.shade = 'dark'
+  } else root.dataset.theme = theme
 }

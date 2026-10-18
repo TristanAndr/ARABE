@@ -1,7 +1,11 @@
 /* Fiches de vocabulaire : mêmes filets que la fiche de conjugaison. */
 
+.words {
+  margin-top: 1.25rem;
+}
+
 .table {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .head th {
@@ -29,11 +33,36 @@
 }
 
 .frCell {
-  width: 40%;
+  white-space: nowrap;
+}
+
+/* Une précision sous le mot : sur toute la largeur, la ligne du mot n'a alors pas de filet. */
+.row[data-noted] td {
+  border-bottom: 0;
+}
+
+.noteRow td {
+  padding: 0 0 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.noteRow :global(.arabic) {
+  font-size: 1.2em;
 }
 
 .arCell {
   text-align: right;
+}
+
+.row .arCell {
+  padding-left: 2rem;
+}
+
+/* Les titres des colonnes arabes suivent le même retrait que leurs mots. */
+.head th + th {
+  padding-left: 2rem;
 }
 
 .word {
@@ -45,6 +74,7 @@
 .wordAr {
   font-size: clamp(1.7rem, 4.5vw, 2.1rem);
   line-height: 2.1;
+  white-space: nowrap;
 }
 
 .cellLabel {
@@ -70,7 +100,6 @@
 }
 
 .legend {
-  margin-top: 0.75rem;
   font-size: 0.82rem;
   color: var(--muted);
 }
@@ -123,6 +152,11 @@
   font-style: normal;
 }
 
+/* Dessin des fruits sans emoji, aligné comme un emoji. */
+.drawing {
+  vertical-align: -0.12em;
+}
+
 .emojiBig {
   display: block;
   margin: 0.75rem 0 0;
@@ -155,8 +189,8 @@
   gap: 0.6rem;
 }
 
-/* Mobile : le français au-dessus, les formes arabes en dessous. */
-@media (max-width: 36rem) {
+/* Écran étroit : le français au-dessus, les formes arabes en dessous. */
+@media (max-width: 48rem) {
   .table thead {
     display: none;
   }
@@ -174,7 +208,7 @@
     flex-direction: row-reverse;
     flex-wrap: wrap;
     justify-content: flex-start;
-    column-gap: 1.25rem;
+    column-gap: 0.8rem;
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--rule);
   }
@@ -187,6 +221,34 @@
   .row:first-child td {
     border: 0;
     padding: 0;
+  }
+
+  .row .arCell {
+    padding-left: 0;
+  }
+
+  .row[data-noted] {
+    border-bottom: 0;
+  }
+
+  .noteRow,
+  .noteRow td {
+    display: block;
+  }
+
+  /* Trois formes sur une ligne, même pour les mots longs. */
+  .wordAr {
+    font-size: 1.45rem;
+  }
+
+  .word {
+    gap: 0.3rem;
+  }
+
+  .speak:not(.speakLarge) {
+    width: 1.7rem;
+    height: 1.7rem;
+    font-size: 0.9rem;
   }
 
   .frCell {
@@ -206,5 +268,52 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--muted);
+  }
+}
+
+/* Cocooning : survol des lignes, boutons d'écoute bleu bonbon, emoji qui saute. */
+:global([data-theme='cocooning']) .row td {
+  transition: background-color 120ms var(--ease);
+}
+
+:global([data-theme='cocooning']) .row:hover td {
+  background: var(--sp-yellow-soft);
+}
+
+:global([data-theme='cocooning']) .speak {
+  border: 0;
+  background: var(--sp-blue-soft);
+  color: var(--sp-blue);
+  transition:
+    color 120ms var(--ease),
+    background-color 120ms var(--ease),
+    transform 160ms var(--bounce);
+}
+
+:global([data-theme='cocooning']) .speak:hover {
+  color: #fff;
+  background: var(--sp-blue);
+  transform: scale(1.12);
+}
+
+:global([data-theme='cocooning']) .speakLarge {
+  color: #fff;
+  background: var(--sp-blue);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--sp-blue) 60%, var(--choc));
+}
+
+:global([data-theme='cocooning']) .optionFr {
+  font-family: var(--font-fun);
+  font-weight: 550;
+}
+
+:global([data-theme='cocooning']) .emojiBig {
+  animation: cocoPop 460ms var(--bounce);
+}
+
+@keyframes cocoPop {
+  from {
+    opacity: 0;
+    transform: scale(0.3) rotate(-15deg);
   }
 }

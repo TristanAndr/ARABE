@@ -1,7 +1,7 @@
 import type { SyncStatus } from '../sync/types'
 import styles from './Header.module.css'
 
-export type View = 'exercise' | 'revision' | 'alphabet' | 'settings' | 'account'
+export type View = 'exercise' | 'vocabulaire' | 'conjugaison' | 'alphabet' | 'settings' | 'account'
 
 interface Props {
   /** Sans `view`, en-tête réduit à la marque (écrans de connexion, chargement). */
@@ -14,7 +14,8 @@ interface Props {
 
 const SECTIONS: { view: View; label: string }[] = [
   { view: 'exercise', label: 'Lecture' },
-  { view: 'revision', label: 'Révision' },
+  { view: 'vocabulaire', label: 'Vocabulaire' },
+  { view: 'conjugaison', label: 'Conjugaison' },
   { view: 'alphabet', label: 'Alphabet' },
 ]
 
@@ -24,7 +25,7 @@ const SYNC_HINT: Partial<Record<SyncStatus, string>> = {
 }
 
 export function Header({ view, position = null, total = 0, onNavigate, syncStatus = 'saved' }: Props) {
-  const main = view === 'exercise' || view === 'revision' || view === 'alphabet'
+  const main = view !== undefined && view !== 'settings' && view !== 'account'
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
@@ -39,6 +40,7 @@ export function Header({ view, position = null, total = 0, onNavigate, syncStatu
                 key={s.view}
                 type="button"
                 className={styles.navItem}
+                data-section={s.view}
                 aria-current={view === s.view ? 'page' : undefined}
                 onClick={() => onNavigate(s.view)}
               >

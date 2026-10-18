@@ -1,0 +1,368 @@
+/* Barre de jeu : un trait par question, les points et la série en cours. */
+.bar {
+  margin-top: 1.5rem;
+}
+
+.track {
+  display: flex;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sprinkle {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--rule);
+  transition: background-color 200ms var(--ease);
+}
+
+.sprinkle[data-state='right'] {
+  background: var(--ok);
+}
+
+.sprinkle[data-state='wrong'] {
+  background: var(--error);
+}
+
+.sprinkle[data-state='current'] {
+  background: var(--rule-strong);
+}
+
+.counters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1.25rem;
+  min-height: 1.6rem;
+  margin-top: 0.6rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.points,
+.combo,
+.cheer {
+  animation: pop 320ms var(--ease);
+}
+
+.points {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.combo {
+  color: var(--partial);
+  font-weight: 600;
+}
+
+.cheer {
+  font-family: var(--font-text);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+/* Explosion de confettis au centre du parent (position: relative). */
+.burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.burst > span {
+  position: absolute;
+  width: 0.7rem;
+  height: 0.25rem;
+  margin: -0.125rem 0 0 -0.35rem;
+  border-radius: 999px;
+  background: var(--color);
+  opacity: 0;
+  animation: fly 900ms cubic-bezier(0.15, 0.7, 0.3, 1) forwards;
+}
+
+.burstBig > span {
+  width: 0.9rem;
+  height: 0.3rem;
+  animation-duration: 1400ms;
+}
+
+/* Fin de série */
+.end {
+  position: relative;
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.star {
+  color: var(--rule);
+  animation: starIn 420ms var(--ease) both;
+}
+
+.star[data-on='true'] {
+  color: var(--partial);
+}
+
+.endTitle {
+  margin-top: 0.75rem;
+  font-family: var(--font-text);
+  font-size: 1.8rem;
+  font-weight: 500;
+  font-variation-settings: 'opsz' 36;
+}
+
+.endScore {
+  margin-top: 0.25rem;
+  font-family: var(--font-text);
+  font-size: 2.4rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.endDetail {
+  margin-top: 0.25rem;
+  color: var(--ink-soft);
+}
+
+.endStats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 1.75rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.endActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.again {
+  min-height: 3rem;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+@keyframes fly {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), calc(var(--dy) + 1.5rem)) rotate(calc(var(--rot) + 240deg));
+  }
+}
+
+@keyframes starIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .burst {
+    display: none;
+  }
+}
+
+/* Cocooning : barre en vermicelles, compteurs en pastilles, grosses étoiles. */
+:global([data-theme='cocooning']) .track {
+  gap: 4px;
+}
+
+:global([data-theme='cocooning']) .sprinkle {
+  height: 10px;
+  border-radius: 999px;
+}
+
+:global([data-theme='cocooning']) .sprinkle[data-state='right'] {
+  background: var(--sp-mint);
+  animation: cocoPlop 360ms var(--bounce);
+}
+
+:global([data-theme='cocooning']) .sprinkle[data-state='wrong'] {
+  animation: cocoPlop 360ms var(--bounce);
+}
+
+:global([data-theme='cocooning']) .sprinkle[data-state='current'] {
+  background: var(--sp-yellow);
+  animation: cocoPulse 1.2s ease-in-out infinite;
+}
+
+:global([data-theme='cocooning']) .counters {
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  font-family: var(--font-fun);
+}
+
+:global([data-theme='cocooning']) .points,
+:global([data-theme='cocooning']) .combo,
+:global([data-theme='cocooning']) .cheer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  animation: cocoPopIn 380ms var(--bounce);
+}
+
+:global([data-theme='cocooning']) .points {
+  background: var(--sp-yellow-soft);
+}
+
+:global([data-theme='cocooning']) .combo {
+  background: var(--sp-pink-soft);
+  color: var(--ink);
+}
+
+:global([data-theme='cocooning']) .cheer {
+  background: var(--sp-lilac);
+  color: #fff;
+  font-family: var(--font-fun);
+  font-style: normal;
+  font-weight: 600;
+  transform: rotate(-3deg);
+}
+
+:global([data-theme='cocooning']) .burst > span:nth-child(6n + 1) {
+  background: var(--sp-pink);
+}
+
+:global([data-theme='cocooning']) .burst > span:nth-child(6n + 2) {
+  background: var(--sp-yellow);
+}
+
+:global([data-theme='cocooning']) .burst > span:nth-child(6n + 3) {
+  background: var(--sp-mint);
+}
+
+:global([data-theme='cocooning']) .burst > span:nth-child(6n + 4) {
+  background: var(--sp-blue);
+}
+
+:global([data-theme='cocooning']) .burst > span:nth-child(6n + 5) {
+  background: var(--sp-lilac);
+}
+
+:global([data-theme='cocooning']) .burst > span:nth-child(6n) {
+  background: var(--sp-orange);
+}
+
+:global([data-theme='cocooning']) .stars {
+  font-size: 3.4rem;
+}
+
+:global([data-theme='cocooning']) .star[data-on='true'] {
+  color: var(--sp-yellow);
+  text-shadow: 0 3px 0 color-mix(in srgb, var(--sp-orange) 70%, transparent);
+}
+
+:global([data-theme='cocooning']) .star:nth-child(2) {
+  font-size: 1.25em;
+}
+
+:global([data-theme='cocooning']) .star {
+  animation-timing-function: var(--bounce);
+}
+
+:global([data-theme='cocooning']) .endTitle,
+:global([data-theme='cocooning']) .endScore {
+  font-family: var(--font-fun);
+  font-weight: 650;
+}
+
+:global([data-theme='cocooning']) .endStats {
+  gap: 0.5rem 1rem;
+  font-family: var(--font-fun);
+}
+
+:global([data-theme='cocooning']) .endStats li {
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+}
+
+:global([data-theme='cocooning']) .again {
+  min-height: 3.4rem;
+  padding: 0 2rem;
+  font-size: 1.2rem;
+  animation: cocoWiggle 2.4s ease-in-out 1.2s infinite;
+}
+
+@keyframes cocoPlop {
+  from {
+    transform: scaleY(2.2);
+  }
+}
+
+@keyframes cocoPulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes cocoPopIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes cocoWiggle {
+  0%,
+  86%,
+  100% {
+    transform: rotate(0);
+  }
+  90% {
+    transform: rotate(-3deg);
+  }
+  95% {
+    transform: rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global([data-theme='cocooning']) .sprinkle[data-state='current'],
+  :global([data-theme='cocooning']) .again {
+    animation: none;
+  }
+}

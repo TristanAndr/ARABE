@@ -56,7 +56,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
+  :root:not([data-theme='light']):not([data-theme='cocooning']) {
     --bg: #151716;
     --bg-raised: #1c1f1d;
     --ink: #ebe6da;
@@ -221,4 +221,182 @@ kbd {
     transition-duration: 0ms !important;
     animation-duration: 0ms !important;
   }
+}
+
+/* ------------------------------------------------------------------------------------------
+ * Thème Cocooning : chocolat chaud liégeois, crème fouettée et vermicelles colorés, en version
+ * claire ou sombre (data-shade="dark").
+ * Les composants complètent ce thème avec des règles :global([data-theme='cocooning']).
+ * ------------------------------------------------------------------------------------------ */
+:root[data-theme='cocooning'] {
+  --bg: #fff5ea;
+  --bg-raised: #fffdf9;
+  --ink: #3a2219;
+  --ink-soft: #5e3d2e;
+  --muted: #9a7b68;
+  --rule: #f0dfcc;
+  --rule-strong: #dcc0a2;
+  --accent: #7b4a2e;
+  --accent-ink: #fff5ea;
+  --accent-soft: #f7e7d7;
+  --ok: #17a06e;
+  --ok-soft: #daf4e8;
+  --partial: #c97d00;
+  --error: #e0434b;
+  --error-soft: #ffe2e0;
+  --focus: #ff5d9e;
+
+  /* Vermicelles */
+  --sp-pink: #ff5d9e;
+  --sp-yellow: #ffc23a;
+  --sp-mint: #22c39a;
+  --sp-blue: #3f9cff;
+  --sp-lilac: #9b78ff;
+  --sp-orange: #ff8a3d;
+  --sp-pink-soft: #ffe1ee;
+  --sp-yellow-soft: #fff1c8;
+  --sp-blue-soft: #e0eeff;
+  --sp-lilac-soft: #ece5ff;
+
+  /* Chocolat de l'en-tête */
+  --choc: #4a2a1c;
+  --choc-deep: #331c12;
+  --cream: #fff5ea;
+
+  --font-fun: 'Fredoka Variable', 'Inter Variable', system-ui, sans-serif;
+  --radius: 22px;
+  --shadow: 0 1px 2px rgb(74 42 28 / 8%), 0 10px 28px -12px rgb(74 42 28 / 28%);
+  --bounce: cubic-bezier(0.3, 1.6, 0.5, 1);
+
+  --conj-pronoun: #d9363e;
+  --conj-stem: #3a2219;
+  --conj-affix: #13996a;
+  --conj-gloss: #2f6fcf;
+
+  color-scheme: light;
+}
+
+/* Cocooning sombre : chocolat chaud dans une tasse foncée. */
+:root[data-theme='cocooning'][data-shade='dark'] {
+  --bg: #1d120c;
+  --bg-raised: #2a1a12;
+  --ink: #f8eadb;
+  --ink-soft: #e2cbb5;
+  --muted: #b19480;
+  --rule: #3f2a1e;
+  --rule-strong: #5c4130;
+  --accent: #e3a873;
+  --accent-ink: #1d120c;
+  --accent-soft: #3c271b;
+  --ok: #4fdca8;
+  --ok-soft: #173a2c;
+  --partial: #ffc455;
+  --error: #ff7d82;
+  --error-soft: #401c1d;
+  --focus: #ff7db0;
+  --sp-pink: #ff7db0;
+  --sp-yellow: #ffcf5c;
+  --sp-mint: #4fdcb0;
+  --sp-blue: #6db3ff;
+  --sp-lilac: #b49bff;
+  --sp-orange: #ffa15e;
+  --sp-pink-soft: #45202f;
+  --sp-yellow-soft: #3f3213;
+  --sp-blue-soft: #1a2e48;
+  --sp-lilac-soft: #2d2348;
+  --choc: #2c180f;
+  --choc-deep: #120904;
+  --cream: #f8eadb;
+  --shadow: 0 1px 2px rgb(0 0 0 / 35%), 0 10px 28px -12px rgb(0 0 0 / 60%);
+  --conj-pronoun: #ff8a7f;
+  --conj-stem: #f8eadb;
+  --conj-affix: #5fe0ac;
+  --conj-gloss: #8cb9ff;
+  color-scheme: dark;
+}
+
+[data-theme='cocooning'][data-shade='dark'] body::before {
+  opacity: 0.1;
+}
+
+/* Vermicelles éparpillés sur la crème, très discrets. */
+[data-theme='cocooning'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><g stroke-linecap='round' stroke-width='5'><path stroke='%23ff5d9e' d='M20 30l12 -6'/><path stroke='%23ffc23a' d='M90 18l4 12'/><path stroke='%2322c39a' d='M150 40l-11 6'/><path stroke='%233f9cff' d='M40 95l10 8'/><path stroke='%239b78ff' d='M115 85l13 -2'/><path stroke='%23ff8a3d' d='M165 120l-4 12'/><path stroke='%23ff5d9e' d='M75 150l12 4'/><path stroke='%2322c39a' d='M15 160l6 -11'/><path stroke='%23ffc23a' d='M130 160l-12 -5'/></g></svg>");
+  opacity: 0.16;
+}
+
+[data-theme='cocooning'] ::selection {
+  background: var(--sp-pink-soft);
+}
+
+/* Boutons bonbons, qui s'enfoncent au clic. */
+[data-theme='cocooning'] .btn {
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0 1.5rem;
+  border-width: 2px;
+  border-radius: 999px;
+  font-family: var(--font-fun);
+  font-size: 1.02rem;
+  font-weight: 600;
+  transition:
+    background-color 120ms var(--ease),
+    color 120ms var(--ease),
+    border-color 120ms var(--ease),
+    box-shadow 120ms var(--ease),
+    transform 120ms var(--ease);
+}
+
+[data-theme='cocooning'] .btn-primary {
+  box-shadow: 0 4px 0 var(--choc-deep);
+}
+
+[data-theme='cocooning'] .btn-primary:hover:not(:disabled) {
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 var(--choc-deep);
+}
+
+[data-theme='cocooning'] .btn-primary:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--choc-deep);
+}
+
+[data-theme='cocooning'] .btn-primary:disabled {
+  box-shadow: 0 4px 0 var(--rule-strong);
+}
+
+[data-theme='cocooning'] .btn-secondary {
+  background: var(--bg-raised);
+  box-shadow: 0 4px 0 var(--rule-strong);
+}
+
+[data-theme='cocooning'] .btn-secondary:hover:not(:disabled) {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+[data-theme='cocooning'] .btn-secondary:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--rule-strong);
+}
+
+[data-theme='cocooning'] .btn-link {
+  min-height: auto;
+  padding: 0.25rem 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+[data-theme='cocooning'] .btn-link:hover {
+  color: var(--accent);
 }

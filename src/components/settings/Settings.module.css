@@ -448,3 +448,10 @@
     line-height: 1.25;
   }
 }
+
+/* Cocooning : titres en police ronde. */
+:global([data-theme='cocooning']) .title,
+:global([data-theme='cocooning']) .sectionTitle {
+  font-family: var(--font-fun);
+  font-weight: 650;
+}

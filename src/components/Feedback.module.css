@@ -136,3 +136,31 @@
     grid-column: 1 / -1;
   }
 }
+
+/* Cocooning : verdict en bandeau teinté. */
+:global([data-theme='cocooning']) .verdict {
+  padding: 0.7rem 1.1rem;
+  border-radius: 16px;
+  background: var(--error-soft);
+  font-family: var(--font-fun);
+  font-size: 1.7rem;
+  font-weight: 650;
+}
+
+:global([data-theme='cocooning']) .correct {
+  background: var(--ok-soft);
+}
+
+:global([data-theme='cocooning']) .partial {
+  background: var(--sp-yellow-soft);
+}
+
+:global([data-theme='cocooning']) .count {
+  font-family: var(--font-fun);
+}
+
+:global([data-theme='cocooning']) .wrongWord {
+  padding: 0 0.15em;
+  border-radius: 6px;
+  background: var(--error-soft);
+}

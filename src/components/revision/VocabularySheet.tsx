@@ -1,36 +1,25 @@
+import { Fragment } from 'react'
 import type { SpeechState } from '../../revision/speech'
 import type { VocabCategory } from '../../revision/vocabulary'
 import { SpeakButton } from './SpeakButton'
 import { SpokenWord } from './SpokenWord'
+import { FrenchWord } from './WordIcon'
 import styles from './Revision.module.css'
 import vocab from './Vocabulary.module.css'
 
 interface Props {
   category: VocabCategory
-  speech: SpeechState
+  canSpeak: boolean
 }
 
-export function VocabularySheet({ category, speech }: Props) {
-  const canSpeak = speech !== 'indisponible'
+/** Les mots du thème : français, puis chaque forme arabe avec son bouton d'écoute. */
+export function VocabularyTable({ category, canSpeak }: Props) {
   return (
-    <article className={styles.sheet} aria-labelledby="sheet-title">
-      <header className={styles.sheetHead}>
-        <p className={styles.kicker}>Fiche de révision · vocabulaire</p>
-        <h1 id="sheet-title" className={styles.title}>
-          {category.title}
-          <span className={`arabic ${styles.titleAr}`} lang="ar" dir="rtl">
-            {category.titleAr}
-          </span>
-        </h1>
-        <p className={styles.intro}>
-          <Mixed text={category.intro} />
-        </p>
-        <p className={vocab.legend}>
-          En gris clair, ce qui ne se prononce pas quand le mot est dit seul :{' '}
-          <SpokenWord text="مِشْمِشٌ" className={styles.inlineAr} /> se dit « mishmish ».
-        </p>
-        <SpeechNote speech={speech} />
-      </header>
+    <section className={vocab.words} aria-label={`Les mots : ${category.title.toLowerCase()}`}>
+      <p className={vocab.legend}>
+        En gris clair, ce qui ne se prononce pas quand le mot est dit seul :{' '}
+        <SpokenWord text="مِشْمِشٌ" className={styles.inlineAr} /> se dit « mishmish ».
+      </p>
 
       <table className={`${styles.table} ${vocab.table}`}>
         <thead className={vocab.head}>
@@ -45,38 +34,33 @@ export function VocabularySheet({ category, speech }: Props) {
         </thead>
         <tbody>
           {category.words.map((w) => (
-            <tr key={w.id} className={vocab.row} data-word={w.id}>
-              <td className={vocab.frCell}>
-                <span className={styles.translation}>
-                  {w.emoji && <Emoji symbol={w.emoji} />}
-                  {w.fr}
-                </span>
-                {w.note && (
-                  <span className={styles.grammar}>
-                    <Mixed text={w.note} />
+            <Fragment key={w.id}>
+              <tr className={vocab.row} data-word={w.id} data-noted={w.note ? true : undefined}>
+                <td className={vocab.frCell}>
+                  <span className={styles.translation}>
+                    <FrenchWord word={w} />
                   </span>
-                )}
-              </td>
-              {[w.ar, ...(w.others ?? [])].map((ar, i) => (
-                <td key={i} className={vocab.arCell}>
-                  <span className={vocab.cellLabel}>{category.columns[i]}</span>
-                  <Word text={ar} canSpeak={canSpeak} />
                 </td>
-              ))}
-            </tr>
+                {[w.ar, ...(w.others ?? [])].map((ar, i) => (
+                  <td key={i} className={vocab.arCell}>
+                    <span className={vocab.cellLabel}>{category.columns[i]}</span>
+                    <Word text={ar} canSpeak={canSpeak} />
+                  </td>
+                ))}
+              </tr>
+              {w.note && (
+                // La précision court sous toute la ligne : la colonne française reste étroite.
+                <tr className={vocab.noteRow}>
+                  <td colSpan={category.columns.length + 1}>
+                    <Mixed text={w.note} />
+                  </td>
+                </tr>
+              )}
+            </Fragment>
           ))}
         </tbody>
       </table>
-    </article>
-  )
-}
-
-/** Emoji décoratif : le mot français suffit aux lecteurs d'écran. */
-export function Emoji({ symbol, className }: { symbol: string; className?: string }) {
-  return (
-    <span className={`${vocab.emoji} ${className ?? ''}`} aria-hidden="true">
-      {symbol}
-    </span>
+    </section>
   )
 }
 
@@ -90,7 +74,7 @@ function Word({ text, canSpeak }: { text: string; canSpeak: boolean }) {
 }
 
 /** Texte français contenant des mots arabes : chaque mot arabe est isolé et grossi. */
-function Mixed({ text }: { text: string }) {
+export function Mixed({ text }: { text: string }) {
   return (
     <>
       {text.split(/([؀-ۿ]+)/).map((part, i) =>

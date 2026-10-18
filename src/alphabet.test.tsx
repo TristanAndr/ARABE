@@ -40,7 +40,7 @@ describe('section Alphabet', () => {
     expect(screen.getByText(/de droite à gauche/)).toBeTruthy()
     await user.click(screen.getByRole('button', { name: 'Lecture' }))
     expect(await screen.findByLabelText('Transcription')).toBeTruthy()
-    await user.click(screen.getByRole('button', { name: 'Révision' }))
+    await user.click(screen.getByRole('button', { name: 'Conjugaison' }))
     expect(screen.getByRole('heading', { level: 1, name: /Le présent/ })).toBeTruthy()
   })
 
@@ -94,7 +94,7 @@ describe('section Alphabet', () => {
     expect(within(b as HTMLElement).queryByLabelText('n’existe pas')).toBeNull()
   })
 
-  it('entraînement : une lettre tout de suite, réponse masquée, « Suivant » seulement après la réponse', async () => {
+  it('entraînement : une lettre tout de suite, réponse masquée, « Je savais » seulement après la réponse', async () => {
     const user = userEvent.setup()
     await openTraining(user)
     expect(screen.getByRole('heading', { level: 1, name: /L’alphabet arabe/ })).toBeTruthy()
@@ -102,8 +102,8 @@ describe('section Alphabet', () => {
     const card = cardOf(shownForm())
     expect(screen.getByTestId('flashcard-letter').getAttribute('dir')).toBe('rtl')
     expect(screen.queryByRole('region', { name: 'Réponse' })).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Suivant' })).toBeNull()
-    // Ni score ni fin de série.
+    expect(screen.queryByRole('button', { name: 'Je savais' })).toBeNull()
+    // Points et série, mais ni nombre de questions ni fin de partie.
     expect(screen.queryByText(/sur 10|Correctes|Question \d/)).toBeNull()
 
     await user.click(screen.getByRole('button', { name: 'Afficher la réponse' }))
@@ -113,7 +113,8 @@ describe('section Alphabet', () => {
     expect(answer.textContent).toMatch(/Forme (isolée|initiale|médiane|finale)/)
     expect(screen.queryByRole('button', { name: 'Afficher la réponse' })).toBeNull()
 
-    await user.click(screen.getByRole('button', { name: 'Suivant' }))
+    await user.click(screen.getByRole('button', { name: 'Je savais' }))
+    expect(screen.getByText(/10 pts/)).toBeTruthy()
     expect(screen.queryByRole('region', { name: 'Réponse' })).toBeNull()
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Afficher la réponse' }))
   })
@@ -125,7 +126,7 @@ describe('section Alphabet', () => {
     for (let i = 0; i < 40; i++) {
       await user.click(screen.getByRole('button', { name: 'Afficher la réponse' }))
       expect(screen.getByRole('region', { name: 'Réponse' }).textContent).toContain(previous.letter.name)
-      // Le focus est sur « Suivant » : Entrée passe à la carte suivante.
+      // Le focus est sur « Je savais » : Entrée passe à la carte suivante.
       await user.keyboard('{Enter}')
       const card = cardOf(shownForm())
       expect(card.letter === previous.letter && card.position === previous.position).toBe(false)

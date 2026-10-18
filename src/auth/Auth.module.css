@@ -125,3 +125,9 @@
   color: var(--muted);
   font-size: 0.95rem;
 }
+
+/* Cocooning : titres en police ronde. */
+:global([data-theme='cocooning']) .title {
+  font-family: var(--font-fun);
+  font-weight: 650;
+}

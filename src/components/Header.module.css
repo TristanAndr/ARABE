@@ -71,13 +71,15 @@
   color: var(--muted);
 }
 
-@media (max-width: 36rem) {
+@media (max-width: 54rem) {
   .inner {
     flex-wrap: wrap;
   }
   .nav {
     order: 3;
     flex-basis: 100%;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
   }
 }
 
@@ -99,4 +101,121 @@
 
 .sync[data-status='pending'] {
   color: var(--partial);
+}
+
+/* Cocooning : bandeau chocolat, frise de vermicelles, pastilles crème. */
+:global([data-theme='cocooning']) .header {
+  position: relative;
+  border-bottom: 0;
+  background: linear-gradient(180deg, var(--choc), var(--choc-deep));
+  color: var(--cream);
+}
+
+:global([data-theme='cocooning']) .header::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 -6px;
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--sp-pink) 0 14px,
+    transparent 14px 20px,
+    var(--sp-yellow) 20px 34px,
+    transparent 34px 40px,
+    var(--sp-mint) 40px 54px,
+    transparent 54px 60px,
+    var(--sp-blue) 60px 74px,
+    transparent 74px 80px,
+    var(--sp-lilac) 80px 94px,
+    transparent 94px 100px,
+    var(--sp-orange) 100px 114px,
+    transparent 114px 120px
+  );
+}
+
+:global([data-theme='cocooning']) .inner {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.25rem;
+  max-width: calc(var(--measure) + 18rem + 2 * var(--gutter));
+  padding-block: 0.75rem;
+}
+
+:global([data-theme='cocooning']) .brand {
+  font-family: var(--font-fun);
+  font-size: 1.5rem;
+  font-weight: 650;
+  color: var(--cream);
+}
+
+:global([data-theme='cocooning']) .brandAr {
+  color: var(--sp-yellow);
+}
+
+:global([data-theme='cocooning']) .nav {
+  gap: 0.35rem;
+}
+
+:global([data-theme='cocooning']) .navItem {
+  padding: 0.4rem 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--cream) 78%, transparent);
+  font-family: var(--font-fun);
+  font-size: 0.98rem;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+:global([data-theme='cocooning']) .navItem:hover {
+  color: var(--cream);
+  background: color-mix(in srgb, var(--cream) 12%, transparent);
+}
+
+:global([data-theme='cocooning']) .navItem[aria-current='page'] {
+  color: var(--choc);
+  background: var(--cream);
+}
+
+:global([data-theme='cocooning']) .navItem[data-section='exercise']::before {
+  content: '📖 ';
+  content: '📖 ' / '';
+}
+
+:global([data-theme='cocooning']) .navItem[data-section='vocabulaire']::before {
+  content: '🍓 ';
+  content: '🍓 ' / '';
+}
+
+:global([data-theme='cocooning']) .navItem[data-section='conjugaison']::before {
+  content: '🧠 ';
+  content: '🧠 ' / '';
+}
+
+:global([data-theme='cocooning']) .navItem[data-section='alphabet']::before {
+  content: '✍️ ';
+  content: '✍️ ' / '';
+}
+
+:global([data-theme='cocooning']) .meta {
+  align-items: center;
+}
+
+:global([data-theme='cocooning']) .meta :global(.btn-link) {
+  color: color-mix(in srgb, var(--cream) 85%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--cream) 35%, transparent);
+}
+
+:global([data-theme='cocooning']) .meta :global(.btn-link):hover {
+  color: var(--sp-yellow);
+}
+
+:global([data-theme='cocooning']) .progress {
+  white-space: nowrap;
+  color: var(--cream);
+}
+
+:global([data-theme='cocooning']) .of,
+:global([data-theme='cocooning']) .sync {
+  color: color-mix(in srgb, var(--cream) 60%, transparent);
 }

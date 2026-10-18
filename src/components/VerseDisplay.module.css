@@ -38,3 +38,16 @@
   font-size: 1rem;
   margin-inline-start: 0.4rem;
 }
+
+/* Cocooning : le verset sur une carte crème. */
+:global([data-theme='cocooning']) .figure {
+  margin-top: 1rem;
+  padding: 0.5rem clamp(1rem, 4vw, 2rem) 1.5rem;
+  background:
+    radial-gradient(circle at 10% 10%, var(--sp-yellow-soft), transparent 45%),
+    radial-gradient(circle at 92% 92%, var(--sp-pink-soft), transparent 45%),
+    var(--bg-raised);
+  border: 2px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 0 var(--rule);
+}
