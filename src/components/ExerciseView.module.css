@@ -4,6 +4,49 @@
   flex-direction: column;
 }
 
+/* Place dans la série, au-dessus du verset. */
+.series {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.seriesText {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.seriesOf {
+  color: var(--muted);
+}
+
+.seriesTrack {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.seriesFill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 240ms var(--ease);
+}
+
+:global([data-theme='cocooning']) .seriesTrack {
+  height: 8px;
+  border-radius: 999px;
+}
+
+:global([data-theme='cocooning']) .seriesFill {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--sp-pink), var(--sp-yellow), var(--sp-mint), var(--sp-blue), var(--sp-lilac));
+}
+
 .form {
   margin-top: clamp(2rem, 5vh, 3rem);
 }

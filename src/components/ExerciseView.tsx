@@ -22,6 +22,8 @@ interface Props {
   nextLabel?: string
   /** Faux à la fin du Coran : plus de suite. */
   canNext?: boolean
+  /** Place dans la série de phrases (absente en mode verset). */
+  step?: { position: number; total: number }
 }
 
 export function ExerciseView({
@@ -34,6 +36,7 @@ export function ExerciseView({
   toolbar,
   nextLabel = 'Phrase suivante',
   canNext = true,
+  step,
 }: Props) {
   const [answer, setAnswer] = useState('')
   // Dernière réponse vérifiée : le résultat est recalculé si les réglages changent.
@@ -67,6 +70,7 @@ export function ExerciseView({
   return (
     <article className={styles.exercise}>
       {toolbar}
+      {step && <SeriesProgress {...step} />}
       <VerseDisplay exercise={exercise} />
 
       <form className={styles.form} onSubmit={check} noValidate>
@@ -102,5 +106,19 @@ export function ExerciseView({
         {sessionCorrect > 1 ? 's' : ''} du premier coup
       </footer>
     </article>
+  )
+}
+
+/** « Phrase 3 sur 35 » et une fine barre, juste au-dessus du verset. */
+function SeriesProgress({ position, total }: { position: number; total: number }) {
+  return (
+    <div className={styles.series}>
+      <p className={styles.seriesText} aria-live="polite">
+        Phrase {position} <span className={styles.seriesOf}>sur</span> {total}
+      </p>
+      <div className={styles.seriesTrack} aria-hidden="true">
+        <div className={styles.seriesFill} style={{ width: `${(100 * position) / total}%` }} />
+      </div>
+    </div>
   )
 }

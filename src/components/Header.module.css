@@ -62,16 +62,9 @@
   font-size: 0.9rem;
 }
 
-.progress {
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
-}
 
-.of {
-  color: var(--muted);
-}
 
-@media (max-width: 54rem) {
+@media (max-width: 46rem) {
   .inner {
     flex-wrap: wrap;
   }
@@ -210,12 +203,7 @@
   color: var(--sp-yellow);
 }
 
-:global([data-theme='cocooning']) .progress {
-  white-space: nowrap;
-  color: var(--cream);
-}
 
-:global([data-theme='cocooning']) .of,
 :global([data-theme='cocooning']) .sync {
   color: color-mix(in srgb, var(--cream) 60%, transparent);
 }

@@ -109,8 +109,6 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   return (
     <div className={styles.shell}>
       <Header
-        position={sessionExercise && !verse ? index + 1 : null}
-        total={order.length}
         view={view}
         syncStatus={syncStatus}
         onNavigate={(next) => {
@@ -177,6 +175,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
             nextLabel={verse ? 'Verset suivant' : 'Phrase suivante'}
             canNext={verse ? next(verse) !== null : true}
             toolbar={toolbar}
+            step={verse ? undefined : { position: index + 1, total: order.length }}
           />
         ) : (
           <>

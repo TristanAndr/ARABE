@@ -6,8 +6,6 @@ export type View = 'exercise' | 'vocabulaire' | 'conjugaison' | 'alphabet' | 'se
 interface Props {
   /** Sans `view`, en-tête réduit à la marque (écrans de connexion, chargement). */
   view?: View
-  position?: number | null
-  total?: number
   onNavigate?: (view: View) => void
   syncStatus?: SyncStatus
 }
@@ -24,7 +22,7 @@ const SYNC_HINT: Partial<Record<SyncStatus, string>> = {
   pending: 'Non enregistré',
 }
 
-export function Header({ view, position = null, total = 0, onNavigate, syncStatus = 'saved' }: Props) {
+export function Header({ view, onNavigate, syncStatus = 'saved' }: Props) {
   const main = view !== undefined && view !== 'settings' && view !== 'account'
   return (
     <header className={styles.header}>
@@ -54,11 +52,6 @@ export function Header({ view, position = null, total = 0, onNavigate, syncStatu
             {SYNC_HINT[syncStatus] && (
               <span className={styles.sync} data-status={syncStatus} role="status">
                 {SYNC_HINT[syncStatus]}
-              </span>
-            )}
-            {view === 'exercise' && position !== null && (
-              <span className={styles.progress} aria-live="polite">
-                Phrase {position} <span className={styles.of}>sur</span> {total}
               </span>
             )}
             {main && onNavigate && (
