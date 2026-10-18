@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { cleanup, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { EXERCISES } from './data/corpus'
 import { formsForVerb, FORMS, grammarLabel, pronounLabel, verbOf } from './revision/conjugation'
+import { FRUITS } from './revision/vocabulary'
 import { createEnv } from './test/env'
 
 let env: ReturnType<typeof createEnv>
@@ -206,6 +207,41 @@ describe('révision', () => {
     await user.click(radio)
     await user.click(screen.getByRole('button', { name: 'Valider' }))
     expect(screen.getByRole('status', { name: 'Résultat' }).textContent).toContain('Juste.')
+  })
+
+  it('catégorie fruits : fiche avec écoute de chaque mot, et entraînement', async () => {
+    const speak = vi.fn()
+    const synth = { speak, cancel: vi.fn(), getVoices: () => [{ lang: 'ar-SA' }], addEventListener: vi.fn(), removeEventListener: vi.fn() }
+    vi.stubGlobal('speechSynthesis', synth)
+    vi.stubGlobal('SpeechSynthesisUtterance', class { lang = ''; voice = null; rate = 1; constructor(public text: string) {} })
+    try {
+      const user = userEvent.setup()
+      await openRevision(user)
+      await user.click(screen.getByRole('button', { name: 'Les fruits' }))
+      expect(screen.getByRole('heading', { level: 1, name: /Les fruits/ })).toBeTruthy()
+      expect(document.querySelectorAll('tr[data-word]')).toHaveLength(FRUITS.words.length)
+
+      await user.click(screen.getByRole('button', { name: 'Écouter تُفَّاحَةٌ' }))
+      expect(speak).toHaveBeenCalledTimes(1)
+      expect(speak.mock.calls[0]![0].text).toBe('تُفَّاحَةٌ')
+
+      // Mode « Retrouver le mot arabe » : on choisit le mot de la fiche qui correspond au français affiché.
+      const fr = document.querySelector('[class*="promptFrBig"]')!.textContent!
+      const word = FRUITS.words.find((w) => w.fr === fr)!
+      await user.click((screen.getAllByRole('radio') as HTMLInputElement[]).find((r) => r.value === word.id)!)
+      await user.click(screen.getByRole('button', { name: 'Valider' }))
+      expect(screen.getByRole('status', { name: 'Résultat' }).textContent).toContain('Juste.')
+
+      // La catégorie est conservée en passant par les paramètres.
+      await user.click(screen.getByRole('button', { name: 'Paramètres' }))
+      await user.click(screen.getByRole('button', { name: 'Retour à la révision' }))
+      expect(screen.getByRole('heading', { level: 1, name: /Les fruits/ })).toBeTruthy()
+
+      await user.click(screen.getByRole('button', { name: 'Les couleurs' }))
+      expect(document.querySelector('tr[data-word="rouge"]')!.textContent).toContain('حَمْرَاءُ')
+    } finally {
+      vi.unstubAllGlobals()
+    }
   })
 })
 

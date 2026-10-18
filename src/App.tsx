@@ -8,7 +8,7 @@ import { useQuranText } from './quran/useQuranText'
 import { AccountView } from './components/AccountView'
 import { ExerciseView } from './components/ExerciseView'
 import { Header, type View } from './components/Header'
-import { RevisionView } from './components/revision/RevisionView'
+import { RevisionView, type RevisionCategory } from './components/revision/RevisionView'
 import { SessionEnd } from './components/SessionEnd'
 import { SettingsView } from './components/settings/SettingsView'
 import { EXERCISES } from './data/corpus'
@@ -58,6 +58,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   const revision = useRevisionPrefs(initial.revision, savers.revision)
   const [sessions, setSessions] = useState<ConjugationSessionRecord[]>(initial.conjugationSessions)
   const [view, setView] = useState<View>('exercise')
+  const [revisionCategory, setRevisionCategory] = useState<RevisionCategory>('present')
   // Section à retrouver en quittant les paramètres ou le compte.
   const [section, setSection] = useState<Section>('exercise')
   const spellings = useMemo(() => resolveSpellings(settings), [settings])
@@ -132,6 +133,8 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
           <AlphabetView spellings={spellings} />
         ) : view === 'revision' ? (
           <RevisionView
+            category={revisionCategory}
+            onCategory={setRevisionCategory}
             prefs={revision.prefs}
             onPrefs={revision.update}
             sessions={sessions}

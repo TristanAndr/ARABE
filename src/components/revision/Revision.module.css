@@ -1,5 +1,37 @@
 /* Fiche de conjugaison : liste à filets, sans cartes, typographie de manuel. */
 
+/* Choix de la catégorie de révision */
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.category {
+  padding: 0.45rem 0;
+  margin-bottom: -1px;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition:
+    color 120ms var(--ease),
+    border-color 120ms var(--ease);
+}
+
+.category:hover {
+  color: var(--ink);
+}
+
+.category[aria-pressed='true'] {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
 .sheet {
   padding-top: clamp(2rem, 6vh, 4rem);
 }
