@@ -89,6 +89,8 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
       const check: VerbCheck =
         method === 'saisie' ? checkVerb(typed, question.expected) : choice === question.expected ? 'correct' : 'wrong'
       result = { correct: check === 'correct', vowelsOnly: check === 'vowels', given: answer }
+    } else if (question.kind === 'pronom-arabe') {
+      result = { correct: choice === question.expected, given: choice }
     } else {
       const chosen = FORMS.find((f) => f.id === choice)!
       result = { correct: checkPronoun(chosen, question.verb), given: choice }
@@ -96,7 +98,7 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
     setOutcomes((o) => [...o, result])
     onAttempt({
       mode: question.kind,
-      prompt: question.kind === 'verbe' ? question.form.id : question.verb,
+      prompt: question.kind === 'pronom' ? question.verb : question.form.id,
       answer: result.given,
       correct: result.correct,
     })
@@ -158,6 +160,9 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
           <ModeButton active={prefs.mode === 'pronom'} onClick={() => changeMode('pronom')}>
             Retrouver le pronom
           </ModeButton>
+          <ModeButton active={prefs.mode === 'pronom-arabe'} onClick={() => changeMode('pronom-arabe')}>
+            Dire le pronom en arabe
+          </ModeButton>
         </div>
         {prefs.mode === 'verbe' && (
           <div className={styles.switch} role="group" aria-label="Façon de répondre">
@@ -200,6 +205,14 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
               typed={typed}
               onTyped={setTyped}
               onInsert={insert}
+              outcome={outcome}
+              fieldRef={firstField}
+            />
+          ) : question.kind === 'pronom-arabe' ? (
+            <ArabicPronounQuestion
+              question={question}
+              choice={choice}
+              onChoice={setChoice}
               outcome={outcome}
               fieldRef={firstField}
             />
@@ -445,6 +458,53 @@ function PronounQuestion({
   )
 }
 
+function ArabicPronounQuestion({
+  question,
+  choice,
+  onChoice,
+  outcome,
+  fieldRef,
+}: {
+  question: Extract<Question, { kind: 'pronom-arabe' }>
+  choice: string
+  onChoice: (p: string) => void
+  outcome: Outcome | undefined
+  fieldRef: RefObject<HTMLInputElement | null>
+}) {
+  const { form } = question
+  return (
+    <>
+      <div className={styles.prompt}>
+        <p className={styles.promptLabel}>Comment dit-on ce pronom en arabe ?</p>
+        <p className={styles.promptFrBig}>{pronounLabel(form)}</p>
+        <p className={styles.promptFr}>
+          <span className={styles.muted}>{grammarLabel(form)}</span>
+        </p>
+      </div>
+
+      <fieldset className={`${styles.options} ${styles.verbGrid}`}>
+        <legend className="visually-hidden">Pronoms proposés</legend>
+        {question.options.map((p, i) => (
+          <label key={p} className={styles.option} data-state={optionState(outcome, p === choice, p === question.expected)}>
+            <input
+              ref={i === 0 ? fieldRef : undefined}
+              type="radio"
+              name="arabic-pronoun"
+              value={p}
+              checked={choice === p}
+              disabled={!!outcome}
+              onChange={() => onChoice(p)}
+            />
+            <span className={`arabic ${styles.optionAr} ${styles.pronoun}`} lang="ar" dir="rtl">
+              {p}
+            </span>
+          </label>
+        ))}
+      </fieldset>
+    </>
+  )
+}
+
 /** État visuel d'une option après validation : réponse attendue, erreur choisie, ou neutre. */
 function optionState(outcome: Outcome | undefined, chosen: boolean, right: boolean): string | undefined {
   if (!outcome) return chosen ? 'chosen' : undefined
@@ -454,12 +514,20 @@ function optionState(outcome: Outcome | undefined, chosen: boolean, right: boole
 }
 
 function OutcomeView({ question, outcome }: { question: Question; outcome: Outcome }) {
-  const forms: ConjugatedForm[] = question.kind === 'verbe' ? [question.form] : formsForVerb(question.verb)
+  const forms: ConjugatedForm[] = question.kind === 'pronom' ? formsForVerb(question.verb) : [question.form]
   return (
     <div className={styles.outcome} role="status" aria-label="Résultat">
       <p className={outcome.correct ? styles.right : styles.wrong}>
         {outcome.correct ? 'Juste.' : outcome.vowelsOnly ? 'Presque : les lettres sont justes, pas les voyelles.' : 'Pas tout à fait.'}
       </p>
+      {question.kind === 'pronom-arabe' && !outcome.correct && outcome.given && (
+        <p className={styles.given}>
+          Ta réponse :{' '}
+          <span className="arabic" lang="ar" dir="rtl">
+            {outcome.given}
+          </span>
+        </p>
+      )}
       {question.kind === 'verbe' && !outcome.correct && outcome.given && (
         <p className={styles.given}>
           Ta réponse :{' '}
@@ -469,7 +537,9 @@ function OutcomeView({ question, outcome }: { question: Question; outcome: Outco
         </p>
       )}
       <p className={styles.expectedLabel}>
-        {question.kind === 'verbe'
+        {question.kind === 'pronom-arabe'
+          ? 'Pronom attendu'
+          : question.kind === 'verbe'
           ? 'Forme attendue'
           : forms.length > 1
             ? 'Pronoms possibles'
@@ -478,8 +548,19 @@ function OutcomeView({ question, outcome }: { question: Question; outcome: Outco
       <ul className={styles.expected}>
         {forms.map((f) => (
           <li key={f.id}>
-            <ConjugatedPhrase form={f} className={styles.expectedAr} />
-            <span className={styles.expectedFr}>{f.translation}{f.pronounNote ? ` (${f.pronounNote})` : ''}</span>
+            {question.kind === 'pronom-arabe' ? (
+              <>
+                <span className={`arabic ${styles.expectedAr} ${styles.pronoun}`} lang="ar" dir="rtl">
+                  {f.pronoun}
+                </span>
+                <span className={styles.expectedFr}>{pronounLabel(f)}</span>
+              </>
+            ) : (
+              <>
+                <ConjugatedPhrase form={f} className={styles.expectedAr} />
+                <span className={styles.expectedFr}>{f.translation}{f.pronounNote ? ` (${f.pronounNote})` : ''}</span>
+              </>
+            )}
           </li>
         ))}
       </ul>

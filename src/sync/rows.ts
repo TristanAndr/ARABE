@@ -56,7 +56,7 @@ export function settingsFromRow(row: SettingsRow | null): { settings: Settings |
 }
 
 export function sessionFromRow(row: SessionRow): ConjugationSessionRecord | null {
-  if (row.mode !== 'verbe' && row.mode !== 'pronom') return null
+  if (row.mode !== 'verbe' && row.mode !== 'pronom' && row.mode !== 'pronom-arabe') return null
   return {
     mode: row.mode,
     method: row.method === 'saisie' ? 'saisie' : 'choix',

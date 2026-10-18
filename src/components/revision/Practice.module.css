@@ -130,6 +130,12 @@
   font-size: 1rem;
 }
 
+.promptFrBig {
+  margin: 0.75rem 0 0.25rem;
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  color: var(--conj-gloss);
+}
+
 /* Options : rangées à filets, la sélection se lit par la couleur du trait. */
 .options {
   margin: 2rem 0 0;

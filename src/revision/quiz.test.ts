@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { distinctVerbs, FORMS, formsForVerb, verbOf } from './conjugation'
-import { buildSession, shuffle, verbOptions } from './quiz'
+import { buildSession, distinctPronouns, pronounOptions, shuffle, verbOptions } from './quiz'
 
 /** Générateur déterministe pour des tests reproductibles. */
 function seeded(seed: number) {
@@ -40,6 +40,32 @@ describe('sessions', () => {
     const f = FORMS.find((x) => x.id === '3mp')! // يَفْعَلُونَ
     const opts = verbOptions(f, seeded(3)).filter((o) => o !== verbOf(f))
     expect(opts.every((o) => o.startsWith('يَ') || o.endsWith('ونَ'))).toBe(true)
+  })
+
+  it('mode pronom arabe : une question par forme, le pronom arabe de la fiche est attendu', () => {
+    const qs = buildSession('pronom-arabe', seeded(5))
+    expect(qs).toHaveLength(FORMS.length)
+    for (const q of qs) {
+      if (q.kind !== 'pronom-arabe') throw new Error()
+      expect(q.expected).toBe(q.form.pronoun)
+      expect(q.options).toHaveLength(4)
+      expect(new Set(q.options).size).toBe(4)
+      expect(q.options.filter((o) => o === q.expected)).toHaveLength(1)
+      for (const o of q.options) expect(distinctPronouns()).toContain(o)
+    }
+  })
+
+  it('12 pronoms arabes distincts pour 14 formes', () => {
+    expect(distinctPronouns()).toHaveLength(12)
+  })
+
+  it('options de pronoms : les rivaux partagent en priorité la personne ou le nombre', () => {
+    const f = FORMS.find((x) => x.id === '2mp')! // أَنْتُمْ
+    const opts = pronounOptions(f, seeded(6)).filter((o) => o !== f.pronoun)
+    for (const o of opts) {
+      const other = FORMS.find((x) => x.pronoun === o)!
+      expect(other.person === 2 || other.number === 'pluriel').toBe(true)
+    }
   })
 
   it('shuffle conserve les éléments', () => {

@@ -14,7 +14,7 @@ export const DEFAULT_REVISION_PREFS: RevisionPrefs = { mode: 'verbe', method: 'c
 export function sanitizeRevisionPrefs(raw: unknown): RevisionPrefs | null {
   if (!isRecord(raw)) return null
   return {
-    mode: raw.mode === 'pronom' ? 'pronom' : 'verbe',
+    mode: raw.mode === 'pronom' || raw.mode === 'pronom-arabe' ? raw.mode : 'verbe',
     method: raw.method === 'saisie' ? 'saisie' : 'choix',
   }
 }

@@ -98,6 +98,8 @@ Dans l'ordre, chacune une seule fois :
 2. `supabase/migrations/20261010120000_alphabet_progress.sql` : table de l'ancien suivi de l'alphabet. Elle
    n'est plus lue ni écrite par l'application ; elle est conservée pour ne pas effacer les données déjà
    enregistrées. Inutile de l'appliquer sur un nouveau projet.
+3. `supabase/migrations/20261018120000_pronoun_mode.sql` : autorise le mode de révision « Dire le pronom en
+   arabe » dans les tables de conjugaison.
 
 - **Par le dashboard** : **SQL Editor → New query**, coller tout le fichier, **Run**.
 - **Ou par la CLI Supabase** : `npx supabase login`, `npx supabase link --project-ref <ref>`, `npx supabase db push`.

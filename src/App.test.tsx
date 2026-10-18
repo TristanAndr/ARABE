@@ -3,7 +3,7 @@ import { cleanup, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { EXERCISES } from './data/corpus'
-import { formsForVerb, FORMS, grammarLabel, verbOf } from './revision/conjugation'
+import { formsForVerb, FORMS, grammarLabel, pronounLabel, verbOf } from './revision/conjugation'
 import { createEnv } from './test/env'
 
 let env: ReturnType<typeof createEnv>
@@ -193,6 +193,19 @@ describe('révision', () => {
     await user.click(screen.getByRole('button', { name: 'Recommencer' }))
     expect(screen.getByText(/Correctes :/).textContent).toContain('0 / 0')
     expect(screen.getByText(/Question 1/)).toBeTruthy()
+  })
+
+  it('mode pronom arabe : le pronom arabe correspondant est jugé juste', async () => {
+    const user = userEvent.setup()
+    await openRevision(user)
+    await user.click(screen.getByRole('button', { name: 'Dire le pronom en arabe' }))
+    const label = document.querySelector('[class*="promptFrBig"]')!.textContent!
+    const grammar = document.querySelector('[class*="promptFr"]:not([class*="promptFrBig"])')!.textContent!
+    const form = FORMS.find((f) => pronounLabel(f) === label && grammarLabel(f) === grammar)!
+    const radio = (screen.getAllByRole('radio') as HTMLInputElement[]).find((r) => r.value === form.pronoun)!
+    await user.click(radio)
+    await user.click(screen.getByRole('button', { name: 'Valider' }))
+    expect(screen.getByRole('status', { name: 'Résultat' }).textContent).toContain('Juste.')
   })
 })
 
