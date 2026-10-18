@@ -34,6 +34,7 @@
 .counters {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   align-items: baseline;
   gap: 0.25rem 1.25rem;
   min-height: 1.6rem;

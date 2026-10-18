@@ -1,28 +1,21 @@
-/* Flashcard : une fiche cartonnée au filet, qui pivote quand on la retourne. */
+/* Flashcard : comme l'entraînement de l'alphabet, la question et un grand mot au centre, sans cadre. Elle pivote quand on la retourne. */
 .stage {
   position: relative;
 }
 
 .card {
-  margin-top: 2.25rem;
-  min-height: 15rem;
+  margin-top: 1rem;
+  min-height: 17rem;
   padding: 1.5rem 1.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid var(--rule-strong);
-  border-radius: 4px;
-  background: var(--bg-raised);
   text-align: center;
   animation: flip 260ms var(--ease);
 }
 
 .card[data-side='recto'] {
   cursor: pointer;
-}
-
-.card[data-side='verso'] {
-  border-color: var(--accent);
 }
 
 .face {
@@ -36,13 +29,13 @@
 }
 
 .big {
-  font-size: clamp(2.6rem, 8vw, 3.4rem);
+  font-size: clamp(3.2rem, 11vw, 4.6rem);
   line-height: 2.1;
 }
 
 .bigFr {
   font-family: var(--font-text);
-  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-size: clamp(2.2rem, 7vw, 3rem);
   color: var(--conj-gloss);
 }
 

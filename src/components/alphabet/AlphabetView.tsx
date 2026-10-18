@@ -23,7 +23,6 @@ export function AlphabetView({ spellings }: Props) {
   return (
     <article className={styles.alphabet} aria-labelledby="alphabet-title">
       <header>
-        <p className={styles.kicker}>Fiche · écriture</p>
         <h1 id="alphabet-title" className={styles.title}>
           L’alphabet arabe
           <span className={`arabic ${styles.titleAr}`} lang="ar" dir="rtl">
