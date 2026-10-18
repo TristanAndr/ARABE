@@ -10,10 +10,10 @@ import styles from './Revision.module.css'
 
 export type RevisionCategory = 'present' | 'fruits' | 'couleurs'
 
-const CATEGORIES: { id: RevisionCategory; label: string }[] = [
-  { id: 'present', label: 'Le présent' },
-  { id: 'fruits', label: 'Les fruits' },
-  { id: 'couleurs', label: 'Les couleurs' },
+const CATEGORIES: { id: RevisionCategory; label: string; emoji: string }[] = [
+  { id: 'present', label: 'Le présent', emoji: '⏳' },
+  { id: 'fruits', label: 'Les fruits', emoji: '🍓' },
+  { id: 'couleurs', label: 'Les couleurs', emoji: '🎨' },
 ]
 
 interface Props {
@@ -40,6 +40,7 @@ export function RevisionView({ category, onCategory, ...props }: Props) {
             aria-pressed={category === c.id}
             onClick={() => onCategory(c.id)}
           >
+            <span aria-hidden="true">{c.emoji} </span>
             {c.label}
           </button>
         ))}

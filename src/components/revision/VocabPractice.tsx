@@ -4,6 +4,7 @@ import { buildVocabSession, type VocabMode, type VocabQuestion } from '../../rev
 import type { VocabCategory, VocabWord } from '../../revision/vocabulary'
 import { SpeakButton } from './SpeakButton'
 import { SpokenWord } from './SpokenWord'
+import { Emoji } from './VocabularySheet'
 import styles from './Practice.module.css'
 import vocab from './Vocabulary.module.css'
 
@@ -135,7 +136,12 @@ export function VocabPractice({ category, speech }: Props) {
         <form className={styles.form} onSubmit={submit} onKeyDown={onKeyDown} noValidate>
           <div className={styles.prompt}>
             <p className={styles.promptLabel}>{current.prompt}</p>
-            {mode === 'fr-ar' && <p className={styles.promptFrBig}>{question.word.fr}</p>}
+            {mode === 'fr-ar' && (
+              <>
+                {question.word.emoji && <Emoji symbol={question.word.emoji} className={vocab.emojiBig} />}
+                <p className={styles.promptFrBig}>{question.word.fr}</p>
+              </>
+            )}
             {mode === 'ar-fr' && (
               <p className={styles.promptAr}>
                 <SpokenWord text={question.word.ar} />
@@ -167,7 +173,10 @@ export function VocabPractice({ category, speech }: Props) {
                   {arabicOptions ? (
                     <SpokenWord text={w.ar} className={styles.optionAr} />
                   ) : (
-                    <span className={vocab.optionFr}>{w.fr}</span>
+                    <span className={vocab.optionFr}>
+                      {w.emoji && <Emoji symbol={w.emoji} />}
+                      {w.fr}
+                    </span>
                   )}
                 </label>
               )
@@ -196,7 +205,7 @@ export function VocabPractice({ category, speech }: Props) {
           </p>
           <p className={styles.endText}>
             {correctCount === questions.length
-              ? 'Tout est juste.'
+              ? 'Tout est juste. 🏆'
               : `${questions.length - correctCount} mot${questions.length - correctCount > 1 ? 's' : ''} à revoir dans la fiche.`}
           </p>
           <button type="button" className="btn btn-primary" onClick={() => restart()} autoFocus>
@@ -229,7 +238,7 @@ function Outcome({
   const others = (word.others ?? []).map((ar, i) => ({ ar, label: columns[i + 1]!.toLowerCase() }))
   return (
     <div className={styles.outcome} role="status" aria-label="Résultat">
-      <p className={correct ? styles.right : styles.wrong}>{correct ? 'Juste.' : 'Pas tout à fait.'}</p>
+      <p className={correct ? styles.right : styles.wrong}>{correct ? 'Juste. 🎉' : 'Pas tout à fait. 🙈'}</p>
       <p className={styles.expectedLabel}>Réponse</p>
       <ul className={styles.expected}>
         <li>
@@ -238,6 +247,7 @@ function Outcome({
             {canSpeak && <SpeakButton text={word.ar} label={`Écouter ${word.ar}`} />}
           </span>
           <span className={styles.expectedFr}>
+            {word.emoji && <Emoji symbol={word.emoji} />}
             {word.fr}
             {others.map((o) => (
               <span key={o.label}>

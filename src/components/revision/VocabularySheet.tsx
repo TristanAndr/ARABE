@@ -47,7 +47,10 @@ export function VocabularySheet({ category, speech }: Props) {
           {category.words.map((w) => (
             <tr key={w.id} className={vocab.row} data-word={w.id}>
               <td className={vocab.frCell}>
-                <span className={styles.translation}>{w.fr}</span>
+                <span className={styles.translation}>
+                  {w.emoji && <Emoji symbol={w.emoji} />}
+                  {w.fr}
+                </span>
                 {w.note && (
                   <span className={styles.grammar}>
                     <Mixed text={w.note} />
@@ -65,6 +68,15 @@ export function VocabularySheet({ category, speech }: Props) {
         </tbody>
       </table>
     </article>
+  )
+}
+
+/** Emoji décoratif : le mot français suffit aux lecteurs d'écran. */
+export function Emoji({ symbol, className }: { symbol: string; className?: string }) {
+  return (
+    <span className={`${vocab.emoji} ${className ?? ''}`} aria-hidden="true">
+      {symbol}
+    </span>
   )
 }
 
