@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 import type { VocabWord } from '../../revision/vocabulary'
+import { VEGETABLE_DRAWINGS } from './vegetableDrawings'
 import vocab from './Vocabulary.module.css'
 
 /**
@@ -39,14 +40,26 @@ const DRAWINGS: Record<string, ReactElement> = {
 /** Emoji ou dessin du mot, décoratif : le mot français suffit aux lecteurs d'écran. */
 export function WordIcon({ word, className }: { word: VocabWord; className?: string }) {
   const drawing = DRAWINGS[word.id]
-  if (!word.emoji && !drawing) return null
+  const vegetable = VEGETABLE_DRAWINGS[word.id]
+  if (!word.emoji && !drawing && !vegetable) return null
   return (
     <span className={`${vocab.emoji} ${className ?? ''}`} aria-hidden="true">
-      {word.emoji ?? (
-        <svg className={vocab.drawing} viewBox="0 0 32 32" width="1em" height="1em" focusable="false">
-          {drawing}
-        </svg>
-      )}
+      {word.emoji ??
+        (drawing ? (
+          <svg className={vocab.drawing} viewBox="0 0 32 32" width="1em" height="1em" focusable="false">
+            {drawing}
+          </svg>
+        ) : (
+          // Dessin statique du support de cours, sans script ni lien.
+          <svg
+            className={vocab.drawing}
+            viewBox="0 0 100 100"
+            width="1.25em"
+            height="1.25em"
+            focusable="false"
+            dangerouslySetInnerHTML={{ __html: vegetable! }}
+          />
+        ))}
     </span>
   )
 }

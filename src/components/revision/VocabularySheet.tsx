@@ -73,11 +73,14 @@ function Word({ text, canSpeak }: { text: string; canSpeak: boolean }) {
   )
 }
 
-/** Texte français contenant des mots arabes : chaque mot arabe est isolé et grossi. */
+/**
+ * Texte français contenant de l'arabe : chaque expression arabe (mots consécutifs) est isolée et
+ * grossie d'un bloc, pour que ses mots restent dans l'ordre de droite à gauche.
+ */
 export function Mixed({ text }: { text: string }) {
   return (
     <>
-      {text.split(/([؀-ۿ]+)/).map((part, i) =>
+      {text.split(/([؀-ۿ]+(?:\s+[؀-ۿ]+)*)/).map((part, i) =>
         /[؀-ۿ]/.test(part) ? (
           <span key={i} className={`arabic ${styles.inlineAr}`} lang="ar" dir="rtl">
             {part}

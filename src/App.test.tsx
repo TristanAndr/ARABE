@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { EXERCISES } from './data/corpus'
 import { formsForVerb, FORMS, grammarLabel, pronounLabel, verbOf } from './revision/conjugation'
-import { FRUITS } from './revision/vocabulary'
+import { FRUITS, VEGETABLES } from './revision/vocabulary'
 import { createEnv } from './test/env'
 
 let env: ReturnType<typeof createEnv>
@@ -265,6 +265,15 @@ describe('vocabulaire', () => {
       const pomme = document.querySelector('tr[data-word="pomme"] [style]') as HTMLElement
       expect(pomme.textContent).toBe('pomme')
       expect(pomme.style.color).not.toBe('')
+      // Une expression arabe de plusieurs mots reste d'un bloc, dans l'ordre de droite à gauche.
+      const spans = [...document.querySelectorAll('[class*="noteRow"] [lang="ar"]')].map((e) => e.textContent)
+      expect(spans).toContain('حَبَّةُ عِنَبٍ')
+
+      // Les légumes, avec leurs mots de mesure.
+      await user.click(screen.getByRole('button', { name: /^Les légumes/ }))
+      expect(document.querySelectorAll('tr[data-word]')).toHaveLength(VEGETABLES.words.length)
+      expect(document.querySelector('tr[data-word="ail"]')!.textContent).toContain('فَصُّ ثُومٍ')
+      await user.click(screen.getByRole('button', { name: /^Les fruits/ }))
 
       await user.click(screen.getByRole('button', { name: 'Écouter تُفَّاحٌ' }))
       expect(speak).toHaveBeenCalledTimes(1)

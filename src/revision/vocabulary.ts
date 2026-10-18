@@ -1,9 +1,10 @@
 /**
- * Fiches de vocabulaire : les fruits et les couleurs.
+ * Fiches de vocabulaire : les fruits, les légumes et les couleurs.
  *
- * Mots repris du support de cours « Fawakih » (arabe littéraire, entièrement
+ * Mots repris des supports de cours « Fawakih » et « Khudar » (arabe littéraire, entièrement
  * vocalisé, tanwīn compris). Le mot principal (`ar`) sert aux exercices ; les autres formes sont
- * données à côté sur la fiche : pour les fruits l'unité et le duel, pour les couleurs le féminin.
+ * données à côté sur la fiche : pour les fruits et les légumes l'unité et le duel, pour les couleurs
+ * le féminin.
  */
 
 export interface VocabWord {
@@ -21,7 +22,7 @@ export interface VocabWord {
 }
 
 export interface VocabCategory {
-  id: 'fruits' | 'couleurs'
+  id: 'fruits' | 'legumes' | 'couleurs'
   title: string
   titleAr: string
   intro: string
@@ -86,6 +87,41 @@ export const FRUITS: VocabCategory = {
   ],
 }
 
+export const VEGETABLES: VocabCategory = {
+  id: 'legumes',
+  title: 'Les légumes',
+  titleAr: 'خُضَارٌ',
+  intro:
+    'Comme pour les fruits, la plupart des légumes ont un collectif masculin et une unité en ـَةٌ, féminine : جَزَرٌ → جَزَرَةٌ → جَزَرَتَانِ. Les autres se comptent avec un mot de mesure : حَبَّةُ (une pièce, un grain), فَصُّ (une gousse), رَأْسُ (une tête) ou وَرَقَةُ (une feuille). Au duel, ce mot perd son ن devant le légume : حَبَّتَا طَمَاطِمَ.',
+  columns: ['Collectif', 'Un légume', 'Deux légumes'],
+  words: [
+    word('carotte', 'carotte', '🥕', '#e8710a', 'جَزَرٌ', ['جَزَرَةٌ', 'جَزَرَتَانِ']),
+    word('concombre', 'concombre', '🥒', '#2b8a3e', 'خِيَارٌ', ['خِيَارَةٌ', 'خِيَارَتَانِ'], '« un concombre », خِيَارَةٌ, est féminin : خِيَارَةٌ خَضْرَاءُ'),
+    word('oignon', 'oignon', '🧅', '#c98a00', 'بَصَلٌ', ['بَصَلَةٌ', 'بَصَلَتَانِ']),
+    word('aubergine', 'aubergine', '🍆', '#6a2c91', 'بَاذِنْجَانٌ', ['بَاذِنْجَانَةٌ', 'بَاذِنْجَانَتَانِ'], 'de بَاذِنْجَان, passé par le catalan albergínia : « aubergine »'),
+    word('laitue', 'laitue', '🥬', '#2f9e44', 'خَسٌّ', ['خَسَّةٌ', 'خَسَّتَانِ'], 'une salade entière : خَسَّةٌ ou رَأْسُ خَسٍّ'),
+    word('poivron', 'poivron', '🫑', '#d62828', 'فُلْفُلٌ', ['فُلْفُلَةٌ', 'فُلْفُلَتَانِ'], 'un poivron : فُلْفُلَةٌ ou حَبَّةُ فُلْفُلٍ ; le piment fort : فُلْفُلٌ حَارٌّ'),
+    word('radis', 'radis', '', '#d6336c', 'فُجْلٌ', ['فُجْلَةٌ', 'فُجْلَتَانِ']),
+    word('citrouille', 'citrouille', '🎃', '#e8590c', 'يَقْطِينٌ', ['يَقْطِينَةٌ', 'يَقْطِينَتَانِ'], 'dans l’usage courant, aussi قَرْعٌ'),
+    word('champignon', 'champignon', '🍄', '#8b5a2b', 'فُطْرٌ', ['فُطْرَةٌ', 'فُطْرَتَانِ'], 'un champignon : فُطْرَةٌ ou حَبَّةُ فُطْرٍ'),
+    word('olive', 'olive', '🫒', '#5c7f1a', 'زَيْتُونٌ', ['زَيْتُونَةٌ', 'زَيْتُونَتَانِ'], 'même racine que زَيْتٌ, l’huile ; une olive : زَيْتُونَةٌ ou حَبَّةُ زَيْتُونٍ'),
+    word('navet', 'navet', '', '#8e44ad', 'لِفْتٌ', ['لِفْتَةٌ', 'لِفْتَتَانِ'], 'un navet : لِفْتَةٌ ou حَبَّةُ لِفْتٍ'),
+    word('betterave', 'betterave', '', '#9d174d', 'شَمَنْدَرٌ', ['شَمَنْدَرَةٌ', 'شَمَنْدَرَتَانِ'], 'aussi بَنْجَرٌ en Égypte et بَارْبَا au Maghreb'),
+    word('tomate', 'tomate', '🍅', '#e03131', 'طَمَاطِمُ', ['حَبَّةُ طَمَاطِمَ', 'حَبَّتَا طَمَاطِمَ'], 'diptote, sans tanwīn : حَبَّةُ طَمَاطِمَ ; au Levant, بَنْدُورَةٌ'),
+    word('patate', 'pomme de terre', '🥔', '#b8860b', 'بَطَاطِسُ', ['حَبَّةُ بَطَاطِسَ', 'حَبَّتَا بَطَاطِسَ'], 'même schème que طَمَاطِمُ ; aussi بَطَاطَا au Levant et au Maghreb'),
+    word('ail', 'ail', '🧄', '#868e96', 'ثُومٌ', ['فَصُّ ثُومٍ', 'فَصَّا ثُومٍ'], 'une gousse : فَصُّ ثُومٍ ; une tête entière : رَأْسُ ثُومٍ'),
+    word('courgette', 'courgette', '', '#2b7a3a', 'كُوسَا', ['حَبَّةُ كُوسَا', 'حَبَّتَا كُوسَا'], 'invariable (parfois كُوسَى) : l’unité se forme avec حَبَّةُ'),
+    word('petitspois', 'petits pois', '🫛', '#5f9420', 'بَازِلَّاءُ', ['حَبَّةُ بَازِلَّاءَ', 'حَبَّتَا بَازِلَّاءَ'], 'aussi بَسِلَّةٌ en Égypte'),
+    word('epinard', 'épinard', '', '#2b8a3e', 'سَبَانِخُ', ['وَرَقَةُ سَبَانِخَ', 'وَرَقَتَا سَبَانِخَ'], 'une feuille : وَرَقَةُ سَبَانِخَ ; du persan, puis de l’espagnol espinaca : « épinard »'),
+    word('chou', 'chou', '', '#3b9b4a', 'مَلْفُوفٌ', ['رَأْسُ مَلْفُوفٍ', 'رَأْسَا مَلْفُوفٍ'], '« enroulé sur lui-même » (racine ل ف ف) ; aussi كُرُنْبٌ ; se compte par tête'),
+    word('choufleur', 'chou-fleur', '', '#7c8794', 'قَرْنَبِيطٌ', ['رَأْسُ قَرْنَبِيطٍ', 'رَأْسَا قَرْنَبِيطٍ'], 'se compte par tête ; au Levant, aussi زَهْرَةٌ'),
+    word('brocoli', 'brocoli', '🥦', '#2b8a3e', 'بْرُوكُولِي', ['رَأْسُ بْرُوكُولِي', 'رَأْسَا بْرُوكُولِي'], 'emprunt invariable : se compte par tête'),
+    word('endive', 'endive', '', '#b89a00', 'هِنْدِبَاءُ', ['وَرَقَةُ هِنْدِبَاءَ', 'وَرَقَتَا هِنْدِبَاءَ'], 'par feuille, ou par tête : رَأْسُ هِنْدِبَاءَ'),
+    word('mais', 'maïs', '🌽', '#d4a900', 'ذُرَةٌ', ['حَبَّةُ ذُرَةٍ', 'حَبَّتَا ذُرَةٍ'], 'ذُرَةٌ finit déjà par ـَةٌ : il est féminin (ذُرَةٌ صَفْرَاءُ) ; un épi : كُوزُ ذُرَةٍ'),
+    word('celeri', 'céleri', '', '#6a9e1f', 'كَرَفْسٌ', ['وَرَقَةُ كَرَفْسٍ', 'وَرَقَتَا كَرَفْسٍ'], 'une tige : عُودُ كَرَفْسٍ'),
+  ],
+}
+
 export const COLORS: VocabCategory = {
   id: 'couleurs',
   title: 'Les couleurs',
@@ -110,4 +146,4 @@ export const COLORS: VocabCategory = {
   ],
 }
 
-export const VOCAB_CATEGORIES = [FRUITS, COLORS] as const
+export const VOCAB_CATEGORIES = [FRUITS, VEGETABLES, COLORS] as const

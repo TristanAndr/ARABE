@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useSpeech } from '../../revision/speech'
-import { COLORS, FRUITS, type VocabCategory } from '../../revision/vocabulary'
+import { COLORS, FRUITS, VEGETABLES, type VocabCategory } from '../../revision/vocabulary'
 import { vocabDirections } from './decks'
 import { Flashcards } from './Flashcards'
 import { PageTabs } from './PageTabs'
@@ -12,6 +12,7 @@ export type VocabTheme = VocabCategory['id']
 
 const THEMES: { theme: VocabCategory; emoji: string }[] = [
   { theme: FRUITS, emoji: '🍓' },
+  { theme: VEGETABLES, emoji: '🥕' },
   { theme: COLORS, emoji: '🎨' },
 ]
 

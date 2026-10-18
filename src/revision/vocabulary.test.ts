@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { stripVowels } from './check'
 import { buildVocabSession } from './vocabQuiz'
-import { COLORS, FRUITS, VOCAB_CATEGORIES } from './vocabulary'
+import { COLORS, FRUITS, VEGETABLES, VOCAB_CATEGORIES } from './vocabulary'
 
 function seeded(seed: number) {
   let s = seed
@@ -31,6 +31,19 @@ describe('fiches de vocabulaire', () => {
     const abricot = FRUITS.words.find((w) => w.id === 'abricot')!
     expect([abricot.ar, ...abricot.others!]).toEqual(['مِشْمِشٌ', 'مِشْمِشَةٌ', 'مِشْمِشَتَانِ'])
     expect(COLORS.columns).toEqual(['Masculin', 'Féminin'])
+  })
+
+  it('légumes : les 24 du support, unité en ـَةٌ ou mot de mesure, ن du duel qui tombe en annexion', () => {
+    expect(VEGETABLES.words).toHaveLength(24)
+    const forms = (id: string) => {
+      const w = VEGETABLES.words.find((v) => v.id === id)!
+      return [w.ar, ...w.others!]
+    }
+    expect(forms('carotte')).toEqual(['جَزَرٌ', 'جَزَرَةٌ', 'جَزَرَتَانِ'])
+    expect(forms('tomate')).toEqual(['طَمَاطِمُ', 'حَبَّةُ طَمَاطِمَ', 'حَبَّتَا طَمَاطِمَ'])
+    expect(forms('ail')).toEqual(['ثُومٌ', 'فَصُّ ثُومٍ', 'فَصَّا ثُومٍ'])
+    expect(forms('chou')).toEqual(['مَلْفُوفٌ', 'رَأْسُ مَلْفُوفٍ', 'رَأْسَا مَلْفُوفٍ'])
+    expect(forms('epinard')).toEqual(['سَبَانِخُ', 'وَرَقَةُ سَبَانِخَ', 'وَرَقَتَا سَبَانِخَ'])
   })
 })
 
