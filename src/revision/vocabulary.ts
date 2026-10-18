@@ -21,11 +21,31 @@ export interface VocabWord {
   tint?: string
 }
 
+/**
+ * Mot découpé pour le mémo : la partie qui varie (préfixe, terminaison) est colorée. `tail` est la
+ * voyelle de la terminaison posée sur la dernière lettre du radical (le ـَ de تُفَّاحَةٌ).
+ */
+export interface WordParts {
+  prefix?: string
+  stem: string
+  tail?: string
+  suffix?: string
+}
+
+export const partsText = (p: WordParts): string => (p.prefix ?? '') + p.stem + (p.tail ?? '') + (p.suffix ?? '')
+
+export interface ThemeGuide {
+  /** Formes successives d'un mot exemple, avec leur rôle. */
+  steps: readonly { label: string; parts: WordParts }[]
+  tips: readonly string[]
+}
+
 export interface VocabCategory {
   id: 'fruits' | 'legumes' | 'couleurs'
   title: string
   titleAr: string
-  intro: string
+  /** Mémo du thème : les formes d'un mot exemple, puis deux ou trois rappels courts. */
+  guide: ThemeGuide
   /** Libellés des colonnes arabes de la fiche, mot principal compris. */
   columns: readonly string[]
   words: readonly VocabWord[]
@@ -53,8 +73,17 @@ export const FRUITS: VocabCategory = {
   id: 'fruits',
   title: 'Les fruits',
   titleAr: 'فَوَاكِهُ',
-  intro:
-    'Le mot de base est un collectif : il désigne l’espèce ou les fruits en général (« la pomme, des pommes ») et il est masculin singulier. On ajoute ـَةٌ pour désigner un seul fruit, qui devient féminin : تُفَّاحٌ → تُفَّاحَةٌ. Pour exactement deux fruits, le ة s’ouvre en ت suivi du duel ـَتَانِ : تُفَّاحَتَانِ.',
+  guide: {
+    steps: [
+      { label: 'Le fruit en général', parts: { stem: 'تُفَّاحٌ' } },
+      { label: 'Un fruit : + ـَةٌ', parts: { stem: 'تُفَّاح', tail: 'َ', suffix: 'ةٌ' } },
+      { label: 'Deux fruits : + ـَتَانِ', parts: { stem: 'تُفَّاح', tail: 'َ', suffix: 'تَانِ' } },
+    ],
+    tips: [
+      'Le collectif est masculin, l’unité féminine.',
+      'Mots empruntés (kiwi, mangue) : on compte avec حَبَّةُ, « un grain ».',
+    ],
+  },
   columns: ['Collectif', 'Un fruit', 'Deux fruits'],
   words: [
     word('pomme', 'pomme', '🍎', '#d62828', 'تُفَّاحٌ', ['تُفَّاحَةٌ', 'تُفَّاحَتَانِ']),
@@ -91,8 +120,17 @@ export const VEGETABLES: VocabCategory = {
   id: 'legumes',
   title: 'Les légumes',
   titleAr: 'خُضَارٌ',
-  intro:
-    'Comme pour les fruits, la plupart des légumes ont un collectif masculin et une unité en ـَةٌ, féminine : جَزَرٌ → جَزَرَةٌ → جَزَرَتَانِ. Les autres se comptent avec un mot de mesure : حَبَّةُ (une pièce, un grain), فَصُّ (une gousse), رَأْسُ (une tête) ou وَرَقَةُ (une feuille). Au duel, ce mot perd son ن devant le légume : حَبَّتَا طَمَاطِمَ.',
+  guide: {
+    steps: [
+      { label: 'Le légume en général', parts: { stem: 'جَزَرٌ' } },
+      { label: 'Un légume : + ـَةٌ', parts: { stem: 'جَزَر', tail: 'َ', suffix: 'ةٌ' } },
+      { label: 'Deux légumes : + ـَتَانِ', parts: { stem: 'جَزَر', tail: 'َ', suffix: 'تَانِ' } },
+    ],
+    tips: [
+      'Sinon, un mot de mesure : حَبَّةُ une pièce · فَصُّ une gousse · رَأْسُ une tête · وَرَقَةُ une feuille.',
+      'Au duel, ce mot perd son ن : حَبَّتَا طَمَاطِمَ.',
+    ],
+  },
   columns: ['Collectif', 'Un légume', 'Deux légumes'],
   words: [
     word('carotte', 'carotte', '🥕', '#e8710a', 'جَزَرٌ', ['جَزَرَةٌ', 'جَزَرَتَانِ']),
@@ -126,8 +164,16 @@ export const COLORS: VocabCategory = {
   id: 'couleurs',
   title: 'Les couleurs',
   titleAr: 'أَلْوَانٌ',
-  intro:
-    'Les couleurs de base suivent le schème أَفْعَلُ au masculin et فَعْلَاءُ au féminin. Les autres se forment sur un nom avec le suffixe nisba ـِيٌّ, et ـِيَّةٌ au féminin.',
+  guide: {
+    steps: [
+      { label: 'Masculin : أَـ', parts: { prefix: 'أَ', stem: 'حْمَرُ' } },
+      { label: 'Féminin : ـَاءُ', parts: { stem: 'حَمْر', tail: 'َ', suffix: 'اءُ' } },
+    ],
+    tips: [
+      'Couleurs de base : أَفْعَلُ au masculin, فَعْلَاءُ au féminin.',
+      'Les autres viennent d’un nom + ـِيٌّ : بُنٌّ, le café → بُنِّيٌّ, marron.',
+    ],
+  },
   columns: ['Masculin', 'Féminin'],
   words: [
     word('rouge', 'rouge', '❤️', '#d62828', 'أَحْمَرُ', ['حَمْرَاءُ']),

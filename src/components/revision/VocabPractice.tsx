@@ -97,7 +97,6 @@ export function VocabPractice({ category, speech }: Props) {
         <h2 id="practice-title" className="visually-hidden">
           Entraînement
         </h2>
-        <p className={styles.lead}>Une question par mot de la fiche.</p>
       </div>
 
       <div className={styles.controls}>

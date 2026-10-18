@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import type { SpeechState } from '../../revision/speech'
 import type { VocabCategory } from '../../revision/vocabulary'
 import { SpeakButton } from './SpeakButton'
@@ -16,11 +15,6 @@ interface Props {
 export function VocabularyTable({ category, canSpeak }: Props) {
   return (
     <section className={vocab.words} aria-label={`Les mots : ${category.title.toLowerCase()}`}>
-      <p className={vocab.legend}>
-        En gris clair, ce qui ne se prononce pas quand le mot est dit seul :{' '}
-        <SpokenWord text="مِشْمِشٌ" className={styles.inlineAr} /> se dit « mishmish ».
-      </p>
-
       <table className={`${styles.table} ${vocab.table}`}>
         <thead className={vocab.head}>
           <tr>
@@ -34,8 +28,7 @@ export function VocabularyTable({ category, canSpeak }: Props) {
         </thead>
         <tbody>
           {category.words.map((w) => (
-            <Fragment key={w.id}>
-              <tr className={vocab.row} data-word={w.id} data-noted={w.note ? true : undefined}>
+              <tr key={w.id} className={vocab.row} data-word={w.id}>
                 <td className={vocab.frCell}>
                   <span className={styles.translation}>
                     <FrenchWord word={w} />
@@ -48,15 +41,6 @@ export function VocabularyTable({ category, canSpeak }: Props) {
                   </td>
                 ))}
               </tr>
-              {w.note && (
-                // La précision court sous toute la ligne : la colonne française reste étroite.
-                <tr className={vocab.noteRow}>
-                  <td colSpan={category.columns.length + 1}>
-                    <Mixed text={w.note} />
-                  </td>
-                </tr>
-              )}
-            </Fragment>
           ))}
         </tbody>
       </table>

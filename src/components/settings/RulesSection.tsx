@@ -1,4 +1,3 @@
-import { PARTIAL_THRESHOLD } from '../../compare/compare'
 import type { NormalizationOptions } from '../../compare/normalize'
 import styles from './Settings.module.css'
 
@@ -43,30 +42,9 @@ export function RulesSection({ normalization, onChange }: Props) {
             />
             <span>
               <span className={styles.choiceLabel}>{o.label}</span>
-              <span className={styles.choiceSummary}>{o.detail}</span>
             </span>
           </label>
         ))}
-      </div>
-      <div className={styles.prose}>
-        <p>Toujours appliqué, quel que soit le profil :</p>
-        <ul>
-          <li>espaces, tirets et soulignés sont ignorés : bismillāh, bismi llāh et bismi-llāh sont équivalents ;</li>
-          <li>les diacritiques saisis en caractères combinants sont recomposés (h + point souscrit = ḥ) ;</li>
-          <li>
-            une consonne doublée (šadda) s'écrit deux fois ; une voyelle longue doit être écrite longue. Ces écarts
-            comptent comme des erreurs ;
-          </li>
-          <li>
-            quand l'écriture uthmanie note une assimilation ou un abrègement propre à la récitation, la forme
-            orthographique est aussi acceptée et le retour l'indique.
-          </li>
-        </ul>
-        <p>
-          Résultat : « juste » sans aucun écart, « presque » jusqu'à {Math.round(PARTIAL_THRESHOLD * 100)} % de sons
-          en écart, « à reprendre » au-delà. Les durées de madd, la nasalisation (ġunna), l'iḫfāʾ et la qalqala ne
-          sont pas notées dans les références et ne sont donc pas vérifiées.
-        </p>
       </div>
     </section>
   )

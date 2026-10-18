@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { stripVowels } from './check'
 import { buildVocabSession } from './vocabQuiz'
-import { COLORS, FRUITS, VEGETABLES, VOCAB_CATEGORIES } from './vocabulary'
+import { COLORS, FRUITS, partsText, VEGETABLES, VOCAB_CATEGORIES } from './vocabulary'
 
 function seeded(seed: number) {
   let s = seed
@@ -44,6 +44,22 @@ describe('fiches de vocabulaire', () => {
     expect(forms('ail')).toEqual(['ثُومٌ', 'فَصُّ ثُومٍ', 'فَصَّا ثُومٍ'])
     expect(forms('chou')).toEqual(['مَلْفُوفٌ', 'رَأْسُ مَلْفُوفٍ', 'رَأْسَا مَلْفُوفٍ'])
     expect(forms('epinard')).toEqual(['سَبَانِخُ', 'وَرَقَةُ سَبَانِخَ', 'وَرَقَتَا سَبَانِخَ'])
+  })
+})
+
+describe('mémo des thèmes', () => {
+  it('les morceaux colorés recomposent exactement les mots exemples', () => {
+    const words = VOCAB_CATEGORIES.map((c) => c.guide.steps.map((s) => partsText(s.parts)))
+    expect(words).toEqual([
+      ['تُفَّاحٌ', 'تُفَّاحَةٌ', 'تُفَّاحَتَانِ'],
+      ['جَزَرٌ', 'جَزَرَةٌ', 'جَزَرَتَانِ'],
+      ['أَحْمَرُ', 'حَمْرَاءُ'],
+    ])
+    // Et ce sont bien des formes de la fiche.
+    for (const c of VOCAB_CATEGORIES) {
+      const forms = c.words.flatMap((w) => [w.ar, ...(w.others ?? [])])
+      for (const s of c.guide.steps) expect(forms).toContain(partsText(s.parts))
+    }
   })
 })
 

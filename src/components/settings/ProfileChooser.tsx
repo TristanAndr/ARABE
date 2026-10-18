@@ -24,10 +24,6 @@ export function ProfileChooser({ profileId, customBase, onProfile, onBase }: Pro
       <h2 id="profile-title" className={styles.sectionTitle}>
         Profil de translittération
       </h2>
-      <p className={styles.sectionNote}>
-        Il n'existe pas de convention universelle. Les profils proposés sont des choix pratiques, documentés
-        ci-dessous ; seul le profil précis suit de près une norme savante (DIN 31635).
-      </p>
       <div className={styles.choices} role="radiogroup" aria-labelledby="profile-title">
         {OPTIONS.map((o) => (
           <label key={o.id} className={styles.choice} data-checked={profileId === o.id}>
@@ -40,7 +36,6 @@ export function ProfileChooser({ profileId, customBase, onProfile, onBase }: Pro
             />
             <span className={styles.choiceBody}>
               <span className={styles.choiceLabel}>{o.label}</span>
-              <span className={styles.choiceSummary}>{o.summary}</span>
               {o.id === 'custom' && profileId === 'custom' && (
                 <span className={styles.baseRow}>
                   Profil de base

@@ -73,15 +73,12 @@ export function AuthView({ auth, notice: initialNotice = null, error: initialErr
 
   return (
     <section className={styles.auth} aria-labelledby="auth-title">
-      <p className={styles.kicker}>Qirāʾa · lecture de l’arabe coranique</p>
       <h1 id="auth-title" className={styles.title}>
         {TITLES[mode]}
       </h1>
-      <p className={styles.intro}>
-        {mode === 'forgot'
-          ? 'Indique l’adresse de ton compte : tu recevras un lien pour choisir un nouveau mot de passe.'
-          : 'Ta progression, tes réglages et tes résultats sont enregistrés dans ton compte, visibles de toi seul.'}
-      </p>
+      {mode === 'forgot' && (
+        <p className={styles.intro}>Tu recevras un lien pour choisir un nouveau mot de passe.</p>
+      )}
 
       {notice && (
         <p className={styles.notice} role="status">
@@ -237,7 +234,6 @@ export function NewPasswordForm({
 export function RecoveryView({ email, onSubmit }: { email: string; onSubmit: (pw: string) => Promise<string | null> }) {
   return (
     <section className={styles.auth} aria-labelledby="recovery-title">
-      <p className={styles.kicker}>Qirāʾa · compte</p>
       <h1 id="recovery-title" className={styles.title}>
         Nouveau mot de passe
       </h1>

@@ -1,5 +1,5 @@
 import { useRef, useState, type Ref } from 'react'
-import { formOf, LETTERS, letterAt, NON_CONNECTORS, POSITIONS, type Letter } from '../../alphabet/letters'
+import { formOf, LETTERS, letterAt, POSITIONS, type Letter } from '../../alphabet/letters'
 import type { Spellings } from '../../translit/profiles'
 import { AlphabetQuiz } from './AlphabetQuiz'
 import styles from './Alphabet.module.css'
@@ -30,13 +30,7 @@ export function AlphabetView({ spellings }: Props) {
             حُرُوفُ الهِجَاءِ
           </span>
         </h1>
-        <p className={styles.intro}>
-          Les 28 lettres, leurs noms et leurs formes selon la place dans le mot. Choisis une lettre pour ouvrir sa
-          fiche.
-        </p>
       </header>
-
-      <Rules />
 
       <div className={styles.tabs} role="group" aria-label="Affichage">
         {(
@@ -76,33 +70,6 @@ export function AlphabetView({ spellings }: Props) {
       {tab === 'tableau' && <LetterTable />}
       {tab === 'revision' && <AlphabetQuiz />}
     </article>
-  )
-}
-
-function Rules() {
-  return (
-    <section className={styles.rules} aria-label="Règles essentielles">
-      <ul>
-        <li>
-          L’arabe se lit et s’écrit <strong>de droite à gauche</strong>.
-        </li>
-        <li>
-          Dans un mot, les lettres se lient entre elles et <strong>changent de forme selon leur place</strong> :
-          isolée, initiale, médiane ou finale.
-        </li>
-        <li>
-          Six lettres ne se lient <strong>jamais à la lettre suivante</strong> :{' '}
-          <span className={`arabic ${styles.inlineAr}`} lang="ar" dir="rtl">
-            {NON_CONNECTORS.join('، ')}
-          </span>
-          . Elles n’ont donc pas de forme initiale ni médiane : après elles, le mot reprend avec une forme isolée ou
-          initiale.
-        </li>
-        <li>
-          Les formes du tableau montrent une lettre seule ou attachée par un trait (ـ) ; elles ne sont pas des mots.
-        </li>
-      </ul>
-    </section>
   )
 }
 

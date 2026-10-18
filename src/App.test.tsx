@@ -133,7 +133,7 @@ describe('conjugaison', () => {
     expect(screen.getByText(/Phrase 1/)).toBeTruthy()
   })
 
-  it('une partie à la fois : le tableau, puis « À retenir » dans son onglet', async () => {
+  it('une partie à la fois : le tableau seul, sans l’entraînement', async () => {
     const user = userEvent.setup()
     await openConjugation(user)
     const rows = document.querySelectorAll('tr[data-form]')
@@ -142,12 +142,7 @@ describe('conjugaison', () => {
     expect(row.textContent).toContain('أَنْتِ')
     expect(row.textContent!.replaceAll('\u200D', '')).toContain('تَفْعَلِينَ')
     expect(row.textContent).toContain('tu fais')
-    expect(screen.queryByText('Un radical stable')).toBeNull()
     expect(screen.queryByRole('radio')).toBeNull()
-
-    await user.click(screen.getByRole('button', { name: 'À retenir' }))
-    expect(screen.getByText('Un radical stable')).toBeTruthy()
-    expect(document.querySelectorAll('tr[data-form]')).toHaveLength(0)
   })
 
   it('les paramètres ramènent à la conjugaison', async () => {
@@ -227,9 +222,11 @@ describe('conjugaison', () => {
     // Le présent : du pronom au verbe.
     expect(remaining()).toBe(`Encore ${FORMS.length} cartes`)
     const pronoun = deck().getByRole('group', { name: 'Recto de la carte' }).querySelector('[lang="ar"]')!.textContent!
-    const form = FORMS.find((f) => f.pronoun === pronoun)!
+    // Un même pronom peut avoir deux formes (هُمَا : ils ou elles, à deux) : l'une des deux est au verso.
+    const translations = FORMS.filter((f) => f.pronoun === pronoun).map((f) => f.translation)
     await user.click(deck().getByRole('button', { name: 'Retourner la carte' }))
-    expect(deck().getByRole('group', { name: 'Verso de la carte' }).textContent).toContain(form.translation)
+    const back = deck().getByRole('group', { name: 'Verso de la carte' }).textContent!
+    expect(translations.some((t) => back.includes(t))).toBe(true)
     await user.click(deck().getByRole('button', { name: 'À revoir' }))
     expect(remaining()).toBe(`Encore ${FORMS.length} cartes`)
     await user.click(deck().getByRole('button', { name: 'Retourner la carte' }))
@@ -259,16 +256,15 @@ describe('vocabulaire', () => {
       await user.click(screen.getByRole('button', { name: 'Vocabulaire' }))
       expect(screen.getByRole('heading', { level: 1, name: /Le vocabulaire/ })).toBeTruthy()
       expect(screen.getByRole('button', { name: /^Les fruits/ }).getAttribute('aria-pressed')).toBe('true')
-      expect(screen.getByRole('heading', { level: 2, name: /Les fruits/ })).toBeTruthy()
+      // Le mémo montre les formes d'un mot exemple, terminaison en couleur.
+      const memo = screen.getByRole('region', { name: 'Mémo' })
+      const colored = [...within(memo).getByLabelText('تُفَّاحَةٌ').querySelectorAll('[class*="variable"]')]
+      expect(colored.map((e) => e.textContent!.replaceAll('\u200D', ''))).toContain('ةٌ')
       expect(document.querySelectorAll('tr[data-word]')).toHaveLength(FRUITS.words.length)
       // Le mot français est écrit dans la couleur du fruit.
       const pomme = document.querySelector('tr[data-word="pomme"] [style]') as HTMLElement
       expect(pomme.textContent).toBe('pomme')
       expect(pomme.style.color).not.toBe('')
-      // Une expression arabe de plusieurs mots reste d'un bloc, dans l'ordre de droite à gauche.
-      const spans = [...document.querySelectorAll('[class*="noteRow"] [lang="ar"]')].map((e) => e.textContent)
-      expect(spans).toContain('حَبَّةُ عِنَبٍ')
-
       // Les légumes, avec leurs mots de mesure.
       await user.click(screen.getByRole('button', { name: /^Les légumes/ }))
       expect(document.querySelectorAll('tr[data-word]')).toHaveLength(VEGETABLES.words.length)
@@ -292,7 +288,7 @@ describe('vocabulaire', () => {
       // Le thème est conservé en passant par les paramètres.
       await user.click(screen.getByRole('button', { name: 'Paramètres' }))
       await user.click(screen.getByRole('button', { name: 'Retour au vocabulaire' }))
-      expect(screen.getByRole('heading', { level: 2, name: /Les fruits/ })).toBeTruthy()
+      expect(screen.getByRole('button', { name: /^Les fruits/ }).getAttribute('aria-pressed')).toBe('true')
 
       await user.click(screen.getByRole('button', { name: /^Les couleurs/ }))
       expect(document.querySelector('tr[data-word="rouge"]')!.textContent).toContain('حَمْرَاءُ')

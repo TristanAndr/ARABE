@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useSpeech } from '../../revision/speech'
-import { COLORS, FRUITS, VEGETABLES, type VocabCategory } from '../../revision/vocabulary'
+import { COLORS, FRUITS, VEGETABLES, type ThemeGuide as Guide, type VocabCategory } from '../../revision/vocabulary'
 import { vocabDirections } from './decks'
 import { Flashcards } from './Flashcards'
 import { PageTabs } from './PageTabs'
 import { VocabPractice } from './VocabPractice'
+import { SegmentedWord } from './SegmentedWord'
 import { Mixed, SpeechNote, VocabularyTable } from './VocabularySheet'
 import styles from './Revision.module.css'
 
@@ -39,17 +40,12 @@ export function VocabularyView({ theme, onTheme }: Props) {
   return (
     <article className={styles.sheet} aria-labelledby="page-title">
       <header>
-        <p className={styles.kicker}>Fiche · vocabulaire</p>
         <h1 id="page-title" className={styles.title}>
           Le vocabulaire
           <span className={`arabic ${styles.titleAr}`} lang="ar" dir="rtl">
             المُفْرَدَاتُ
           </span>
         </h1>
-        <p className={styles.intro}>
-          Les mots par thème, avec leur prononciation. Choisis un thème, puis lis les mots, révise-les en flashcards
-          ou entraîne-toi.
-        </p>
       </header>
 
       <nav className={styles.categories} aria-label="Thèmes">
@@ -64,25 +60,12 @@ export function VocabularyView({ theme, onTheme }: Props) {
             <span className={styles.categoryEmoji} aria-hidden="true">
               {emoji}
             </span>
-            <span>
-              <span className={styles.categoryName}>{t.title}</span>
-              <span className={styles.categoryCount}>{t.words.length} mots</span>
-            </span>
+            <span className={styles.categoryName}>{t.title}</span>
           </button>
         ))}
       </nav>
 
-      <section className={styles.rules} aria-labelledby="theme-title">
-        <h2 id="theme-title" className={styles.themeTitle}>
-          {category.title}
-          <span className={`arabic ${styles.themeAr}`} lang="ar" dir="rtl">
-            {category.titleAr}
-          </span>
-        </h2>
-        <p>
-          <Mixed text={category.intro} />
-        </p>
-      </section>
+      <ThemeGuide guide={category.guide} />
       <SpeechNote speech={speech} />
 
       <PageTabs tabs={TABS} value={tab} onChange={setTab} />
@@ -93,5 +76,37 @@ export function VocabularyView({ theme, onTheme }: Props) {
         {tab === 'exercice' && <VocabPractice category={category} speech={speech} />}
       </div>
     </article>
+  )
+}
+
+/** Mémo du thème : les formes d'un mot exemple reliées par des flèches, puis les rappels. */
+function ThemeGuide({ guide }: { guide: Guide }) {
+  return (
+    <section className={styles.guide} aria-label="Mémo">
+      <ol className={styles.guideSteps}>
+        {guide.steps.map((step, i) => (
+          <Fragment key={step.label}>
+            {i > 0 && (
+              <li className={styles.guideArrow} aria-hidden="true">
+                →
+              </li>
+            )}
+            <li className={styles.guideStep}>
+              <SegmentedWord parts={step.parts} className={styles.guideAr} />
+              <span className={styles.guideLabel}>
+                <Mixed text={step.label} />
+              </span>
+            </li>
+          </Fragment>
+        ))}
+      </ol>
+      <ul className={styles.guideTips}>
+        {guide.tips.map((tip) => (
+          <li key={tip}>
+            <Mixed text={tip} />
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }

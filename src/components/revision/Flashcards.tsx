@@ -76,7 +76,6 @@ export function Flashcards({ directions }: { directions: readonly FlashcardDirec
         <h2 id="flashcards-title" className="visually-hidden">
           Flashcards
         </h2>
-        <p className={styles.lead}>Retourne la carte, puis dis si tu savais. Les cartes à revoir reviennent à la fin du paquet.</p>
       </div>
 
       {directions.length > 1 && (

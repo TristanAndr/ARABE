@@ -41,8 +41,7 @@ export function AccountView({
         </button>
       </div>
       <p className={styles.intro}>
-        Connecté avec <strong>{account.email}</strong>. Ta progression, tes réglages et tes résultats sont liés à ce
-        compte et ne sont visibles que par toi.
+        Connecté avec <strong>{account.email}</strong>.
       </p>
 
       <section className={styles.section} aria-labelledby="sync-title">
@@ -65,7 +64,6 @@ export function AccountView({
         <h2 id="signout-title" className={styles.sectionTitle}>
           Déconnexion
         </h2>
-        <p className={styles.sectionNote}>Ferme la session sur ce navigateur uniquement.</p>
         <p style={{ marginTop: '1rem' }}>
           <button type="button" className="btn btn-secondary" onClick={() => void signOut()} disabled={busy}>
             Se déconnecter

@@ -121,10 +121,6 @@ export function SettingsView({
           {closeLabel}
         </button>
       </div>
-      <p className={styles.intro}>
-        Les conventions choisies ici servent à la fois à afficher la référence et à vérifier tes réponses. Elles
-        sont enregistrées dans ce navigateur uniquement.
-      </p>
 
       <ProfileChooser
         profileId={draft.profileId}
@@ -135,7 +131,6 @@ export function SettingsView({
 
       <MappingTable
         base={basePreset}
-        isCustom={draft.profileId === 'custom'}
         cells={cells}
         invalid={invalid}
         onEdit={editCell}

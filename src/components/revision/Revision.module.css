@@ -627,3 +627,104 @@
   font-family: var(--font-fun);
   font-size: 1rem;
 }
+
+/* Mémo du thème : formes d'un mot exemple, puis rappels. */
+.guide {
+  margin-top: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.guideSteps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guideStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Flèche entre deux formes, à la hauteur des mots arabes. */
+.guideArrow {
+  padding-top: 1.35rem;
+  font-size: 1.35rem;
+  color: var(--muted);
+}
+
+.guideAr {
+  font-size: 2.4rem;
+  line-height: 2;
+}
+
+/* Partie qui varie d'une forme à l'autre. */
+.variable {
+  color: var(--conj-affix);
+}
+
+.segmented {
+  white-space: nowrap;
+}
+
+.guideLabel {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.guideLabel :global(.arabic) {
+  color: var(--conj-affix);
+}
+
+.guideLabel :global(.arabic),
+.guideTips :global(.arabic) {
+  font-size: 1.25em;
+}
+
+.guideTips {
+  margin: 0.75rem 0 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.8;
+}
+
+:global([data-theme='cocooning']) .guide {
+  padding: 1rem 1.25rem;
+  border: 0;
+  border-radius: 16px;
+  background: var(--sp-lilac-soft);
+}
+
+:global([data-theme='cocooning']) .guideArrow {
+  color: var(--sp-pink);
+  font-weight: 700;
+}
+
+@media (max-width: 30rem) {
+  .guideSteps {
+    gap: 0.25rem 0.4rem;
+  }
+
+  .guideAr {
+    font-size: 1.8rem;
+  }
+
+  .guideArrow {
+    padding-top: 0.95rem;
+    font-size: 1.1rem;
+  }
+
+  .guideLabel {
+    font-size: 0.72rem;
+  }
+}

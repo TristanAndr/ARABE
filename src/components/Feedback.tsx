@@ -65,10 +65,6 @@ export function Feedback({ result, exercise, spellings, stale }: Props) {
               </div>
             ))}
           </dl>
-          <p className={styles.caveat}>
-            Les écarts sont localisés par alignement automatique : l'emplacement est fiable, la nature de l'erreur
-            est indicative.
-          </p>
         </>
       )}
 

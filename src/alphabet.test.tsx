@@ -37,7 +37,7 @@ describe('section Alphabet', () => {
     const user = userEvent.setup()
     await openAlphabet(user)
     expect(screen.getByRole('button', { name: 'Alphabet' }).getAttribute('aria-current')).toBe('page')
-    expect(screen.getByText(/de droite à gauche/)).toBeTruthy()
+    expect(screen.getByRole('heading', { level: 1, name: /L’alphabet arabe/ })).toBeTruthy()
     await user.click(screen.getByRole('button', { name: 'Lecture' }))
     expect(await screen.findByLabelText('Transcription')).toBeTruthy()
     await user.click(screen.getByRole('button', { name: 'Conjugaison' }))

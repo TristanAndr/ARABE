@@ -5,7 +5,6 @@ import styles from './Settings.module.css'
 
 interface Props {
   base: PresetId
-  isCustom: boolean
   cells: Partial<Record<Phoneme, string>>
   invalid: Partial<Record<Phoneme, string[]>>
   onEdit: (p: Phoneme, text: string) => void
@@ -15,7 +14,7 @@ interface Props {
 const LETTER_OF = new Map<Phoneme, string>()
 for (const g of LETTER_GROUPS) for (const r of g.rows) if (r.phoneme && !LETTER_OF.has(r.phoneme)) LETTER_OF.set(r.phoneme, r.arabic)
 
-export function MappingTable({ base, isCustom, cells, invalid, onEdit, conflicts }: Props) {
+export function MappingTable({ base, cells, invalid, onEdit, conflicts }: Props) {
   const defaults = PRESETS[base].spellings
 
   return (
@@ -23,23 +22,16 @@ export function MappingTable({ base, isCustom, cells, invalid, onEdit, conflicts
       <h2 id="mapping-title" className={styles.sectionTitle}>
         Correspondances
       </h2>
-      <p className={styles.sectionNote}>
-        « Par défaut » montre les graphies du profil {isCustom ? 'de base' : 'actif'} : la première sert à afficher la
-        référence, les suivantes sont acceptées à la saisie. Dans « Personnalisée », sépare plusieurs graphies par des
-        virgules.{!isCustom && ' Modifier une case active le profil Personnalisé.'}
-      </p>
 
       {LETTER_GROUPS.map((group) => (
         <div key={group.title} className={styles.group}>
           <h3 className={styles.groupTitle}>{group.title}</h3>
-          {group.note && <p className={styles.groupNote}>{group.note}</p>}
           <table className={styles.table}>
             <thead>
               <tr>
                 <th scope="col">Lettre</th>
                 <th scope="col">Par défaut</th>
                 <th scope="col">Personnalisée</th>
-                <th scope="col">Prononciation</th>
               </tr>
             </thead>
             <tbody>
@@ -85,7 +77,6 @@ export function MappingTable({ base, isCustom, cells, invalid, onEdit, conflicts
                         <span className={styles.none}>—</span>
                       )}
                     </td>
-                    <td className={styles.hintCell}>{row.hint}</td>
                   </tr>
                 )
               })}

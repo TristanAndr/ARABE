@@ -35,7 +35,6 @@ export function ConjugationTable() {
             <span className={`arabic ${styles.groupAr}`} lang="ar" dir="rtl">
               {p.arabic}
             </span>
-            <span className={styles.groupNote}>{p.note}</span>
           </h2>
           <table className={styles.table}>
             <thead className="visually-hidden">
@@ -88,10 +87,6 @@ function Legend() {
           <span className={`${styles.swatch} ${styles.swatchGloss}`} aria-hidden /> Traduction
         </li>
       </ul>
-      <p className={styles.legendNote}>
-        La voyelle finale du <span className={`arabic ${styles.inlineAr}`} lang="ar" dir="rtl">ل</span> fait partie de la terminaison (dernière colonne) : elle est
-        posée sur le <span className={`arabic ${styles.inlineAr}`} lang="ar" dir="rtl">ل</span> du radical, mais prend la couleur de la terminaison.
-      </p>
     </div>
   )
 }

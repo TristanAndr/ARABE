@@ -9,10 +9,6 @@ export function SessionEnd({ progress, onRestart }: { progress: Progress; onRest
   return (
     <section className={styles.end}>
       <h1 className={styles.title}>Session terminée.</h1>
-      <p className={styles.lead}>
-        {count('correct')} lecture{count('correct') > 1 ? 's' : ''} juste{count('correct') > 1 ? 's' : ''} du premier
-        coup sur {progress.order.length}.
-      </p>
       <dl className={styles.summary}>
         <div>
           <dt>Justes</dt>

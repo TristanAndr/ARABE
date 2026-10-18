@@ -53,7 +53,6 @@ export function SessionSection({ order, theme, onOrder, onTheme, progress, onRes
           ]}
           onChange={onOrder}
         />
-        <span className={styles.fieldHint}>S'applique à la prochaine session.</span>
       </div>
       <div className={styles.fieldRow}>
         <span className={styles.fieldLabel}>Thème</span>

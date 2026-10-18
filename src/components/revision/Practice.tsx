@@ -151,7 +151,6 @@ export function Practice({ prefs, onPrefs, sessions, onAttempt, onSessionComplet
         <h2 id="practice-title" className="visually-hidden">
           Entraînement
         </h2>
-        <p className={styles.lead}>Les questions reprennent exactement les formes de la fiche.</p>
         <p className={styles.history}>{historyLine(modeStats(sessions, prefs.mode))}</p>
       </div>
 
