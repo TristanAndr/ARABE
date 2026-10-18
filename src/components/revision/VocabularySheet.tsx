@@ -28,11 +28,14 @@ export function VocabularySheet({ category, speech }: Props) {
       </header>
 
       <table className={`${styles.table} ${vocab.table}`}>
-        <thead className={category.columns ? vocab.head : 'visually-hidden'}>
+        <thead className={vocab.head}>
           <tr>
             <th scope="col">Français</th>
-            <th scope="col">{category.columns?.main ?? 'Arabe'}</th>
-            {category.columns && <th scope="col">{category.columns.second}</th>}
+            {category.columns.map((c) => (
+              <th key={c} scope="col">
+                {c}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -46,14 +49,12 @@ export function VocabularySheet({ category, speech }: Props) {
                   </span>
                 )}
               </td>
-              <td className={vocab.arCell}>
-                <Word text={w.ar} canSpeak={canSpeak} />
-              </td>
-              {category.columns && (
-                <td className={vocab.arCell}>
-                  {w.ar2 && w.ar2 !== w.ar ? <Word text={w.ar2} canSpeak={canSpeak} /> : <span className={vocab.same}>identique</span>}
+              {[w.ar, ...(w.others ?? [])].map((ar, i) => (
+                <td key={i} className={vocab.arCell}>
+                  <span className={vocab.cellLabel}>{category.columns[i]}</span>
+                  <Word text={ar} canSpeak={canSpeak} />
                 </td>
-              )}
+              ))}
             </tr>
           ))}
         </tbody>

@@ -47,9 +47,8 @@
   line-height: 2.1;
 }
 
-.same {
-  font-size: 0.82rem;
-  color: var(--muted);
+.cellLabel {
+  display: none;
 }
 
 /* Bouton d'écoute : discret, rond, à côté du mot. */
@@ -154,5 +153,20 @@
 
   .frCell {
     flex-basis: 100%;
+  }
+
+  .arCell {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .cellLabel {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
 }

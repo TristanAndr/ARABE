@@ -221,9 +221,9 @@ describe('révision', () => {
       expect(screen.getByRole('heading', { level: 1, name: /Les fruits/ })).toBeTruthy()
       expect(document.querySelectorAll('tr[data-word]')).toHaveLength(FRUITS.words.length)
 
-      await user.click(screen.getByRole('button', { name: 'Écouter تُفَّاحَةٌ' }))
+      await user.click(screen.getByRole('button', { name: 'Écouter تُفَّاحٌ' }))
       expect(speak).toHaveBeenCalledTimes(1)
-      expect(speak.mock.calls[0]![0].text).toBe('تُفَّاحَةٌ')
+      expect(speak.mock.calls[0]![0].text).toBe('تُفَّاحٌ')
 
       // Mode « Retrouver le mot arabe » : on choisit le mot de la fiche qui correspond au français affiché.
       const fr = document.querySelector('[class*="promptFrBig"]')!.textContent!

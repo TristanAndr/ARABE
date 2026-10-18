@@ -175,7 +175,7 @@ export function VocabPractice({ category, speech }: Props) {
             })}
           </fieldset>
 
-          {answered && <Outcome correct={outcome} word={question.word} secondLabel={category.columns?.second} canSpeak={speech !== 'indisponible'} />}
+          {answered && <Outcome correct={outcome} word={question.word} columns={category.columns} canSpeak={speech !== 'indisponible'} />}
 
           <div className={styles.actions}>
             {answered ? (
@@ -219,15 +219,15 @@ function optionState(outcome: boolean | undefined, chosen: boolean, right: boole
 function Outcome({
   correct,
   word,
-  secondLabel,
+  columns,
   canSpeak,
 }: {
   correct: boolean
   word: VocabWord
-  secondLabel?: string
+  columns: readonly string[]
   canSpeak: boolean
 }) {
-  const second = word.ar2 && word.ar2 !== word.ar && secondLabel ? word.ar2 : null
+  const others = (word.others ?? []).map((ar, i) => ({ ar, label: columns[i + 1]!.toLowerCase() }))
   return (
     <div className={styles.outcome} role="status" aria-label="Résultat">
       <p className={correct ? styles.right : styles.wrong}>{correct ? 'Juste.' : 'Pas tout à fait.'}</p>
@@ -242,12 +242,14 @@ function Outcome({
           </span>
           <span className={styles.expectedFr}>
             {word.fr}
-            {second && ` · ${secondLabel!.toLowerCase()} : `}
-            {second && (
-              <span className="arabic" lang="ar" dir="rtl">
-                {second}
+            {others.map((o) => (
+              <span key={o.label}>
+                {` · ${o.label} : `}
+                <span className="arabic" lang="ar" dir="rtl">
+                  {o.ar}
+                </span>
               </span>
-            )}
+            ))}
           </span>
         </li>
       </ul>
