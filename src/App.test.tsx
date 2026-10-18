@@ -223,7 +223,8 @@ describe('révision', () => {
 
       await user.click(screen.getByRole('button', { name: 'Écouter تُفَّاحٌ' }))
       expect(speak).toHaveBeenCalledTimes(1)
-      expect(speak.mock.calls[0]![0].text).toBe('تُفَّاحٌ')
+      // Le mot seul est prononcé à la pause : sans tanwīn.
+      expect(speak.mock.calls[0]![0].text).toBe('تُفَّاح')
 
       // Mode « Retrouver le mot arabe » : on choisit le mot de la fiche qui correspond au français affiché.
       const fr = document.querySelector('[class*="promptFrBig"]')!.textContent!
