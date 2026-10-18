@@ -20,13 +20,13 @@ describe('fiches de vocabulaire', () => {
 
   it.each(VOCAB_CATEGORIES.map((c) => [c.id, c] as const))('%s : chaque mot est vocalisé', (_, c) => {
     for (const w of c.words) {
-      for (const ar of [w.ar, w.arFem].filter((x): x is string => !!x)) expect(stripVowels(ar)).not.toBe(ar)
+      for (const ar of [w.ar, w.ar2].filter((x): x is string => !!x)) expect(stripVowels(ar)).not.toBe(ar)
     }
   })
 
-  it('chaque couleur a son féminin', () => {
-    expect(COLORS.words.every((w) => w.arFem)).toBe(true)
-    expect(FRUITS.words.some((w) => w.arFem)).toBe(false)
+  it('chaque couleur a son féminin, chaque fruit son pluriel', () => {
+    expect(COLORS.words.every((w) => w.ar2)).toBe(true)
+    expect(FRUITS.words.every((w) => w.ar2)).toBe(true)
   })
 })
 

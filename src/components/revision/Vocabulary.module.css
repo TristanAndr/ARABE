@@ -47,6 +47,11 @@
   line-height: 2.1;
 }
 
+.same {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 /* Bouton d'écoute : discret, rond, à côté du mot. */
 .speak {
   display: inline-grid;

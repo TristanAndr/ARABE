@@ -32,7 +32,7 @@ export function VocabularySheet({ category, speech }: Props) {
           <tr>
             <th scope="col">Français</th>
             <th scope="col">{category.columns?.main ?? 'Arabe'}</th>
-            {category.columns && <th scope="col">{category.columns.fem}</th>}
+            {category.columns && <th scope="col">{category.columns.second}</th>}
           </tr>
         </thead>
         <tbody>
@@ -50,7 +50,9 @@ export function VocabularySheet({ category, speech }: Props) {
                 <Word text={w.ar} canSpeak={canSpeak} />
               </td>
               {category.columns && (
-                <td className={vocab.arCell}>{w.arFem && <Word text={w.arFem} canSpeak={canSpeak} />}</td>
+                <td className={vocab.arCell}>
+                  {w.ar2 && w.ar2 !== w.ar ? <Word text={w.ar2} canSpeak={canSpeak} /> : <span className={vocab.same}>identique</span>}
+                </td>
               )}
             </tr>
           ))}

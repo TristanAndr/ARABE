@@ -175,7 +175,7 @@ export function VocabPractice({ category, speech }: Props) {
             })}
           </fieldset>
 
-          {answered && <Outcome correct={outcome} word={question.word} canSpeak={speech !== 'indisponible'} />}
+          {answered && <Outcome correct={outcome} word={question.word} secondLabel={category.columns?.second} canSpeak={speech !== 'indisponible'} />}
 
           <div className={styles.actions}>
             {answered ? (
@@ -216,7 +216,18 @@ function optionState(outcome: boolean | undefined, chosen: boolean, right: boole
   return undefined
 }
 
-function Outcome({ correct, word, canSpeak }: { correct: boolean; word: VocabWord; canSpeak: boolean }) {
+function Outcome({
+  correct,
+  word,
+  secondLabel,
+  canSpeak,
+}: {
+  correct: boolean
+  word: VocabWord
+  secondLabel?: string
+  canSpeak: boolean
+}) {
+  const second = word.ar2 && word.ar2 !== word.ar && secondLabel ? word.ar2 : null
   return (
     <div className={styles.outcome} role="status" aria-label="Résultat">
       <p className={correct ? styles.right : styles.wrong}>{correct ? 'Juste.' : 'Pas tout à fait.'}</p>
@@ -231,10 +242,10 @@ function Outcome({ correct, word, canSpeak }: { correct: boolean; word: VocabWor
           </span>
           <span className={styles.expectedFr}>
             {word.fr}
-            {word.arFem ? ` · féminin : ` : ''}
-            {word.arFem && (
+            {second && ` · ${secondLabel!.toLowerCase()} : `}
+            {second && (
               <span className="arabic" lang="ar" dir="rtl">
-                {word.arFem}
+                {second}
               </span>
             )}
           </span>
