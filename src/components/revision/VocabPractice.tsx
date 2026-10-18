@@ -3,6 +3,7 @@ import { speakArabic, type SpeechState } from '../../revision/speech'
 import { buildVocabSession, type VocabMode, type VocabQuestion } from '../../revision/vocabQuiz'
 import type { VocabCategory, VocabWord } from '../../revision/vocabulary'
 import { SpeakButton } from './SpeakButton'
+import { SpokenWord } from './SpokenWord'
 import styles from './Practice.module.css'
 import vocab from './Vocabulary.module.css'
 
@@ -136,8 +137,8 @@ export function VocabPractice({ category, speech }: Props) {
             <p className={styles.promptLabel}>{current.prompt}</p>
             {mode === 'fr-ar' && <p className={styles.promptFrBig}>{question.word.fr}</p>}
             {mode === 'ar-fr' && (
-              <p className={`arabic ${styles.promptAr}`} lang="ar" dir="rtl">
-                {question.word.ar}
+              <p className={styles.promptAr}>
+                <SpokenWord text={question.word.ar} />
               </p>
             )}
             {mode === 'ecoute' && (
@@ -164,9 +165,7 @@ export function VocabPractice({ category, speech }: Props) {
                     onChange={() => setChoice(id)}
                   />
                   {arabicOptions ? (
-                    <span className={`arabic ${styles.optionAr}`} lang="ar" dir="rtl">
-                      {w.ar}
-                    </span>
+                    <SpokenWord text={w.ar} className={styles.optionAr} />
                   ) : (
                     <span className={vocab.optionFr}>{w.fr}</span>
                   )}
@@ -235,9 +234,7 @@ function Outcome({
       <ul className={styles.expected}>
         <li>
           <span className={vocab.answerAr}>
-            <span className={`arabic ${styles.expectedAr}`} lang="ar" dir="rtl">
-              {word.ar}
-            </span>
+            <SpokenWord text={word.ar} className={styles.expectedAr} />
             {canSpeak && <SpeakButton text={word.ar} label={`Écouter ${word.ar}`} />}
           </span>
           <span className={styles.expectedFr}>
@@ -245,9 +242,7 @@ function Outcome({
             {others.map((o) => (
               <span key={o.label}>
                 {` · ${o.label} : `}
-                <span className="arabic" lang="ar" dir="rtl">
-                  {o.ar}
-                </span>
+                <SpokenWord text={o.ar} />
               </span>
             ))}
           </span>

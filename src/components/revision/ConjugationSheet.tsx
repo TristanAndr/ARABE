@@ -105,8 +105,8 @@ function Legend() {
         </li>
       </ul>
       <p className={styles.legendNote}>
-        La voyelle finale du <span className={`arabic ${styles.inlineAr}`} lang="ar" dir="rtl">ل</span> fait partie de la terminaison (dernière colonne). Dans le mot entier, elle reste
-        posée sur sa lettre et prend donc la couleur du radical : couper une lettre de sa voyelle abîmerait l'écriture.
+        La voyelle finale du <span className={`arabic ${styles.inlineAr}`} lang="ar" dir="rtl">ل</span> fait partie de la terminaison (dernière colonne) : elle est
+        posée sur le <span className={`arabic ${styles.inlineAr}`} lang="ar" dir="rtl">ل</span> du radical, mais prend la couleur de la terminaison.
       </p>
     </div>
   )

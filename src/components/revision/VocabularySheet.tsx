@@ -1,6 +1,7 @@
 import type { SpeechState } from '../../revision/speech'
 import type { VocabCategory } from '../../revision/vocabulary'
 import { SpeakButton } from './SpeakButton'
+import { SpokenWord } from './SpokenWord'
 import styles from './Revision.module.css'
 import vocab from './Vocabulary.module.css'
 
@@ -23,6 +24,10 @@ export function VocabularySheet({ category, speech }: Props) {
         </h1>
         <p className={styles.intro}>
           <Mixed text={category.intro} />
+        </p>
+        <p className={vocab.legend}>
+          En gris clair, ce qui ne se prononce pas quand le mot est dit seul :{' '}
+          <SpokenWord text="مِشْمِشٌ" className={styles.inlineAr} /> se dit « mishmish ».
         </p>
         <SpeechNote speech={speech} />
       </header>
@@ -66,9 +71,7 @@ export function VocabularySheet({ category, speech }: Props) {
 function Word({ text, canSpeak }: { text: string; canSpeak: boolean }) {
   return (
     <span className={vocab.word}>
-      <span className={`arabic ${vocab.wordAr}`} lang="ar" dir="rtl">
-        {text}
-      </span>
+      <SpokenWord text={text} className={vocab.wordAr} />
       {canSpeak && <SpeakButton text={text} label={`Écouter ${text}`} />}
     </span>
   )

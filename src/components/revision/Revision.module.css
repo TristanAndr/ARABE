@@ -95,6 +95,15 @@
   color: var(--conj-gloss);
 }
 
+/* Deux couches superposées dans la même cellule : voir ConjugatedWord. */
+.layered {
+  display: inline-grid;
+}
+
+.layered > span {
+  grid-area: 1 / 1;
+}
+
 /* Le mot reste un seul mot : segments inline contigus, aucun espacement ajouté. */
 .word {
   white-space: nowrap;

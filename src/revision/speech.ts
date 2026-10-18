@@ -13,26 +13,21 @@ function arabicVoice(): SpeechSynthesisVoice | undefined {
 }
 
 const FATHATAN = '\u064B'
-/** Voyelles brèves et tanwīn qui tombent à la pause ; la šadda et le soukoun restent. */
-const PAUSE_DROPPED = /[\u064B-\u0650]/
+/** Voyelles brèves, tanwīn et šadda ; le soukoun, déjà muet, reste. */
+const FINAL_MARK = /[\u064B-\u0651]/
 
 /**
  * Forme de pause (الوَقْف) : un mot dit seul, ou en fin d'énoncé, perd sa voyelle finale et son
  * tanwīn (مِشْمِشٌ se dit « mishmish », تُفَّاحَتَانِ « tuffāḥatān »), sauf ـًا qui se dit « -ā »
- * (شُكْرًا → « shukrā »). Seul le dernier mot est concerné : حَبَّةُ فَرَاوِلَةٍ → « ḥabbatu farāwila ».
+ * (شُكْرًا → « shukrā »). Le redoublement d'une dernière lettre ne s'entend plus : بُنِّيٌّ se dit
+ * « bunnī ». Seul le dernier mot est concerné : حَبَّةُ فَرَاوِلَةٍ → « ḥabbatu farāwila ».
  */
 export function pausalForm(text: string): string {
   const s = text.normalize('NFC').trimEnd()
-  if (s.endsWith(FATHATAN + 'ا')) return s.slice(0, -2) + '\u064Eا'
-  if (s.endsWith('ا' + FATHATAN)) return s.slice(0, -2) + '\u064Eا'
+  if (s.endsWith(FATHATAN + 'ا') || s.endsWith('ا' + FATHATAN)) return s.slice(0, -2) + '\u064Eا'
   let end = s.length
-  let kept = ''
-  while (end > 0 && /[\u064B-\u0652]/.test(s[end - 1]!)) {
-    const mark = s[end - 1]!
-    if (!PAUSE_DROPPED.test(mark)) kept = mark + kept
-    end--
-  }
-  return s.slice(0, end) + kept
+  while (end > 0 && FINAL_MARK.test(s[end - 1]!)) end--
+  return s.slice(0, end)
 }
 
 /** Prononce un mot ou une expression tels qu'on les dit seuls (forme de pause). */

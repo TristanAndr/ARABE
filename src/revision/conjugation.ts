@@ -98,13 +98,18 @@ export function wordSegments(f: ConjugatedForm): { prefix: string; stem: string;
 /** Lettres qui ne s'attachent jamais à la lettre suivante. */
 const NON_JOINING = new Set(['ا', 'أ', 'إ', 'آ', 'د', 'ذ', 'ر', 'ز', 'و'])
 
+/** Vrai si la lettre (début de la chaîne) s'attache à la lettre qui la suit. */
+export function joinsNext(text: string): boolean {
+  return !NON_JOINING.has(text[0]!)
+}
+
 /**
  * Découpage pédagogique, à la manière d'un manuel : chaque élément est montré seul,
  * relié par un tatwīl (ـ) quand la lettre s'attache à la suivante. Ici la voyelle finale
  * est rendue avec la terminaison (ـُ, ـَانِ, ـُونَ, ـِينَ, ـْنَ).
  */
 export function breakdown(f: ConjugatedForm): { prefix: string; stem: string; ending: string } {
-  const joins = !NON_JOINING.has(f.prefix[0]!)
+  const joins = joinsNext(f.prefix)
   return {
     prefix: f.prefix + (joins ? TATWEEL : ''),
     stem: (joins ? TATWEEL : '') + MODEL.stem + TATWEEL,

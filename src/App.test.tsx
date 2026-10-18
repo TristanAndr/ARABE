@@ -137,7 +137,7 @@ describe('révision', () => {
     expect(rows).toHaveLength(14)
     const row = document.querySelector('tr[data-form="2fs"]')!
     expect(row.textContent).toContain('أَنْتِ')
-    expect(row.textContent).toContain('تَفْعَلِينَ')
+    expect(row.textContent!.replaceAll('\u200D', '')).toContain('تَفْعَلِينَ')
     expect(row.textContent).toContain('tu fais')
   })
 

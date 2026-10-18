@@ -51,6 +51,31 @@
   display: none;
 }
 
+/* Terminaisons muettes à la pause : deux couches superposées, voir SpokenWord. */
+.layered {
+  display: inline-grid;
+}
+
+.layered > span {
+  grid-area: 1 / 1;
+}
+
+.silent {
+  color: var(--rule-strong);
+}
+
+.spoken {
+  pointer-events: none;
+  user-select: none;
+}
+
+.legend {
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+
 /* Bouton d'écoute : discret, rond, à côté du mot. */
 .speak {
   display: inline-grid;
