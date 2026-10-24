@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { EXERCISES } from './data/corpus'
 import { formsForVerb, FORMS, grammarLabel, pronounLabel, verbOf } from './revision/conjugation'
-import { FRUITS, VEGETABLES } from './revision/vocabulary'
+import { ANIMALS, FRUITS, VEGETABLES } from './revision/vocabulary'
 import { createEnv } from './test/env'
 
 let env: ReturnType<typeof createEnv>
@@ -269,6 +269,15 @@ describe('vocabulaire', () => {
       await user.click(screen.getByRole('button', { name: /^Les légumes/ }))
       expect(document.querySelectorAll('tr[data-word]')).toHaveLength(VEGETABLES.words.length)
       expect(document.querySelector('tr[data-word="ail"]')!.textContent).toContain('فَصُّ ثُومٍ')
+      // Les animaux, singulier et pluriel ; deux pluriels courants, chacun prononcé à la pause.
+      await user.click(screen.getByRole('button', { name: /^Les animaux/ }))
+      expect(document.querySelectorAll('tr[data-word]')).toHaveLength(ANIMALS.words.length)
+      const cheval = document.querySelector('tr[data-word="cheval"]')!
+      expect(cheval.textContent).toContain('أَحْصِنَةٌ')
+      expect(cheval.textContent).toContain('خُيُولٌ')
+      await user.click(screen.getByRole('button', { name: 'Écouter أَحْصِنَةٌ / خُيُولٌ' }))
+      expect(speak.mock.calls.at(-1)![0].text).toBe('أَحْصِنَة، خُيُول')
+      speak.mockClear()
       await user.click(screen.getByRole('button', { name: /^Les fruits/ }))
 
       await user.click(screen.getByRole('button', { name: 'Écouter تُفَّاحٌ' }))

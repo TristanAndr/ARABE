@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { stripVowels } from './check'
 import { buildVocabSession } from './vocabQuiz'
-import { COLORS, FRUITS, partsText, VEGETABLES, VOCAB_CATEGORIES } from './vocabulary'
+import { ALTERNATIVES, ANIMALS, COLORS, FRUITS, partsText, VEGETABLES, VOCAB_CATEGORIES } from './vocabulary'
 
 function seeded(seed: number) {
   let s = seed
@@ -47,12 +47,38 @@ describe('fiches de vocabulaire', () => {
   })
 })
 
+describe('animaux', () => {
+  it('les 38 du support : singulier, pluriel, et les deux formes quand le support en donne deux', () => {
+    expect(ANIMALS.words).toHaveLength(38)
+    expect(ANIMALS.columns).toEqual(['Singulier', 'Pluriel'])
+    const forms = (id: string) => {
+      const w = ANIMALS.words.find((v) => v.id === id)!
+      return [w.ar, ...w.others!]
+    }
+    expect(forms('lion')).toEqual(['أَسَدٌ', 'أُسُودٌ'])
+    expect(forms('araignee')).toEqual(['عَنْكَبُوتٌ', 'عَنَاكِبُ'])
+    expect(forms('cheval')).toEqual(['حِصَانٌ', 'أَحْصِنَةٌ / خُيُولٌ'])
+    expect(forms('chevre')).toEqual(['مَاعِزٌ / عَنْزَةٌ', 'مَوَاعِزُ / عِنَازٌ'])
+    // Chaque forme d'une alternative est elle-même un mot vocalisé, sans espace parasite.
+    for (const w of ANIMALS.words) {
+      for (const ar of [w.ar, ...w.others!]) {
+        for (const part of ar.split(ALTERNATIVES)) {
+          expect(part).toBe(part.trim())
+          expect(part).not.toContain('/')
+          expect(stripVowels(part)).not.toBe(part)
+        }
+      }
+    }
+  })
+})
+
 describe('mémo des thèmes', () => {
   it('les morceaux colorés recomposent exactement les mots exemples', () => {
     const words = VOCAB_CATEGORIES.map((c) => c.guide.steps.map((s) => partsText(s.parts)))
     expect(words).toEqual([
       ['تُفَّاحٌ', 'تُفَّاحَةٌ', 'تُفَّاحَتَانِ'],
       ['جَزَرٌ', 'جَزَرَةٌ', 'جَزَرَتَانِ'],
+      ['أَسَدٌ', 'أُسُودٌ'],
       ['أَحْمَرُ', 'حَمْرَاءُ'],
     ])
     // Et ce sont bien des formes de la fiche.

@@ -1,10 +1,11 @@
 /**
- * Fiches de vocabulaire : les fruits, les légumes et les couleurs.
+ * Fiches de vocabulaire : les fruits, les légumes, les animaux et les couleurs.
  *
- * Mots repris des supports de cours « Fawakih » et « Khudar » (arabe littéraire, entièrement
- * vocalisé, tanwīn compris). Le mot principal (`ar`) sert aux exercices ; les autres formes sont
- * données à côté sur la fiche : pour les fruits et les légumes l'unité et le duel, pour les couleurs
- * le féminin.
+ * Mots repris des supports de cours « Fawakih », « Khudar » et « Ḥayawānāt » (arabe littéraire,
+ * entièrement vocalisé, tanwīn compris). Le mot principal (`ar`) sert aux exercices ; les autres
+ * formes sont données à côté sur la fiche : pour les fruits et les légumes l'unité et le duel, pour
+ * les animaux le pluriel, pour les couleurs le féminin. Deux formes également courantes sont
+ * séparées par « / » (voir `ALTERNATIVES`).
  */
 
 export interface VocabWord {
@@ -32,6 +33,9 @@ export interface WordParts {
   suffix?: string
 }
 
+/** Séparateur de deux formes également courantes, ex. أَحْصِنَةٌ / خُيُولٌ. */
+export const ALTERNATIVES = ' / '
+
 export const partsText = (p: WordParts): string => (p.prefix ?? '') + p.stem + (p.tail ?? '') + (p.suffix ?? '')
 
 export interface ThemeGuide {
@@ -41,7 +45,7 @@ export interface ThemeGuide {
 }
 
 export interface VocabCategory {
-  id: 'fruits' | 'legumes' | 'couleurs'
+  id: 'fruits' | 'legumes' | 'animaux' | 'couleurs'
   title: string
   titleAr: string
   /** Mémo du thème : les formes d'un mot exemple, puis deux ou trois rappels courts. */
@@ -160,6 +164,64 @@ export const VEGETABLES: VocabCategory = {
   ],
 }
 
+export const ANIMALS: VocabCategory = {
+  id: 'animaux',
+  title: 'Les animaux',
+  titleAr: 'حَيَوَانَاتٌ',
+  guide: {
+    steps: [
+      { label: 'Un lion', parts: { stem: 'أَسَدٌ' } },
+      { label: 'Des lions : le mot change de moule', parts: { stem: 'أُسُودٌ' } },
+    ],
+    tips: [
+      'Moules fréquents : فُعُولٌ (lions), فِعَالٌ (chiens), فِعْلَانٌ (gazelles), فَعَالِلُ (renards).',
+      'Petites bêtes en ـَةٌ : sans le ة, l’espèce entière, نَحْلَةٌ → نَحْلٌ.',
+      'Un pluriel d’animaux s’accorde au féminin singulier : أُسُودٌ قَوِيَّةٌ.',
+    ],
+  },
+  columns: ['Singulier', 'Pluriel'],
+  words: [
+    word('lion', 'lion', '🦁', '#c98a00', 'أَسَدٌ', ['أُسُودٌ']),
+    word('elephant', 'éléphant', '🐘', '#868e96', 'فِيلٌ', ['فِيَلَةٌ / أَفْيَالٌ']),
+    word('girafe', 'girafe', '🦒', '#c99700', 'زَرَافَةٌ', ['زَرَافَاتٌ']),
+    word('singe', 'singe', '🐒', '#8b5a2b', 'قِرْدٌ', ['قُرُودٌ / قِرَدَةٌ']),
+    word('tigre', 'tigre', '🐯', '#e8710a', 'نَمِرٌ', ['نُمُورٌ']),
+    word('gazelle', 'gazelle', '🦌', '#b8860b', 'غَزَالٌ', ['غِزْلَانٌ']),
+    word('crocodile', 'crocodile', '🐊', '#2b8a3e', 'تِمْسَاحٌ', ['تَمَاسِيحُ']),
+    word('cheval', 'cheval', '🐴', '#8b5a2b', 'حِصَانٌ', ['أَحْصِنَةٌ / خُيُولٌ']),
+    word('vache', 'vache', '🐄', '#8b5a2b', 'بَقَرَةٌ', ['بَقَرَاتٌ / أَبْقَارٌ']),
+    word('mouton', 'mouton', '🐑', '#a68a64', 'خَرُوفٌ', ['خِرَافٌ / خِرْفَانٌ']),
+    word('chevre', 'chèvre', '🐐', '#8b6b4a', 'مَاعِزٌ / عَنْزَةٌ', ['مَوَاعِزُ / عِنَازٌ']),
+    word('poule', 'poule', '🐔', '#d62828', 'دَجَاجَةٌ', ['دَجَاجَاتٌ / دَجَاجٌ']),
+    word('coq', 'coq', '🐓', '#d62828', 'دِيكٌ', ['دُيُوكٌ / أَدْيَاكٌ']),
+    word('ane', 'âne', '🫏', '#7c8794', 'حِمَارٌ', ['حَمِيرٌ / حُمُرٌ']),
+    word('canard', 'canard', '🦆', '#c99700', 'بَطَّةٌ', ['بَطَّاتٌ / بَطٌّ']),
+    word('chat', 'chat', '🐱', '#e8710a', 'قِطٌّ', ['قِطَطٌ']),
+    word('chien', 'chien', '🐶', '#8b5a2b', 'كَلْبٌ', ['كِلَابٌ']),
+    word('chameau', 'chameau', '🐪', '#c49a1b', 'جَمَلٌ', ['جِمَالٌ']),
+    word('loup', 'loup', '🐺', '#868e96', 'ذِئْبٌ', ['ذِئَابٌ']),
+    word('renard', 'renard', '🦊', '#e8590c', 'ثَعْلَبٌ', ['ثَعَالِبُ']),
+    word('ours', 'ours', '🐻', '#7a4a24', 'دُبٌّ', ['دِبَبَةٌ']),
+    word('lapin', 'lapin', '🐰', '#98a2ab', 'أَرْنَبٌ', ['أَرَانِبُ']),
+    word('souris', 'souris', '🐭', '#868e96', 'فَأْرٌ', ['فِئْرَانٌ']),
+    word('serpent', 'serpent', '🐍', '#2b8a3e', 'ثُعْبَانٌ', ['ثَعَابِينُ']),
+    word('poisson', 'poisson', '🐟', '#1f6fd6', 'سَمَكَةٌ', ['أَسْمَاكٌ / سَمَكٌ']),
+    word('baleine', 'baleine', '🐋', '#1f5fa8', 'حُوتٌ', ['حِيتَانٌ']),
+    word('dauphin', 'dauphin', '🐬', '#3b82c4', 'دُلْفِينٌ', ['دَلَافِينُ']),
+    word('tortue', 'tortue', '🐢', '#2f9e44', 'سُلَحْفَاةٌ', ['سَلَاحِفُ']),
+    word('grenouille', 'grenouille', '🐸', '#5f9420', 'ضِفْدَعٌ', ['ضَفَادِعُ']),
+    word('oiseau', 'oiseau', '🐦', '#8b5a2b', 'عُصْفُورٌ / طَائِرٌ', ['عَصَافِيرُ / طُيُورٌ']),
+    word('aigle', 'aigle', '🦅', '#7a4a24', 'نَسْرٌ', ['نُسُورٌ']),
+    word('hibou', 'hibou', '🦉', '#8b6b4a', 'بُومَةٌ', ['بُومَاتٌ / بُومٌ']),
+    word('abeille', 'abeille', '🐝', '#c99700', 'نَحْلَةٌ', ['نَحْلَاتٌ / نَحْلٌ']),
+    word('mouche', 'mouche', '🪰', '#6c757d', 'ذُبَابَةٌ', ['ذُبَابٌ / ذِبَّانٌ']),
+    word('araignee', 'araignée', '🕷️', '#6c757d', 'عَنْكَبُوتٌ', ['عَنَاكِبُ']),
+    word('sauterelle', 'sauterelle', '🦗', '#5f9420', 'جَرَادَةٌ', ['جَرَادٌ']),
+    word('corbeau', 'corbeau', '🐦‍⬛', '#6c757d', 'غُرَابٌ', ['غِرْبَانٌ']),
+    word('fourmi', 'fourmi', '🐜', '#a0522d', 'نَمْلَةٌ', ['نَمْلٌ / نِمَالٌ']),
+  ],
+}
+
 export const COLORS: VocabCategory = {
   id: 'couleurs',
   title: 'Les couleurs',
@@ -192,4 +254,4 @@ export const COLORS: VocabCategory = {
   ],
 }
 
-export const VOCAB_CATEGORIES = [FRUITS, VEGETABLES, COLORS] as const
+export const VOCAB_CATEGORIES = [FRUITS, VEGETABLES, ANIMALS, COLORS] as const

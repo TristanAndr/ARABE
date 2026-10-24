@@ -3,6 +3,7 @@
  */
 
 import { useEffect, useState } from 'react'
+import { ALTERNATIVES } from './vocabulary'
 
 export function speechSupported(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined'
@@ -35,7 +36,8 @@ export function speakArabic(text: string): void {
   if (!speechSupported()) return
   const synth = window.speechSynthesis
   synth.cancel()
-  const utterance = new SpeechSynthesisUtterance(pausalForm(text))
+  // Deux formes séparées par « / » : dites l'une après l'autre, avec une pause.
+  const utterance = new SpeechSynthesisUtterance(text.split(ALTERNATIVES).map(pausalForm).join('، '))
   utterance.lang = 'ar-SA'
   const voice = arabicVoice()
   if (voice) utterance.voice = voice

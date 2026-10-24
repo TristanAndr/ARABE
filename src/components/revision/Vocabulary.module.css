@@ -317,3 +317,18 @@
     transform: scale(0.3) rotate(-15deg);
   }
 }
+
+/* Deux formes également courantes, séparées par une barre discrète. */
+.alternatives {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: 0.4em;
+}
+
+.or {
+  color: var(--muted);
+  font-family: var(--font-text);
+  font-size: 0.9em;
+}

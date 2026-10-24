@@ -1,4 +1,6 @@
+import { Fragment } from 'react'
 import { pausalForm } from '../../revision/speech'
+import { ALTERNATIVES } from '../../revision/vocabulary'
 import styles from './Vocabulary.module.css'
 
 interface Props {
@@ -15,6 +17,19 @@ interface Props {
  * conservé : les signes restants gardent leur place et les deux couches se superposent exactement.
  */
 export function SpokenWord({ text, className = '' }: Props) {
+  // Deux formes également courantes : chacune a sa forme de pause.
+  if (text.includes(ALTERNATIVES)) {
+    return (
+      <span className={styles.alternatives} dir="rtl">
+        {text.split(ALTERNATIVES).map((part, i) => (
+          <Fragment key={i}>
+            {i > 0 && <span className={styles.or}> / </span>}
+            <SpokenWord text={part} className={className} />
+          </Fragment>
+        ))}
+      </span>
+    )
+  }
   const spoken = pausalForm(text)
   if (spoken === text.normalize('NFC')) {
     return (
