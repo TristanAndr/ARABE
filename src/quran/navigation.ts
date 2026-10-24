@@ -31,3 +31,20 @@ export function sanitizePosition(raw: unknown): Position | null {
   const p = { surah: Number(surah), ayah: Number(ayah) }
   return isValid(p) ? p : null
 }
+
+const TOTAL = SURAH_LIST.reduce((n, s) => n + s.ayahs, 0)
+
+/** Verset tiré uniformément dans tout le Coran (chaque verset a la même chance), autre que `avoid`. */
+export function randomVerse(avoid?: Position | null, rand: () => number = Math.random): Position {
+  for (;;) {
+    let k = Math.floor(rand() * TOTAL)
+    for (const s of SURAH_LIST) {
+      if (k < s.ayahs) {
+        const p = { surah: s.number, ayah: k + 1 }
+        if (!avoid || p.surah !== avoid.surah || p.ayah !== avoid.ayah) return p
+        break
+      }
+      k -= s.ayahs
+    }
+  }
+}

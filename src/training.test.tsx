@@ -91,6 +91,39 @@ describe('entraînement verset par verset', () => {
     await expectVerse(112, 2)
   })
 
+  it('verset au hasard, puis enchaînement au hasard après vérification', async () => {
+    const user = userEvent.setup()
+    await env.open()
+    await user.click(verseBar().getByRole('button', { name: /Verset au hasard/ }))
+    const first = counter()
+    await screen.findByRole('button', { name: /Revenir à la sélection/ })
+    await user.type(input(), 'x{Enter}')
+    await user.click(within(result()!).getByRole('button', { name: 'Phrase suivante' }))
+    await waitFor(() => expect(result()).toBeNull())
+    expect(input().value).toBe('')
+    // « Verset suivant » de la barre reprend la lecture dans l'ordre.
+    await user.click(nextVerse())
+    await user.type(input(), 'x{Enter}')
+    expect(within(result()!).getByRole('button', { name: 'Verset suivant' })).toBeTruthy()
+    expect(first).toMatch(/^Verset \d+ \/ \d+$/)
+  })
+
+  it('ordre aléatoire : « Phrase suivante » tire un verset dans tout le Coran', async () => {
+    const user = userEvent.setup()
+    await env.open()
+    await user.click(screen.getByRole('button', { name: 'Paramètres' }))
+    await user.click(screen.getByRole('radio', { name: 'Aléatoire' }))
+    await user.click(screen.getByRole('button', { name: 'Enregistrer' }))
+    await user.click(screen.getByRole('button', { name: "Retour à l'exercice" }))
+    await screen.findByLabelText('Transcription')
+    await user.type(input(), 'x{Enter}')
+    await user.click(within(result()!).getByRole('button', { name: 'Phrase suivante' }))
+    await screen.findByRole('button', { name: /Revenir à la sélection/ })
+    await waitFor(() => expect(result()).toBeNull())
+    await user.type(input(), 'x{Enter}')
+    expect(within(result()!).getByRole('button', { name: 'Phrase suivante' })).toBeTruthy()
+  })
+
   it('dernier verset : premier verset de la sourate suivante', async () => {
     const user = userEvent.setup()
     await env.open()

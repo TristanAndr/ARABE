@@ -11,10 +11,11 @@ interface Props {
   onGo: (p: Position) => void
   onStep: (move: (p: Position) => Position | null) => void
   onExit: () => void
+  onRandom: () => void
 }
 
 /** Choix de la sourate et passage au verset précédent ou suivant, au-dessus de l'exercice. */
-export function VerseNav({ position, verseMode, onGo, onStep, onExit }: Props) {
+export function VerseNav({ position, verseMode, onGo, onStep, onExit, onRandom }: Props) {
   const surah = SURAHS[position.surah]!
   const prev = previous(position)
   const nextPos = next(position)
@@ -37,6 +38,12 @@ export function VerseNav({ position, verseMode, onGo, onStep, onExit }: Props) {
             Suivant
           </span>{' '}
           →
+        </button>
+        <button type="button" className={styles.step} onClick={onRandom}>
+          <span className={styles.long}>Verset au hasard</span>
+          <span className={styles.short} aria-hidden>
+            Hasard
+          </span>
         </button>
       </nav>
       {verseMode && (

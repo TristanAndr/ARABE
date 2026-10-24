@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { SURAH_LIST, SURAHS } from '../data/surahs'
-import { next, previous, sanitizePosition } from './navigation'
+import { isValid, next, previous, randomVerse, sanitizePosition } from './navigation'
 import { searchSurahs } from './search'
 import { loadQuranText, parseTanzil, verseView } from './text'
 
@@ -73,6 +73,21 @@ describe('navigation', () => {
 
   it('fin du Coran : pas de suivant', () => {
     expect(next({ surah: 114, ayah: 6 })).toBeNull()
+  })
+
+  it('verset au hasard : tout le Coran, du premier au dernier verset, jamais le verset évité', () => {
+    expect(randomVerse(null, () => 0)).toEqual({ surah: 1, ayah: 1 })
+    expect(randomVerse(null, () => 0.999999)).toEqual({ surah: 114, ayah: 6 })
+    expect(randomVerse(null, () => 7 / 6236)).toEqual({ surah: 2, ayah: 1 })
+    const draws = [0, 0, 0.5]
+    expect(randomVerse({ surah: 1, ayah: 1 }, () => draws.shift()!)).not.toEqual({ surah: 1, ayah: 1 })
+    const seen = new Set<number>()
+    for (let i = 0; i < 300; i++) {
+      const p = randomVerse()
+      expect(isValid(p)).toBe(true)
+      seen.add(p.surah)
+    }
+    expect(seen.size).toBeGreaterThan(60)
   })
 
   it('position enregistrée invalide : ignorée', () => {

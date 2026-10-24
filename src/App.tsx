@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { AlphabetView } from './components/alphabet/AlphabetView'
 import { VerseNav } from './components/training/VerseNav'
 import trainingStyles from './components/training/Training.module.css'
-import { next, type Position } from './quran/navigation'
+import { next, randomVerse, type Position } from './quran/navigation'
 import { verseItem } from './quran/practice'
 import { useQuranText } from './quran/useQuranText'
 import { AccountView } from './components/AccountView'
@@ -21,6 +21,9 @@ import { resolveSpellings } from './translit/profiles'
 import styles from './App.module.css'
 
 const BY_ID = new Map(EXERCISES.map((e) => [e.id, e]))
+
+// Au hasard, on écarte les très longs versets (2:282…), pénibles à transcrire d'une traite.
+const MAX_RANDOM_WORDS = 24
 
 export interface AccountInfo {
   email: string
@@ -82,7 +85,12 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   latestVerse.current = verse
   const latestSettings = useRef(settings)
   latestSettings.current = settings
-  const goVerse = (p: Position | null) => {
+  // Enchaînement au hasard : « Phrase suivante » tire un verset dans tout le Coran. C'est le cas
+  // en ordre aléatoire, ou après « Verset au hasard » ; choisir un verset précis l'interrompt.
+  const randomOrder = settings.order === 'random'
+  const [randomRun, setRandomRun] = useState(() => randomOrder && verse !== null)
+  const goVerse = (p: Position | null, random = false) => {
+    setRandomRun(random && p !== null)
     latestVerse.current = p
     latestSettings.current = { ...latestSettings.current, trainingVerse: p }
     save(latestSettings.current)
@@ -95,6 +103,15 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
     const to = from && move(from)
     if (to) goVerse(to)
   }
+  const goRandom = () => {
+    const text = quran.status === 'ready' ? quran.text : null
+    const avoid = latestVerse.current ?? position
+    let p = randomVerse(avoid)
+    for (let i = 0; text && i < 50 && text.get(p.surah)![p.ayah - 1]!.split(' ').length > MAX_RANDOM_WORDS; i++) {
+      p = randomVerse(avoid)
+    }
+    goVerse(p, true)
+  }
   const toolbar = position && (
     <VerseNav
       position={position}
@@ -102,6 +119,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
       onGo={goVerse}
       onStep={stepVerse}
       onExit={() => goVerse(null)}
+      onRandom={goRandom}
     />
   )
   const backLabel = BACK_LABELS[section]
@@ -171,9 +189,9 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
               progress.record(exercise.id, verdict)
               store.addReadingAttempt({ exercise_id: exercise.id, verdict, answer })
             }}
-            onNext={verse ? () => stepVerse(next) : progress.next}
-            nextLabel={verse ? 'Verset suivant' : 'Phrase suivante'}
-            canNext={verse ? next(verse) !== null : true}
+            onNext={randomRun || (!verse && randomOrder) ? goRandom : verse ? () => stepVerse(next) : progress.next}
+            nextLabel={randomRun || !verse ? 'Phrase suivante' : 'Verset suivant'}
+            canNext={randomRun || (verse ? next(verse) !== null : true)}
             toolbar={toolbar}
             step={verse ? undefined : { position: index + 1, total: order.length }}
           />
