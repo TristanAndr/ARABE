@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { stripVowels } from './check'
 import { buildVocabSession } from './vocabQuiz'
-import { ALTERNATIVES, ANIMALS, COLORS, FRUITS, partsText, VEGETABLES, VOCAB_CATEGORIES } from './vocabulary'
+import { ALTERNATIVES, ANIMALS, COLORS, EMOTIONS, FRUITS, partsText, VEGETABLES, VOCAB_CATEGORIES, WEATHER } from './vocabulary'
 
 function seeded(seed: number) {
   let s = seed
@@ -72,6 +72,26 @@ describe('animaux', () => {
   })
 })
 
+describe('émotions et météo', () => {
+  const forms = (c: typeof EMOTIONS, id: string) => {
+    const w = c.words.find((v) => v.id === id)!
+    return [w.ar, ...w.others!]
+  }
+
+  it('les 6 émotions primaires : nom, adjectif masculin et féminin', () => {
+    expect(EMOTIONS.words).toHaveLength(6)
+    expect(EMOTIONS.columns).toEqual(['Nom', 'Masculin', 'Féminin'])
+    expect(forms(EMOTIONS, 'joie')).toEqual(['فَرَحٌ', 'فَرِحٌ', 'فَرِحَةٌ'])
+    expect(forms(EMOTIONS, 'colere')).toEqual(['غَضَبٌ', 'غَضْبَانُ', 'غَضْبَى'])
+  })
+
+  it('les 14 mots de la météo : nom, adjectif masculin et féminin', () => {
+    expect(WEATHER.words).toHaveLength(14)
+    expect(WEATHER.columns).toEqual(['Nom', 'Masculin', 'Féminin'])
+    expect(forms(WEATHER, 'cieldegage')).toEqual(['صَفَاءٌ', 'صَافٍ', 'صَافِيَةٌ'])
+  })
+})
+
 describe('mémo des thèmes', () => {
   it('les morceaux colorés recomposent exactement les mots exemples', () => {
     const words = VOCAB_CATEGORIES.map((c) => c.guide.steps.map((s) => partsText(s.parts)))
@@ -80,6 +100,8 @@ describe('mémo des thèmes', () => {
       ['جَزَرٌ', 'جَزَرَةٌ', 'جَزَرَتَانِ'],
       ['أَسَدٌ', 'أُسُودٌ'],
       ['أَحْمَرُ', 'حَمْرَاءُ'],
+      ['حُزْنٌ', 'حَزِينٌ', 'حَزِينَةٌ'],
+      ['مَطَرٌ', 'مُمْطِرٌ', 'مُمْطِرَةٌ'],
     ])
     // Et ce sont bien des formes de la fiche.
     for (const c of VOCAB_CATEGORIES) {

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { EXERCISES } from './data/corpus'
 import { formsForVerb, FORMS, grammarLabel, pronounLabel, verbOf } from './revision/conjugation'
-import { ANIMALS, FRUITS, VEGETABLES } from './revision/vocabulary'
+import { ANIMALS, EMOTIONS, FRUITS, VEGETABLES, WEATHER } from './revision/vocabulary'
 import { createEnv } from './test/env'
 
 let env: ReturnType<typeof createEnv>
@@ -278,6 +278,14 @@ describe('vocabulaire', () => {
       await user.click(screen.getByRole('button', { name: 'Écouter أَحْصِنَةٌ / خُيُولٌ' }))
       expect(speak.mock.calls.at(-1)![0].text).toBe('أَحْصِنَة، خُيُول')
       speak.mockClear()
+      // Émotions, puis météo : le nom, puis l'adjectif au masculin et au féminin.
+      await user.click(screen.getByRole('button', { name: /^Les émotions/ }))
+      expect(document.querySelectorAll('tr[data-word]')).toHaveLength(EMOTIONS.words.length)
+      expect(document.querySelector('tr[data-word="colere"]')!.textContent).toContain('غَضْبَى')
+      await user.click(screen.getByRole('button', { name: /^La météo/ }))
+      expect(document.querySelectorAll('tr[data-word]')).toHaveLength(WEATHER.words.length)
+      const soleil = document.querySelector('tr[data-word="soleil"]')!.textContent
+      for (const ar of ['شَمْسٌ', 'مُشْمِسٌ', 'مُشْمِسَةٌ']) expect(soleil).toContain(ar)
       await user.click(screen.getByRole('button', { name: /^Les fruits/ }))
 
       await user.click(screen.getByRole('button', { name: 'Écouter تُفَّاحٌ' }))

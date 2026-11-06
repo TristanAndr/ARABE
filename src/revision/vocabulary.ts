@@ -1,10 +1,11 @@
 /**
- * Fiches de vocabulaire : les fruits, les légumes, les animaux et les couleurs.
+ * Fiches de vocabulaire : les fruits, les légumes, les animaux, les couleurs, les émotions et la météo.
  *
- * Mots repris des supports de cours « Fawakih », « Khudar » et « Ḥayawānāt » (arabe littéraire,
- * entièrement vocalisé, tanwīn compris). Le mot principal (`ar`) sert aux exercices ; les autres
- * formes sont données à côté sur la fiche : pour les fruits et les légumes l'unité et le duel, pour
- * les animaux le pluriel, pour les couleurs le féminin. Deux formes également courantes sont
+ * Mots repris des supports de cours « Fawakih », « Khudar », « Ḥayawānāt » et « Al-Marṣad » (arabe
+ * littéraire, entièrement vocalisé, tanwīn compris). Le mot principal (`ar`) sert aux exercices ; les
+ * autres formes sont données à côté sur la fiche : pour les fruits et les légumes l'unité et le duel,
+ * pour les animaux le pluriel, pour les couleurs le féminin, pour les émotions et la météo l'adjectif
+ * au masculin et au féminin. Deux formes également courantes sont
  * séparées par « / » (voir `ALTERNATIVES`).
  */
 
@@ -45,7 +46,7 @@ export interface ThemeGuide {
 }
 
 export interface VocabCategory {
-  id: 'fruits' | 'legumes' | 'animaux' | 'couleurs'
+  id: 'fruits' | 'legumes' | 'animaux' | 'couleurs' | 'emotions' | 'meteo'
   title: string
   titleAr: string
   /** Mémo du thème : les formes d'un mot exemple, puis deux ou trois rappels courts. */
@@ -254,4 +255,64 @@ export const COLORS: VocabCategory = {
   ],
 }
 
-export const VOCAB_CATEGORIES = [FRUITS, VEGETABLES, ANIMALS, COLORS] as const
+export const EMOTIONS: VocabCategory = {
+  id: 'emotions',
+  title: 'Les émotions',
+  titleAr: 'المَشَاعِرُ',
+  guide: {
+    steps: [
+      { label: 'La tristesse', parts: { stem: 'حُزْنٌ' } },
+      { label: 'Triste : فَعِيلٌ', parts: { stem: 'حَزِينٌ' } },
+      { label: 'Au féminin : + ـَةٌ', parts: { stem: 'حَزِين', tail: 'َ', suffix: 'ةٌ' } },
+    ],
+    tips: [
+      'Dire ce qu’on ressent : أَشْعُرُ بِـ + le nom, أَشْعُرُ بِالفَرَحِ.',
+      'Colère, schème فَعْلَانُ / فَعْلَى : غَضْبَانُ, غَضْبَى, sans tanwīn.',
+    ],
+  },
+  columns: ['Nom', 'Masculin', 'Féminin'],
+  words: [
+    word('joie', 'joie', '😄', '#d97706', 'فَرَحٌ', ['فَرِحٌ', 'فَرِحَةٌ'], 'le nom فَرَحٌ (a), l’adjectif فَرِحٌ (i) ; aussi سَعِيدٌ, heureux'),
+    word('tristesse', 'tristesse', '😢', '#2563eb', 'حُزْنٌ', ['حَزِينٌ', 'حَزِينَةٌ']),
+    word('colere', 'colère', '😠', '#be123c', 'غَضَبٌ', ['غَضْبَانُ', 'غَضْبَى'], 'diptote, sans tanwīn ; aussi غَاضِبٌ, غَاضِبَةٌ'),
+    word('peur', 'peur', '😨', '#312e81', 'خَوْفٌ', ['خَائِفٌ', 'خَائِفَةٌ']),
+    word('surprise', 'surprise', '😲', '#d97706', 'دَهْشَةٌ', ['مُنْدَهِشٌ', 'مُنْدَهِشَةٌ'], 'aussi مُتَفَاجِئٌ, de مُفَاجَأَةٌ'),
+    word('degout', 'dégoût', '🤢', '#4d7c0f', 'اِشْمِئْزَازٌ', ['مُشْمَئِزٌّ', 'مُشْمَئِزَّةٌ'], 'plus court et très courant : قَرَفٌ'),
+  ],
+}
+
+export const WEATHER: VocabCategory = {
+  id: 'meteo',
+  title: 'La météo',
+  titleAr: 'الطَّقْسُ',
+  guide: {
+    steps: [
+      { label: 'La pluie', parts: { stem: 'مَطَرٌ' } },
+      { label: 'Pluvieux : مُـ', parts: { prefix: 'مُ', stem: 'مْطِرٌ' } },
+      { label: 'Pluvieuse : + ـَةٌ', parts: { stem: 'مُمْطِر', tail: 'َ', suffix: 'ةٌ' } },
+    ],
+    tips: [
+      'Féminins sans ة : السَّمَاءُ, الشَّمْسُ, الرِّيحُ → السَّمَاءُ غَائِمَةٌ ; mais الطَّقْسُ غَائِمٌ.',
+      'Un pluriel de choses s’accorde au féminin singulier : أَمْطَارٌ غَزِيرَةٌ.',
+    ],
+  },
+  columns: ['Nom', 'Masculin', 'Féminin'],
+  words: [
+    word('soleil', 'soleil', '☀️', '#d97706', 'شَمْسٌ', ['مُشْمِسٌ', 'مُشْمِسَةٌ'], 'féminin sans ة : الشَّمْسُ سَاطِعَةٌ'),
+    word('pluie', 'pluie', '🌧️', '#0284c7', 'مَطَرٌ', ['مُمْطِرٌ', 'مُمْطِرَةٌ'], 'pluriel أَمْطَارٌ, accordé au féminin : أَمْطَارٌ غَزِيرَةٌ'),
+    word('nuage', 'nuage', '☁️', '#64748b', 'غَيْمٌ', ['غَائِمٌ', 'غَائِمَةٌ'], 'pluriel غُيُومٌ ; aussi سَحَابٌ'),
+    word('neige', 'neige', '❄️', '#0ea5e9', 'ثَلْجٌ', ['مُثْلِجٌ', 'مُثْلِجَةٌ'], 'pluriel ثُلُوجٌ'),
+    word('vent', 'vent', '💨', '#0284c7', 'رِيحٌ', ['عَاصِفٌ', 'عَاصِفَةٌ'], 'féminin sans ة : رِيحٌ قَوِيَّةٌ ; pluriel رِيَاحٌ'),
+    word('tempete', 'tempête', '⛈️', '#475569', 'عَاصِفَةٌ', ['رَعْدِيٌّ', 'رَعْدِيَّةٌ'], 'pluriel عَوَاصِفُ ; un orage : عَاصِفَةٌ رَعْدِيَّةٌ'),
+    word('eclair', 'éclair', '⚡', '#c99700', 'بَرْقٌ', ['بَارِقٌ', 'بَارِقَةٌ'], 'le tonnerre : رَعْدٌ'),
+    word('brouillard', 'brouillard', '🌫️', '#868e96', 'ضَبَابٌ', ['ضَبَابِيٌّ', 'ضَبَابِيَّةٌ']),
+    word('chaleur', 'chaleur', '🔥', '#e8590c', 'حَرٌّ', ['حَارٌّ', 'حَارَّةٌ'], 'tiède : دَافِئٌ'),
+    word('froid', 'froid', '🥶', '#1f6fd6', 'بَرْدٌ', ['بَارِدٌ', 'بَارِدَةٌ'], 'à ne pas confondre avec بَرَدٌ, la grêle'),
+    word('douceur', 'douceur', '🌤️', '#2b9348', 'اِعْتِدَالٌ', ['مُعْتَدِلٌ', 'مُعْتَدِلَةٌ'], 'un climat tempéré : مُنَاخٌ مُعْتَدِلٌ'),
+    word('humidite', 'humidité', '💧', '#0e7490', 'رُطُوبَةٌ', ['رَطْبٌ', 'رَطْبَةٌ']),
+    word('secheresse', 'sécheresse', '🏜️', '#b8860b', 'جَفَافٌ', ['جَافٌّ', 'جَافَّةٌ']),
+    word('cieldegage', 'ciel dégagé', '🌈', '#3b82c4', 'صَفَاءٌ', ['صَافٍ', 'صَافِيَةٌ'], 'le ي tombe au masculin : جَوٌّ صَافٍ, mais سَمَاءٌ صَافِيَةٌ ; l’arc-en-ciel : قَوْسُ قُزَحَ'),
+  ],
+}
+
+export const VOCAB_CATEGORIES = [FRUITS, VEGETABLES, ANIMALS, COLORS, EMOTIONS, WEATHER] as const

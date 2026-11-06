@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useSpeech } from '../../revision/speech'
-import { ANIMALS, COLORS, FRUITS, VEGETABLES, type ThemeGuide as Guide, type VocabCategory } from '../../revision/vocabulary'
+import { ANIMALS, COLORS, EMOTIONS, FRUITS, VEGETABLES, WEATHER, type ThemeGuide as Guide, type VocabCategory } from '../../revision/vocabulary'
 import { vocabDirections } from './decks'
 import { Flashcards } from './Flashcards'
 import { PageTabs } from './PageTabs'
@@ -16,6 +16,8 @@ const THEMES: { theme: VocabCategory; emoji: string }[] = [
   { theme: VEGETABLES, emoji: '🥕' },
   { theme: ANIMALS, emoji: '🦁' },
   { theme: COLORS, emoji: '🎨' },
+  { theme: EMOTIONS, emoji: '😄' },
+  { theme: WEATHER, emoji: '🌦️' },
 ]
 
 type Tab = 'mots' | 'flashcards' | 'exercice'
