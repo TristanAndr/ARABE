@@ -1,7 +1,7 @@
 import type { SyncStatus } from '../sync/types'
 import styles from './Header.module.css'
 
-export type View = 'exercise' | 'vocabulaire' | 'conjugaison' | 'alphabet' | 'settings' | 'account'
+export type View = 'exercise' | 'motamot' | 'vocabulaire' | 'conjugaison' | 'alphabet' | 'settings' | 'account'
 
 interface Props {
   /** Sans `view`, en-tête réduit à la marque (écrans de connexion, chargement). */
@@ -12,6 +12,7 @@ interface Props {
 
 const SECTIONS: { view: View; label: string }[] = [
   { view: 'exercise', label: 'Lecture' },
+  { view: 'motamot', label: 'Mot à mot' },
   { view: 'vocabulaire', label: 'Vocabulaire' },
   { view: 'conjugaison', label: 'Conjugaison' },
   { view: 'alphabet', label: 'Alphabet' },

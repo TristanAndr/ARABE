@@ -10,6 +10,7 @@ import { ExerciseView } from './components/ExerciseView'
 import { Header, type View } from './components/Header'
 import { ConjugationView } from './components/revision/ConjugationView'
 import { VocabularyView, type VocabTheme } from './components/revision/VocabularyView'
+import { WordByWordView, type WbwTextId } from './components/wordbyword/WordByWordView'
 import { SessionEnd } from './components/SessionEnd'
 import { SettingsView } from './components/settings/SettingsView'
 import { EXERCISES } from './data/corpus'
@@ -40,10 +41,11 @@ interface Props {
   syncStatus?: SyncStatus
 }
 
-type Section = 'exercise' | 'vocabulaire' | 'conjugaison' | 'alphabet'
+type Section = 'exercise' | 'motamot' | 'vocabulaire' | 'conjugaison' | 'alphabet'
 
 const BACK_LABELS: Record<Section, string> = {
   exercise: "Retour à l'exercice",
+  motamot: 'Retour au mot à mot',
   vocabulaire: 'Retour au vocabulaire',
   conjugaison: 'Retour à la conjugaison',
   alphabet: "Retour à l'alphabet",
@@ -64,6 +66,7 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
   const [sessions, setSessions] = useState<ConjugationSessionRecord[]>(initial.conjugationSessions)
   const [view, setView] = useState<View>('exercise')
   const [vocabTheme, setVocabTheme] = useState<VocabTheme>('fruits')
+  const [wbwText, setWbwText] = useState<WbwTextId>('fatiha')
   // Section à retrouver en quittant les paramètres ou le compte.
   const [section, setSection] = useState<Section>('exercise')
   const spellings = useMemo(() => resolveSpellings(settings), [settings])
@@ -149,6 +152,8 @@ export function App({ initial, store, account, syncStatus = 'saved' }: Props) {
           <AccountView account={account} syncStatus={syncStatus} onClose={() => setView(section)} closeLabel={backLabel} />
         ) : view === 'alphabet' ? (
           <AlphabetView spellings={spellings} />
+        ) : view === 'motamot' ? (
+          <WordByWordView textId={wbwText} onText={setWbwText} />
         ) : view === 'vocabulaire' ? (
           <VocabularyView theme={vocabTheme} onTheme={setVocabTheme} />
         ) : view === 'conjugaison' ? (
